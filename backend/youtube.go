@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
@@ -22,7 +21,7 @@ func getSongFromSearch(query string) YouTubeSearch {
 		log.Fatalln(err)
 	}
 	q := req.URL.Query()
-	q.Add("key", os.Getenv("GOOGLE_API_KEY"))
+	q.Add("key", "AIzaSyD2zYHBnGCQY9wiK1tkeWMXpnlBD5BDp-Y")
 	q.Add("part", "snippet")
 	q.Add("maxResults", "1")
 	q.Add("q", query)
@@ -53,7 +52,7 @@ func getVideoDuration(videoId string) float64 {
 	q := req.URL.Query()
 	q.Add("id", videoId)
 	q.Add("part", "contentDetails")
-	q.Add("key", os.Getenv("GOOGLE_API_KEY"))
+	q.Add("key", "AIzaSyD2zYHBnGCQY9wiK1tkeWMXpnlBD5BDp-Y")
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := client.Do(req)
@@ -85,7 +84,7 @@ func youtubeMiddleware(c *gin.Context) {
 	query, exists := c.GetQuery("q")
 	if(!exists) {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Missing Query Parameter!",
+			"error": "Missing Query Parameter!!!",
 		})
 		return
 	} 
