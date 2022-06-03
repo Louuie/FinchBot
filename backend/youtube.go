@@ -99,15 +99,15 @@ func youtubeMiddleware(c *gin.Context) {
 	}
 
 
-	id, erro := insertSong(song)
-	if(erro != nil) {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": erro,
-		})
-	}
+	insertSong(song)
+	// if(erro != nil) {
+	// 	c.JSON(http.StatusBadRequest, map[string]interface{}{
+	// 		"error": erro,
+	// 	})
+	// }
 
 
 	c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Successfully inserted Song document " + id + " into the database!",
+		"message": "Successfully inserted Song document  into the database!",
 	})
 }
