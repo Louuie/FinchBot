@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -21,7 +22,7 @@ func getSongFromSearch(query string) YouTubeSearch {
 		log.Fatalln(err)
 	}
 	q := req.URL.Query()
-	q.Add("key", "AIzaSyD2zYHBnGCQY9wiK1tkeWMXpnlBD5BDp-Y")
+	q.Add("key", os.Getenv("GOOGLE_API_KEY"))
 	q.Add("part", "snippet")
 	q.Add("maxResults", "1")
 	q.Add("q", query)
@@ -52,7 +53,7 @@ func getVideoDuration(videoId string) float64 {
 	q := req.URL.Query()
 	q.Add("id", videoId)
 	q.Add("part", "contentDetails")
-	q.Add("key", "AIzaSyD2zYHBnGCQY9wiK1tkeWMXpnlBD5BDp-Y")
+	q.Add("key", os.Getenv("GOOGLE_API_KEY"))
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := client.Do(req)
