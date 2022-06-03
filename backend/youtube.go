@@ -84,7 +84,7 @@ func youtubeMiddleware(c *gin.Context) {
 	query, exists := c.GetQuery("q")
 	if(!exists) {
 		c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Missing Query Parameter!!",
+			"error": "Missing Query Parameter!!!",
 		})
 		return
 	} 
