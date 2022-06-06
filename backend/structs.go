@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type YouTubeSearch struct{
+type YouTubeSearch struct {
 	Kind          string `firestore:"kind,omitempty"`
 	Etag          string `firestore:"etag,omitempty"`
 	NextPageToken string `firestore:"nextPageToken,omitempty"`
@@ -49,35 +49,60 @@ type YouTubeSearch struct{
 	} `firestore:"items,omitempty"`
 }
 
-
 type VideoDuration struct {
-	Kind 		string `json:"king,omitempty"`
-	Etag 		string `json:"etag,omitempty"`
+	Kind  string `json:"king,omitempty"`
+	Etag  string `json:"etag,omitempty"`
 	Items []struct {
-		Kind 		string `json:"king,omitempty"`
-		Etag 		string `json:"etag,omitempty"`
-		ID 			string `json:"id,omitempty"`
+		Kind           string `json:"king,omitempty"`
+		Etag           string `json:"etag,omitempty"`
+		ID             string `json:"id,omitempty"`
 		ContentDetails struct {
-			Duration 				string `json:"duration,omitempty"`
-			Dimension 				string `json:"dimension,omitempty"`
-			Definition 				string `json:"definition,omitempty"`
-			Caption 				string `json:"caption,omitempty"`
-			LicensedContent 		string `json:"licensedcontent,omitempty"`
-			ContentRating struct {}
-			Projection 				string `json:"projection,omitempty"`
+			Duration        string `json:"duration,omitempty"`
+			Dimension       string `json:"dimension,omitempty"`
+			Definition      string `json:"definition,omitempty"`
+			Caption         string `json:"caption,omitempty"`
+			LicensedContent string `json:"licensedcontent,omitempty"`
+			ContentRating   struct{}
+			Projection      string `json:"projection,omitempty"`
 		}
 	}
-	PageInfo      struct {
+	PageInfo struct {
 		TotalResults   int `firestore:"totalResults,omitempty"`
 		ResultsPerPage int `firestore:"resultsPerPage,omitempty"`
 	} `firestore:"pageInfo,omitempty"`
 }
 
-
 type Song struct {
-	Title 		string  `firestore:"title,omitempty"`
-	Artist 		string  `firestore:"artist,omitempty"`
-	Duration 	float64  `firestore:"duration,omitempty"`
-	VideoID 	string  `firestore:"videoid,omitempty"`
+	User     string  `firestore:"user,omitempty"`
+	Title    string  `firestore:"title,omitempty"`
+	Artist   string  `firestore:"artist,omitempty"`
+	Duration float64 `firestore:"duration,omitempty"`
+	VideoID  string  `firestore:"videoid,omitempty"`
+	Position float64 `firestore:"position,omitempty"`
 }
 
+type Data struct {
+	Name     string  `json:"name,omitempty"`
+	Artist   string  `json:"artist,omitempty"`
+	Duration float64 `json:"duration,omitempty"`
+}
+type ClientData struct {
+	Status  string `json:"status,omitempty"`
+	Message string `json:"message,omitempty"`
+	Data    []Data `json:"data,omitempty"`
+}
+
+type SongPosition struct {
+	Location     float64 `json:"location,omitempty"`
+	IteratorDone bool    `json:"iteratordone,omitempty"`
+}
+
+type ClientSong struct {
+	User     string  `json:"user,omitempty"`
+	Channel  string  `json:"channel,omitempty"`
+	Title    string  `json:"title,omitempty"`
+	Artist   string  `json:"artist,omitempty"`
+	Duration float64 `json:"duration,omitempty"`
+	VideoID  string  `json:"videoid,omitempty"`
+	Position float64 `json:"position,omitempty"`
+}

@@ -14,6 +14,11 @@ import (
 
 // TODO: Add better commenting for better overall code reading and understandability
 
+type Duration struct {
+	Duration     float64
+	isLiveStream bool
+}
+
 func getSongFromSearch(query string) YouTubeSearch {
 	songSearchChan := make(chan YouTubeSearch)
 	go func() {
@@ -43,12 +48,13 @@ func getSongFromSearch(query string) YouTubeSearch {
 		var youtubeResponse YouTubeSearch
 		json.Unmarshal(body, &youtubeResponse)
 		songSearchChan <- youtubeResponse
+		close(songSearchChan)
 	}()
 	return <-songSearchChan
 }
 
-func getVideoDuration(videoId string) float64 {
-	videoDurationChan := make(chan float64)
+func getVideoDuration(videoId string) Duration {
+	videoDurationChan := make(chan Duration)
 	go func() {
 		url := "https://www.googleapis.com/youtube/v3/videos"
 		client := http.Client{}
@@ -74,6 +80,15 @@ func getVideoDuration(videoId string) float64 {
 
 		var songID VideoDuration
 		json.Unmarshal(body, &songID)
+		if songID.Items[0].ContentDetails.Duration == "P0D" {
+			duration := Duration{
+				Duration:     0,
+				isLiveStream: true,
+			}
+			videoDurationChan <- duration
+			close(videoDurationChan)
+			return
+		}
 		songIdDuration := string([]rune(songID.Items[0].ContentDetails.Duration)[2:8])
 		songIdDuration = strings.Replace(songIdDuration, "M", "m", 1)
 		songIdDuration = strings.Replace(songIdDuration, "S", "s", 1)
@@ -82,37 +97,145 @@ func getVideoDuration(videoId string) float64 {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		videoDurationChan <- songDuration.Seconds()
+		duration := Duration{
+			Duration:     songDuration.Seconds(),
+			isLiveStream: false,
+		}
+		videoDurationChan <- duration
 		close(videoDurationChan)
 	}()
 	return <-videoDurationChan
 }
 
 func youtubeMiddleware(c *gin.Context) {
-	query, exists := c.GetQuery("q")
-	if !exists {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Missing Query Parameter!!!",
+	clientDataChan := make(chan ClientData)
+	go func() {
+		channel, channelExists := c.GetQuery("channel")
+		if !channelExists {
+			clientData := ClientData{
+				Status:  "fail",
+				Message: "missing channel",
+				Data: []Data{
+					{"null", "null", 0},
+				},
+			}
+			clientDataChan <- clientData
+			close(clientDataChan)
+			return
+		}
+		user, userExists := c.GetQuery("user")
+		if !userExists {
+			clientData := ClientData{
+				Status:  "fail",
+				Message: "missing user",
+				Data: []Data{
+					{"null", "null", 0},
+				},
+			}
+			clientDataChan <- clientData
+			close(clientDataChan)
+			return
+		}
+		query, qExists := c.GetQuery("q")
+		if !qExists {
+			clientData := ClientData{
+				Status:  "fail",
+				Message: "missing query",
+				Data: []Data{
+					{"null", "null", 0},
+				},
+			}
+			clientDataChan <- clientData
+			close(clientDataChan)
+			return
+		}
+
+		songData := getSongFromSearch(query)
+		songDuration := getVideoDuration(songData.Items[0].ID.VideoID)
+		if songDuration.isLiveStream {
+			clientData := ClientData{
+				Status:  "fail",
+				Message: "a livestream",
+				Data: []Data{
+					{"null", "null", 0},
+				},
+			}
+			clientDataChan <- clientData
+			close(clientDataChan)
+			return
+		}
+		if songDuration.Duration >= 600 {
+			clientData := ClientData{
+				Status:  "fail",
+				Message: "10 minutes or longer",
+				Data: []Data{
+					{"null", "null", 0},
+				},
+			}
+			clientDataChan <- clientData
+			close(clientDataChan)
+			return
+		}
+
+		song := ClientSong{
+			User:     user,
+			Channel:  channel,
+			Title:    songData.Items[0].Snippet.Title,
+			Artist:   songData.Items[0].Snippet.ChannelTitle,
+			Duration: songDuration.Duration,
+			VideoID:  songData.Items[0].ID.VideoID,
+			Position: 1,
+		}
+
+		insertSong(song)
+
+		clientData := ClientData{
+			Status:  "success",
+			Message: "inserted into db",
+			Data: []Data{
+				{song.Title, song.Artist, song.Duration},
+			},
+		}
+		clientDataChan <- clientData
+		close(clientDataChan)
+	}()
+
+	clientData := <-clientDataChan
+
+	if clientData.Message == "missing channel" {
+		c.JSON(http.StatusOK, map[string]interface{}{
+			"error": clientData.Message,
 		})
 		return
 	}
-	songData := getSongFromSearch(query)
-	songDuration := getVideoDuration(songData.Items[0].ID.VideoID)
-	song := Song{
-		Title:    songData.Items[0].Snippet.Title,
-		Artist:   songData.Items[0].Snippet.ChannelTitle,
-		Duration: songDuration,
-		VideoID:  songData.Items[0].ID.VideoID,
+
+	if clientData.Message == "missing query" {
+		c.JSON(http.StatusOK, map[string]interface{}{
+			"error": clientData.Message,
+		})
+		return
 	}
 
-	insertSong(song)
-	// if(erro != nil) {
-	// 	c.JSON(http.StatusBadRequest, map[string]interface{}{
-	// 		"error": erro,
-	// 	})
-	// }
+	if clientData.Message == "missing user" {
+		c.JSON(http.StatusOK, map[string]interface{}{
+			"error": clientData.Message,
+		})
+		return
+	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Successfully inserted Song document  into the database!",
-	})
+	if clientData.Message == "a livestream" {
+		c.JSON(http.StatusOK, map[string]interface{}{
+			"error": clientData.Message,
+		})
+		return
+	}
+
+	if clientData.Message == "10 minutes or longer" {
+		c.JSON(http.StatusOK, map[string]interface{}{
+			"error": clientData.Message,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, clientData)
 }
