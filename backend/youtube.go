@@ -1,21 +1,44 @@
 package main
 
 import (
+	"backend/twitch-bot/database"
+	"backend/twitch-bot/models"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 )
 
 // TODO: Add better commenting for better overall code reading and understandability
 
-func getSongFromSearch(query string) YouTubeSearch {
-	songSearchChan := make(chan YouTubeSearch)
+type Duration struct {
+	Duration     float64
+	isLiveStream bool
+}
+
+func parseTime(duration string) float64 {
+	parseTimeChan := make(chan float64)
+	go func() {
+		log.Println(duration)
+		formattedTime := strings.Replace(duration, "\x00", "", 1)
+		songDuration, err := time.ParseDuration(formattedTime)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		parseTimeChan <- songDuration.Seconds()
+		close(parseTimeChan)
+	}()
+	return <-parseTimeChan
+}
+
+func getSongFromSearch(query string) models.YouTubeSearch {
+	songSearchChan := make(chan models.YouTubeSearch)
 	go func() {
 		url := "https://www.googleapis.com/youtube/v3/search"
 		client := http.Client{}
@@ -40,15 +63,16 @@ func getSongFromSearch(query string) YouTubeSearch {
 			log.Fatalln(err)
 		}
 
-		var youtubeResponse YouTubeSearch
+		var youtubeResponse models.YouTubeSearch
 		json.Unmarshal(body, &youtubeResponse)
 		songSearchChan <- youtubeResponse
+		close(songSearchChan)
 	}()
 	return <-songSearchChan
 }
 
-func getVideoDuration(videoId string) float64 {
-	videoDurationChan := make(chan float64)
+func getVideoDuration(videoId string) Duration {
+	videoDurationChan := make(chan Duration)
 	go func() {
 		url := "https://www.googleapis.com/youtube/v3/videos"
 		client := http.Client{}
@@ -72,47 +96,158 @@ func getVideoDuration(videoId string) float64 {
 			log.Fatalln(err)
 		}
 
-		var songID VideoDuration
+		var songID models.VideoDuration
 		json.Unmarshal(body, &songID)
+		if songID.Items[0].ContentDetails.Duration == "P0D" {
+			duration := Duration{
+				Duration:     0,
+				isLiveStream: true,
+			}
+			videoDurationChan <- duration
+			close(videoDurationChan)
+			return
+		}
 		songIdDuration := string([]rune(songID.Items[0].ContentDetails.Duration)[2:8])
 		songIdDuration = strings.Replace(songIdDuration, "M", "m", 1)
 		songIdDuration = strings.Replace(songIdDuration, "S", "s", 1)
 		songIdDuration = strings.Replace(songIdDuration, "\x00", "", 1)
-		songDuration, err := time.ParseDuration(songIdDuration)
-		if err != nil {
-			log.Fatalln(err)
+		songDuration := parseTime(songIdDuration)
+		duration := Duration{
+			Duration:     songDuration,
+			isLiveStream: false,
 		}
-		videoDurationChan <- songDuration.Seconds()
+		videoDurationChan <- duration
 		close(videoDurationChan)
 	}()
 	return <-videoDurationChan
 }
 
-func youtubeMiddleware(c *gin.Context) {
-	query, exists := c.GetQuery("q")
-	if !exists {
-		c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"error": "Missing Query Parameter!!!",
-		})
-		return
+func youtubeMiddleware(c *fiber.Ctx) error {
+	runtime.GOMAXPROCS(4)
+	type Query struct {
+		Channel string `query:"channel"`
+		User    string `query:"user"`
+		Q       string `query:"q"`
 	}
-	songData := getSongFromSearch(query)
+	query := new(Query)
+
+	if err := c.QueryParser(query); err != nil {
+		return c.JSON(&fiber.Map{
+			"error": err,
+		})
+	}
+	if query.Q == "" {
+		clientData := models.ClientData{
+			Status:  "fail",
+			Message: "missing query",
+			Data: []models.Data{
+				{Name: "null", Artist: "null", Duration: 0, Position: 0},
+			},
+		}
+		return c.JSON(map[string]interface{}{
+			"error": clientData.Message,
+		})
+	}
+
+	if query.User == "" {
+		clientData := models.ClientData{
+			Status:  "fail",
+			Message: "missing user",
+			Data: []models.Data{
+				{Name: "null", Artist: "null", Duration: 0, Position: 0},
+			},
+		}
+		return c.JSON(map[string]interface{}{
+			"error": clientData.Message,
+		})
+	}
+
+	if query.Channel == "" {
+		clientData := models.ClientData{
+			Status:  "fail",
+			Message: "missing channel",
+			Data: []models.Data{
+				{Name: "null", Artist: "null", Duration: 0, Position: 0},
+			},
+		}
+		return c.JSON(map[string]interface{}{
+			"error": clientData.Message,
+		})
+	}
+	songData := getSongFromSearch(query.Q)
+	songData.Items[0].Snippet.Title = strings.ReplaceAll(songData.Items[0].Snippet.Title, "&amp;", "")
+
 	songDuration := getVideoDuration(songData.Items[0].ID.VideoID)
-	song := Song{
+	if songDuration.isLiveStream {
+		clientData := models.ClientData{
+			Status:  "fail",
+			Message: "a livestream",
+			Data: []models.Data{
+				{Name: "null", Artist: "null", Duration: 0, Position: 0},
+			},
+		}
+		return c.JSON(map[string]interface{}{
+			"error": clientData.Message,
+		})
+	}
+	if songDuration.Duration >= 600 {
+		clientData := models.ClientData{
+			Status:  "fail",
+			Message: "10 minutes or longer",
+			Data: []models.Data{
+				{Name: "null", Artist: "null", Duration: 0, Position: 0},
+			},
+		}
+		return c.JSON(map[string]interface{}{
+			"error": clientData.Message,
+		})
+	}
+
+	dbRes := database.CreateTable(query.Channel)
+	latestSongPos := database.GetLatestSongPosition(dbRes.DB, dbRes.Channel)
+	if latestSongPos >= 20 {
+		clientData := models.ClientData{
+			Status:  "fail",
+			Message: "the song queue is full!",
+			Data: []models.Data{
+				{Name: "null", Artist: "null", Duration: 0, Position: 0},
+			},
+		}
+		return c.JSON(map[string]interface{}{
+			"error": clientData.Message,
+		})
+	}
+	song := database.ClientSong{
+		User:     query.User,
+		Channel:  query.Channel,
 		Title:    songData.Items[0].Snippet.Title,
 		Artist:   songData.Items[0].Snippet.ChannelTitle,
-		Duration: songDuration,
+		Duration: songDuration.Duration,
 		VideoID:  songData.Items[0].ID.VideoID,
+		Position: latestSongPos + 1,
 	}
 
-	insertSong(song)
-	// if(erro != nil) {
-	// 	c.JSON(http.StatusBadRequest, map[string]interface{}{
-	// 		"error": erro,
-	// 	})
-	// }
+	dataError := database.InsertSong(dbRes.DB, song, dbRes.Channel)
+	if dataError != "" {
+		clientData := models.ClientData{
+			Status:  "fail",
+			Message: dataError,
+			Data: []models.Data{
+				{Name: "null", Artist: "null", Duration: 0, Position: 0},
+			},
+		}
+		return c.JSON(map[string]interface{}{
+			"error": clientData.Message,
+		})
+	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Successfully inserted Song document  into the database!",
-	})
+	clientData := models.ClientData{
+		Status:  "success",
+		Message: "inserted into db",
+		Data: []models.Data{
+			{Name: song.Title, Artist: song.Artist, Duration: song.Duration, Position: latestSongPos + 1},
+		},
+	}
+	//insertSong(song)
+	return c.JSON(clientData)
 }

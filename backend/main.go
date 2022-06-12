@@ -1,17 +1,16 @@
 package main
 
 import (
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
+	"log"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
-	router := gin.Default()
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"*"}
-	//config.AllowAllOrigins = true
-	router.Use(cors.New(config))
-	router.GET("/youtube", youtubeMiddleware)
-	router.Run("localhost:4040")
+	app := fiber.New()
+	app.Use(logger.New(), cors.New())
+	app.Get("/youtube", youtubeMiddleware)
+	log.Fatal(app.Listen(":3000"))
 }
-
