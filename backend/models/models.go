@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"time"
@@ -85,6 +85,7 @@ type Data struct {
 	Name     string  `json:"name,omitempty"`
 	Artist   string  `json:"artist,omitempty"`
 	Duration float64 `json:"duration,omitempty"`
+	Position int     `json:"position,omitempty"`
 }
 type ClientData struct {
 	Status  string `json:"status,omitempty"`
@@ -95,14 +96,4 @@ type ClientData struct {
 type SongPosition struct {
 	Location     float64 `json:"location,omitempty"`
 	IteratorDone bool    `json:"iteratordone,omitempty"`
-}
-
-type ClientSong struct {
-	User     string  `json:"user,omitempty"`
-	Channel  string  `json:"channel,omitempty"`
-	Title    string  `json:"title,omitempty"`
-	Artist   string  `json:"artist,omitempty"`
-	Duration float64 `json:"duration,omitempty"`
-	VideoID  string  `json:"videoid,omitempty"`
-	Position float64 `json:"position,omitempty"`
 }
