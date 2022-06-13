@@ -1,9 +1,9 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
 import tmi from 'tmi.js';
 import { Gamble } from './commands/Gamble';
 import { SongRequest } from './commands/SongRequest';
 import { Commercial } from './commands/Commercial';
-
+dotenv.config();
 
 const client = new tmi.Client({
     options: { debug: true },

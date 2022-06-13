@@ -25,7 +25,7 @@ type ClientSong struct {
 func initializeConnection() *sql.DB {
 	dbChan := make(chan *sql.DB)
 	go func() {
-		connStr := "postgresql://localhost:5433/song_entries?sslmode=disable"
+		connStr := "postgresql://song_request_admin:MEMO387ad22509@107.185.51.97:5432/song-entries?sslmode=disable"
 		db, err := sql.Open("postgres", connStr)
 		if err != nil {
 			log.Fatalln(err)
@@ -43,7 +43,7 @@ func CreateTable(channel string) DatabaseResult {
 	testChan := make(chan DatabaseResult)
 	go func() {
 		db := initializeConnection()
-		res, err := db.Exec("CREATE TABLE IF NOT EXISTS " + channel + " (artist VARCHAR, duration INT, position INT, title VARCHAR, userid VARCHAR, videoid VARCHAR, PRIMARY KEY (videoid, title))")
+		res, err := db.Exec("CREATE TABLE IF NOT EXISTS " + channel + " (artist VARCHAR NOT NULL, duration INT NOT NULL, id SERIAL, title VARCHAR NOT NULL, userid VARCHAR NOT NULL, videoid VARCHAR NOT NULL, PRIMARY KEY (videoid, title))")
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -63,7 +63,7 @@ func InsertSong(db *sql.DB, song ClientSong, tableName string) string {
 		res, err := db.Exec("INSERT INTO "+tableName+" VALUES ($1, $2, $3, $4, $5, $6)", song.Artist, song.Duration, song.Position, song.Title, song.User, song.VideoID)
 		if err != nil {
 			if strings.Contains(err.Error(), "duplicate key") {
-				insertDataChan <- "this song already exists in the queue!"
+				insertDataChan <- "That song is already in the queue"
 			}
 		} else {
 			insertDataChan <- ""
@@ -77,7 +77,7 @@ func InsertSong(db *sql.DB, song ClientSong, tableName string) string {
 func GetLatestSongPosition(db *sql.DB, tableName string) int {
 	latestSongPosChan := make(chan int)
 	go func() {
-		res, err := db.Query("SELECT position FROM " + tableName + " ORDER BY position DESC LIMIT 1")
+		res, err := db.Query("SELECT id FROM " + tableName + " ORDER BY id DESC LIMIT 1")
 		if err != nil {
 			// maybe this completes the todo -- I need to do more research to figure it out
 			log.Fatalln(err)

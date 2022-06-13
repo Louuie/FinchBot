@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/twitch-bot/middleware"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -10,7 +11,8 @@ import (
 
 func main() {
 	app := fiber.New()
-	app.Use(logger.New(), cors.New())
-	app.Get("/youtube", youtubeMiddleware)
+	app.Use(cors.New())
+	app.Use(logger.New())
+	app.Get("/youtube", middleware.SongRequest)
 	log.Fatal(app.Listen(":3000"))
 }
