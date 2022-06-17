@@ -33,8 +33,8 @@ func ParseTime(duration string) float64 {
 	return <-parseTimeChan
 }
 
-func GetSongFromSearch(query string) models.YouTubeSearch {
-	songSearchChan := make(chan models.YouTubeSearch)
+func GetSongFromSearch(query string) *models.YouTubeSearch {
+	songSearchChan := make(chan *models.YouTubeSearch)
 	go func() {
 		url := "https://www.googleapis.com/youtube/v3/search"
 		client := http.Client{}
@@ -61,14 +61,14 @@ func GetSongFromSearch(query string) models.YouTubeSearch {
 
 		var youtubeResponse models.YouTubeSearch
 		json.Unmarshal(body, &youtubeResponse)
-		songSearchChan <- youtubeResponse
+		songSearchChan <- &youtubeResponse
 		close(songSearchChan)
 	}()
 	return <-songSearchChan
 }
 
-func GetVideoDuration(videoId string) Duration {
-	videoDurationChan := make(chan Duration)
+func GetVideoDuration(videoId string) *Duration {
+	videoDurationChan := make(chan *Duration)
 	go func() {
 		url := "https://www.googleapis.com/youtube/v3/videos"
 		client := http.Client{}
@@ -99,7 +99,7 @@ func GetVideoDuration(videoId string) Duration {
 				Duration:     0,
 				IsLiveStream: true,
 			}
-			videoDurationChan <- duration
+			videoDurationChan <- &duration
 			close(videoDurationChan)
 			return
 		}
@@ -112,7 +112,7 @@ func GetVideoDuration(videoId string) Duration {
 			Duration:     songDuration,
 			IsLiveStream: false,
 		}
-		videoDurationChan <- duration
+		videoDurationChan <- &duration
 		close(videoDurationChan)
 	}()
 	return <-videoDurationChan

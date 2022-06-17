@@ -11,8 +11,9 @@ import (
 
 func main() {
 	app := fiber.New()
-	app.Use(cors.New())
-	app.Use(logger.New())
+	app.Use(cors.New(), logger.New())
 	app.Get("/youtube", middleware.SongRequest)
-	log.Fatal(app.Listen(":3000"))
+	app.Get("/delete", middleware.DeleteSong)
+	app.Get("/songs", middleware.FetchAllSongs)
+	log.Fatal(app.Listen(":3030"))
 }

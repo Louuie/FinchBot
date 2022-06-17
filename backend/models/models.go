@@ -97,3 +97,12 @@ type SongPosition struct {
 	Location     float64 `json:"location,omitempty"`
 	IteratorDone bool    `json:"iteratordone,omitempty"`
 }
+
+type DatabaseQuery struct {
+	Artist   string `json:"artist,omitempty"`
+	Duration int    `json:"duration,omitempty"`
+	Id       int    `json:"id,omitempty"`
+	Title    string `json:"title,omitempty"`
+	Userid   string `json:"userid,omitempty"`
+	Videoid  string `json:"videoid,omitempty"`
+}

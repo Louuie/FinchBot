@@ -5,6 +5,7 @@ import (
 	"backend/twitch-bot/database"
 	"backend/twitch-bot/models"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -28,9 +29,7 @@ func SongRequest(c *fiber.Ctx) error {
 		clientData := models.ClientData{
 			Status:  "fail",
 			Message: "missing query",
-			Data: []models.Data{
-				{Name: "null", Artist: "null", Duration: 0, Position: 0},
-			},
+			Data:    nil,
 		}
 		return c.JSON(map[string]interface{}{
 			"error": clientData.Message,
@@ -41,9 +40,7 @@ func SongRequest(c *fiber.Ctx) error {
 		clientData := models.ClientData{
 			Status:  "fail",
 			Message: "missing user",
-			Data: []models.Data{
-				{Name: "null", Artist: "null", Duration: 0, Position: 0},
-			},
+			Data:    nil,
 		}
 		return c.JSON(map[string]interface{}{
 			"error": clientData.Message,
@@ -54,37 +51,31 @@ func SongRequest(c *fiber.Ctx) error {
 		clientData := models.ClientData{
 			Status:  "fail",
 			Message: "missing channel",
-			Data: []models.Data{
-				{Name: "null", Artist: "null", Duration: 0, Position: 0},
-			},
+			Data:    nil,
 		}
 		return c.JSON(map[string]interface{}{
 			"error": clientData.Message,
 		})
 	}
 	songData := api.GetSongFromSearch(query.Q)
-	if songData.PageInfo.ResultsPerPage == 0 {
+	if songData.PageInfo.TotalResults == 0 {
 		clientData := models.ClientData{
 			Status:  "fail",
 			Message: "No results for that name/link",
-			Data: []models.Data{
-				{Name: "null", Artist: "null", Duration: 0, Position: 0},
-			},
+			Data:    nil,
 		}
 		return c.JSON(map[string]interface{}{
 			"error": clientData.Message,
 		})
 	}
 	songData.Items[0].Snippet.Title = strings.ReplaceAll(songData.Items[0].Snippet.Title, "&amp;", "&")
-
+	//songData.Items[0].Snippet.Title = strings.ReplaceAll(songData.Items[0].Snippet.Title, "&#39;", "'")
 	songDuration := api.GetVideoDuration(songData.Items[0].ID.VideoID)
 	if songDuration.IsLiveStream {
 		clientData := models.ClientData{
 			Status:  "fail",
 			Message: "Livestreams cannot be added to the song queue",
-			Data: []models.Data{
-				{Name: "null", Artist: "null", Duration: 0, Position: 0},
-			},
+			Data:    nil,
 		}
 		return c.JSON(map[string]interface{}{
 			"error": clientData.Message,
@@ -94,24 +85,20 @@ func SongRequest(c *fiber.Ctx) error {
 		clientData := models.ClientData{
 			Status:  "fail",
 			Message: "The video/song is 10 minutes or longer",
-			Data: []models.Data{
-				{Name: "null", Artist: "null", Duration: 0, Position: 0},
-			},
+			Data:    nil,
 		}
 		return c.JSON(map[string]interface{}{
 			"error": clientData.Message,
 		})
 	}
-
-	dbRes := database.CreateTable(query.Channel)
-	latestSongPos := database.GetLatestSongPosition(dbRes.DB, dbRes.Channel)
+	db := database.InitializeConnection()
+	database.CreateTable(query.Channel, db)
+	latestSongPos := database.GetLatestSongPosition(db, query.Channel)
 	if latestSongPos >= 20 {
 		clientData := models.ClientData{
 			Status:  "fail",
 			Message: "The song queue is full!",
-			Data: []models.Data{
-				{Name: "null", Artist: "null", Duration: 0, Position: 0},
-			},
+			Data:    nil,
 		}
 		return c.JSON(map[string]interface{}{
 			"error": clientData.Message,
@@ -127,14 +114,12 @@ func SongRequest(c *fiber.Ctx) error {
 		Position: latestSongPos + 1,
 	}
 
-	dataError := database.InsertSong(dbRes.DB, song, dbRes.Channel)
+	dataError := database.InsertSong(db, song, query.Channel)
 	if dataError != "" {
 		clientData := models.ClientData{
 			Status:  "fail",
 			Message: dataError,
-			Data: []models.Data{
-				{Name: "null", Artist: "null", Duration: 0, Position: 0},
-			},
+			Data:    nil,
 		}
 		return c.JSON(map[string]interface{}{
 			"error": clientData.Message,
@@ -150,4 +135,69 @@ func SongRequest(c *fiber.Ctx) error {
 	}
 	//insertSong(song)
 	return c.JSON(clientData)
+}
+
+func FetchAllSongs(c *fiber.Ctx) error {
+	type Query struct {
+		Channel string `query:"channel"`
+	}
+	query := new(Query)
+	if err := c.QueryParser(query); err != nil {
+		return c.JSON(&fiber.Map{
+			"error": err,
+		})
+	}
+	if query.Channel == "" {
+		clientData := models.ClientData{
+			Status:  "fail",
+			Message: "missing channel",
+			Data:    nil,
+		}
+		return c.JSON(map[string]interface{}{
+			"error": clientData.Message,
+		})
+	}
+	db := database.InitializeConnection()
+	songs, err := database.GetAllSongRequests(query.Channel, db)
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.JSON(fiber.Map{
+		"songs": songs,
+	})
+}
+
+func DeleteSong(c *fiber.Ctx) error {
+	type Query struct {
+		Channel string `query:"channel"`
+		Id      int    `query:"id"`
+	}
+	q := new(Query)
+	if err := c.QueryParser(q); err != nil {
+		return c.JSON(&fiber.Map{
+			"error": err,
+		})
+	}
+	if q.Id == 0 {
+		return c.JSON(&fiber.Map{
+			"error": "missing song id",
+		})
+	}
+	if q.Channel == "" {
+		return c.JSON(&fiber.Map{
+			"error": "missing channel to delete the song from",
+		})
+	}
+	db := database.InitializeConnection()
+	err := database.DeleteSong(q.Channel, q.Id, db)
+	if err != nil {
+		return c.JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.JSON(&fiber.Map{
+		"message": "successfully deleted the song with an id of " + strconv.Itoa(q.Id) + " from channel " + q.Channel,
+	})
 }
