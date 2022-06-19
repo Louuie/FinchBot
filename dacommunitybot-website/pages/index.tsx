@@ -15,12 +15,12 @@ interface Songs {
 const Home: NextPage = () => {
   const [songs, setSongs] = useState([]);
   const songMap = songs.map((song : Songs) =>
-    <div key={song.id}>
+    <div key={song.id} className='text-gray-300 ml-[15.5rem] mt-5'>
       ID: {song.id}<br></br>
       Title: {song.title}<br></br>
       Channel/Artist: {song.artist}<br></br>
       Requested By: {song.userid}
-  </div>
+    </div>
   )
   useEffect(() => {
     let ignore = false;
@@ -40,7 +40,7 @@ const Home: NextPage = () => {
   return (
    <div className='flex'>
      <DrawerMenu/>
-     <div className='flex-1 ml-60'>{songMap}</div>
+     <div className='flex-col bg-gray-800 h-screen w-screen text-gray-300'>{songMap}</div>
    </div>
   )
 }
