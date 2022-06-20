@@ -10,9 +10,6 @@ import (
 )
 
 
-
-
-
 func GetAccessToken(code string) (*models.TwitchAuthResponse, error) {
 	url := "https://id.twitch.tv/oauth2/token"
 	client := http.Client{}
@@ -39,6 +36,30 @@ func GetAccessToken(code string) (*models.TwitchAuthResponse, error) {
 	}
 	var twitchAuthRes models.TwitchAuthResponse
 	json.Unmarshal(body, &twitchAuthRes)
-	log.Println(twitchAuthRes.AccessToken)
 	return &twitchAuthRes, nil
+}
+
+
+func GetUserInfo(token string) (*models.TwitchUserInfoResponse, error) {
+	url := "https://api.twitch.tv/helix/users"
+	client := http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Authorization", "Bearer " + token)
+	req.Header.Add("Client-Id", os.Getenv("TWITCH_CLIENT_ID"))
+	log.Println(req.Header)
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	log.Println(resp.Header)
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var twitchUserInfoResponse models.TwitchUserInfoResponse
+	json.Unmarshal(body, &twitchUserInfoResponse)
+	return &twitchUserInfoResponse, nil
 }
