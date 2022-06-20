@@ -16,7 +16,6 @@ export const DrawerMenu: NextPage = () => {
           backgroundColor: '#0E0F0F'
         }
       }}
-      color="gray-800"
         anchor="left"
         variant="permanent"
         open={isDrawerOpen}

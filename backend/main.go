@@ -15,5 +15,6 @@ func main() {
 	app.Get("/youtube", middleware.SongRequest)
 	app.Get("/delete", middleware.DeleteSong)
 	app.Get("/songs", middleware.FetchAllSongs)
+	app.Post("/auth/twitch", middleware.TwitchAuth)
 	log.Fatal(app.Listen(":3030"))
 }

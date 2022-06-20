@@ -106,3 +106,17 @@ type DatabaseQuery struct {
 	Userid   string `json:"userid,omitempty"`
 	Videoid  string `json:"videoid,omitempty"`
 }
+
+
+
+
+
+type TwitchAuthResponse struct {
+	AccessToken  string    `json:"access_token,omitempty"`
+	ExpiresIn    float64   `json:"expires_in,omitempty"`
+	RefreshToken string    `json:"refresh_token,omitempty"`
+	Scope        []string  `json:"scope,omitempty"`
+	TokenType    string    `json:"token_type,omitempty"`
+	Status 		 float64   `json:"status,omitempty"`
+	Message 	 string    `json:"message,omitempty"` 
+}
