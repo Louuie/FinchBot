@@ -138,3 +138,19 @@ type TwitchUserInfoResponse struct {
 		CreatedAt       time.Time `json:"created_at"`
 	} `json:"data"`
 }
+
+
+type TwitchValidateTokenResponse struct {
+	ClientID  string   `json:"client_id"`
+	Login     string   `json:"login"`
+	Scopes    []string `json:"scopes"`
+	UserID    string   `json:"user_id"`
+	ExpiresIn int      `json:"expires_in"`
+}
+
+
+
+type TwitchRevokeTokenResponse struct {
+	Status int `json:"status"`
+	Message string `json:"message"`
+}

@@ -21,7 +21,6 @@ type Duration struct {
 func ParseTime(duration string) float64 {
 	parseTimeChan := make(chan float64)
 	go func() {
-		log.Println(duration)
 		formattedTime := strings.Replace(duration, "\x00", "", 1)
 		songDuration, err := time.ParseDuration(formattedTime)
 		if err != nil {

@@ -1,22 +1,8 @@
 package main
 
-import (
-	"backend/twitch-bot/middleware"
-	"log"
+import "backend/twitch-bot/middleware"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-)
 
 func main() {
-	app := fiber.New()
-	app.Use(cors.New(), logger.New())
-	app.Get("/youtube", middleware.SongRequest)
-	app.Get("/delete", middleware.DeleteSong)
-	app.Get("/songs", middleware.FetchAllSongs)
-	app.Post("/auth/twitch", middleware.TwitchAuth)
-	app.Get("/auth/twitch/check", middleware.TwitchAuthCheck)
-	app.Get("/auth/twitch/user", middleware.TwitchUserInfo)
-	log.Fatal(app.Listen(":3030"))
+	middleware.Server()
 }

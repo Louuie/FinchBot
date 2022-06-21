@@ -4,15 +4,8 @@ import (
 	"backend/twitch-bot/api"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/session"
-)
-
-
-var (
-	store *session.Store
 )
 
 
@@ -46,11 +39,6 @@ func TwitchAuth(c *fiber.Ctx) error{
 			"error": twitchData.Message,
 		})
 	}
-	store = session.New(session.Config{
-		CookieHTTPOnly: true,
-		Expiration: time.Duration(twitchData.ExpiresIn),
-
-	})
 	
 	sess, err := store.Get(c)
 	if err != nil {
@@ -70,7 +58,12 @@ func TwitchAuthCheck(c *fiber.Ctx) error {
 	sess, err := store.Get(c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
-			"error": "not authenticated! (couldn't get session)",
+			"error": "not authenticated! (couldn't get session) some err",
+		})
+	}
+	if sess == nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": "not authenticated! (couldn't get session) sess == nil",
 		})
 	}
 	if sess.Get("authenticated") == nil {
@@ -78,11 +71,55 @@ func TwitchAuthCheck(c *fiber.Ctx) error {
 			"error": "not authenticated! (couldn't get session)",
 		})
 	}
+	token := fmt.Sprintf("%v", sess.Get("access_token"))
+	err = api.ValidateAccessToken(token); if err != nil {		
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": err,
+		})
+	}
+
+	userInfo, err := api.GetUserInfo(token)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": err,
+		})
+	}
 	return c.Status(fiber.StatusAccepted).JSON(&fiber.Map{
 		"authenticated": sess.Get("authenticated"),
-		"access_token": sess.Get("access_token"),
+		"display_name": userInfo.Data[0].DisplayName,
 	})
 }
+
+func TwitchAuthRevoke(c *fiber.Ctx) error {
+	sess, err := store.Get(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": "not authenticated! (couldn't get session) err != nil",
+		})
+	}
+	if sess == nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": "not authenticated! (couldn't get session) sess == nil",
+		})
+	}
+	if sess.Get("authenticated") == nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": "not authenticated! (couldn't get session) authenticated == nil || access_token == nil",
+		})
+	}
+	err = api.RevokeAccessToken(fmt.Sprintf("%v", sess.Get("access_token")))
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": err,
+		})
+	}
+	sess.Destroy()
+	return c.Status(fiber.StatusAccepted).JSON(&fiber.Map{
+		"authenticated": sess.Get("authenticated"),
+		"message": "logged out",
+	})
+}
+
 
 
 
@@ -90,12 +127,17 @@ func TwitchUserInfo(c * fiber.Ctx) error {
 	sess, err := store.Get(c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
-			"error": "not authenticated! (couldn't get session)",
+			"error": "not authenticated! (couldn't get session) err != nil",
 		})
 	}
-	if sess.Get("authenticated") == nil {
+	if sess == nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
-			"error": "not authenticated! (couldn't get session)",
+			"error": "not authenticated! (couldn't get session) sess == nil",
+		})
+	}
+	if sess.Get("authenticated") == nil || sess.Get("access_token") == nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": "not authenticated! (couldn't get session) authenticated == nil || access_token == nil",
 		})
 	}
 	userInfo, err := api.GetUserInfo(fmt.Sprintf("%v", sess.Get("access_token")))
