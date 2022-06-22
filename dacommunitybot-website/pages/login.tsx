@@ -1,30 +1,7 @@
 import { NextPage } from "next";
 import { Button } from '@mui/material';
-import axios from "axios";
-import { useEffect, useState } from "react";
-
-interface Auth {
-    error?: string,
-}
-
 
 const Login: NextPage = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [displayName, setDisplayName] = useState('');
-    const [loading, setLoading] = useState(true);
-    axios.defaults.withCredentials = true;
-    useEffect(() => {
-        axios.get('http://localhost:3030/auth/twitch/check').then((res) => {
-            const login: Auth = res.data;
-            if (!login.error) setIsLoggedIn(true);
-            setDisplayName(res.data.display_name);
-        }).catch((err) => {  })
-        setLoading(false);
-    }, [])
-
-
-
-
     const onLogin = async () => {
         const authUri = `https://id.twitch.tv/oauth2/authorize` +
         `?response_type=code` +
@@ -32,30 +9,7 @@ const Login: NextPage = () => {
         `&redirect_uri=http://localhost:3000/auth/callback` +
         `&scope=openid user_read&`
         const code = await getCode(authUri);
-        setLoading(true);
-        axios.post('http://localhost:3030/auth/twitch', null, {
-            params: {
-                code: code,
-            }
-        }).then((res) => {
-            const loginData: Auth = res.data;
-            if (loginData.error) console.log(loginData.error);
-            else {
-                setIsLoggedIn(true);
-                axios.get('http://localhost:3030/auth/twitch/check').then((res) => {
-                    setDisplayName(res.data.display_name);
-                }).catch((err) => {  })
-                setLoading(false);
-            }
-        }).catch((err) => console.log(err))
-    }
-
-    const onLogout = async () => {
-        setLoading(true)
-        axios.post('http://localhost:3030/auth/twitch/revoke').then((res) => {
-            const logoutData: Auth = res.data;
-            if (!logoutData.error) setIsLoggedIn(false); console.log(res.data)
-        }).catch((err) => { console.log(err) })
+        console.log(code);
     }
 
     const getCode = (uri : string) => {
@@ -81,27 +35,17 @@ const Login: NextPage = () => {
     };
 
     return (
-        <>
-        {loading ? <div>Loading...</div> 
-        :
         <div className="flex h-screen items-center justify-center">
-        {!isLoggedIn ? 
-                    <div className="mb-20">
-                    <div className='text-center font-bold text-3xl'>DaCommunityBot</div>
-                    <div className="mt-4 w-80 h-40 rounded-md bg-gray-900 text-center">
-                        <div className="flex">
-                            <div className="mt-4 text-md">Welcome to the DaCommunityBot! Please Login to get Started!</div>
-                        </div>
-                        <Button variant="contained" className="mt-4 bg-[#772CE8] hover:bg-[#620be4]" onClick={onLogin}>Log in with Twitch</Button>
+            <div className="mb-20">
+                <div className='text-center font-bold text-3xl'>DaCommunityBot</div>
+                <div className="mt-4 w-80 h-40 rounded-md bg-gray-900 text-center">
+                    <div className="flex">
+                        <div className="mt-4 text-md">Welcome to the DaCommunityBot! Please Login to get Started!</div>
                     </div>
+                    <Button variant="contained" className="mt-4 bg-[#772CE8] hover:bg-[#620be4]" onClick={onLogin}>Log in with Twitch</Button>
                 </div>
-        : <div>
-            <div className="flex">Hello, {displayName}!</div>
-            <Button variant="contained" fullWidth={true} onClick={onLogout}>Log out</Button>    
-        </div>}
-    </div> 
-        }
-        </> 
+            </div>
+        </div>
     )
 }
 
