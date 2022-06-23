@@ -18,19 +18,18 @@ func Server() {
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
-		AllowOrigins: "*",
-		AllowHeaders: "Access-Control-Allow-Origin, Content-Type, Origin, Accept",
+		AllowOrigins:     "*",
+		AllowHeaders:     "Access-Control-Allow-Origin, Content-Type, Origin, Accept",
 	}), logger.New())
 	store = session.New(session.Config{
 		CookieHTTPOnly: true,
-		Expiration: time.Hour * 5,
-
+		Expiration:     time.Hour * 5,
 	})
-	app.Get("/youtube", SongRequest)
-	app.Get("/delete", DeleteSong)
+	app.Get("/song-request", SongRequest)
+	app.Get("/song-request-delete", DeleteSong)
 	app.Get("/songs", FetchAllSongs)
 	app.Post("/auth/twitch", TwitchAuth)
-	app.Get("/auth/twitch/check", TwitchAuthCheck)
+	app.Get("/auth/twitch/validate", TwitchAuthCheck)
 	app.Get("/auth/twitch/user", TwitchUserInfo)
 	app.Post("/auth/twitch/revoke", TwitchAuthRevoke)
 	log.Fatal(app.Listen(":3030"))

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+	"os"
 	"strings"
 
 	_ "github.com/lib/pq"
@@ -27,8 +28,7 @@ type ClientSong struct {
 func InitializeConnection() *sql.DB {
 	dbChan := make(chan *sql.DB)
 	go func() {
-		connStr := "postgresql://song_request_admin:MEMO387ad22509@107.185.51.97:5432/song-entries?sslmode=disable"
-		db, err := sql.Open("postgres", connStr)
+		db, err := sql.Open("postgres", os.Getenv("POSTGRES_CONN"))
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -70,26 +70,20 @@ func InsertSong(db *sql.DB, song ClientSong, tableName string) string {
 
 //TODO: Catch errors when the iteration is over. i.e. when there are no entries just return 1 instead of those position
 func GetLatestSongPosition(db *sql.DB, tableName string) int {
-	latestSongPosChan := make(chan int)
-	go func() {
-		res, err := db.Query("SELECT id FROM " + tableName + " ORDER BY id DESC LIMIT 1")
-		if err != nil {
-			// maybe this completes the todo -- I need to do more research to figure it out
-			log.Fatalln(err)
+	res, err := db.Query("SELECT id FROM " + tableName + " ORDER BY id DESC LIMIT 1")
+	if err != nil {
+		if strings.Contains(err.Error(), "relation") {
+			return 0
 		}
-		if res.Next() {
-			var result int
-			res.Scan(&result)
-			log.Println("result:", result)
-			latestSongPosChan <- result
-			close(latestSongPosChan)
-			return
-		}
-		latestSongPosChan <- 0
-		close(latestSongPosChan)
-		defer res.Close()
-	}()
-	return <-latestSongPosChan
+	}
+	if res.Next() {
+		var result int
+		res.Scan(&result)
+		log.Println("result:", result)
+		return result
+	}
+	defer res.Close()
+	return 0
 }
 
 func GetAllSongRequests(tableName string, db *sql.DB) (*[]models.DatabaseQuery, error) {
