@@ -1,0 +1,10 @@
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+            
+body {
+    @apply dark:bg-[#0B101A] bg-[#0E1420] text-gray-100 antialiased font-mono;
+}
