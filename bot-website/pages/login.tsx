@@ -2,6 +2,7 @@ import { NextPage } from "next";
 import { Button } from '@mui/material';
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Spinner from "../components/spinner/Spinner";
 
 interface Auth {
     error?: string,
@@ -56,7 +57,7 @@ const Login: NextPage = () => {
         setLoading(true)
         axios.post('http://localhost:3030/auth/twitch/revoke').then((res) => {
             const logoutData: Auth = res.data;
-            if (!logoutData.error) setIsLoggedIn(false); console.log(res.data)
+            if (!logoutData.error) setIsLoggedIn(false); setLoading(false); console.log(res.data)
         }).catch((err) => { console.log(err) })
     }
 
@@ -84,7 +85,7 @@ const Login: NextPage = () => {
 
     return (
         <>
-        {loading ? <div>Loading...</div> 
+        {loading ? <Spinner/>
         :
         <div className="flex h-screen items-center justify-center">
         {!isLoggedIn ? 
@@ -92,14 +93,14 @@ const Login: NextPage = () => {
                     <div className='text-center font-bold text-3xl'>DaCommunityBot</div>
                     <div className="mt-4 w-80 h-40 rounded-md bg-gray-900 text-center">
                         <div className="flex">
-                            <div className="mt-4 text-md">Welcome to the DaCommunityBot! Please Login to get Started!</div>
+                            <div className="mt-4 text-md">Welcome to the DaCommunityBot! Login to get Started!</div>
                         </div>
-                        <Button variant="contained" sx={{backgroundColor: '#772CE8', mt: 1.5, ':hover': { backgroundColor: '#620be4' }} } onClick={onLogin}>Log in with Twitch</Button>
+                        <Button variant="contained" sx={{backgroundColor: '#772CE8', fontWeight: 'bold', mt: 1.5, ':hover': { backgroundColor: '#620be4' }} } onClick={onLogin}>Log in with Twitch</Button>
                     </div>
                 </div>
         : <div className="">
             <div>Hello, {displayName}!</div>
-            <Button variant="contained" sx={{mt: 1}} fullWidth={true} onClick={onLogout} >Log out</Button>    
+            <Button variant="contained" sx={{backgroundColor: '#772CE8', fontWeight: 'bold', mt: 1.5, ':hover': { backgroundColor: '#620be4' }} } fullWidth={true} onClick={onLogout} >Log out</Button>    
         </div>
         }
     </div> 
