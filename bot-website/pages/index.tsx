@@ -40,8 +40,7 @@ const Home: NextPage = () => {
   }, [])
   return (
    <div className='flex'>
-     <DrawerMenu/>
-     <div className='flex-col bg-gray-800 h-full text-gray-300'>{songMap}</div>
+     Home page goes here
    </div>
   )
 }
