@@ -10,7 +10,18 @@ import (
 	"os"
 )
 
-
+// Fetches the Twitch User Access Token.
+// Then returns the TwitchAuthResponse.
+// The struct of the TwitchAuthResponse can be found below for deconstruction purposes.
+// 	type TwitchAuthResponse struct {
+//     AccessToken  string
+//     ExpiresIn    float64
+//     RefreshToken string
+//     Scope        []string
+//     TokenType    string
+//     Status       float64
+//     Message      string
+// }
 func GetAccessToken(code string) (*models.TwitchAuthResponse, error) {
 	url := "https://id.twitch.tv/oauth2/token"
 	client := http.Client{}
@@ -40,6 +51,7 @@ func GetAccessToken(code string) (*models.TwitchAuthResponse, error) {
 	return &twitchAuthRes, nil
 }
 
+// Validates the users access token to make sure its a valid one, if not it returns an error.
 func ValidateAccessToken(token string) error {
 	url := "https://id.twitch.tv/oauth2/validate"
 	client := http.Client{}
@@ -47,7 +59,7 @@ func ValidateAccessToken(token string) error {
 	if err != nil {
 		return err
 	}
-	req.Header.Add("Authorization", "Bearer " + token)
+	req.Header.Add("Authorization", "Bearer "+token)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -65,6 +77,7 @@ func ValidateAccessToken(token string) error {
 	return nil
 }
 
+// Revokes the users access token, returns an error if something went wrong in the proccess of revoking the access token.
 func RevokeAccessToken(token string) error {
 	url := "https://id.twitch.tv/oauth2/revoke"
 	client := http.Client{}
@@ -93,7 +106,24 @@ func RevokeAccessToken(token string) error {
 	return nil
 }
 
-
+// Gets the Users Information.
+// Then returns the TwitchUserInfoResponse
+// The Struct of the TwitchUserInfoResponse can be found below for deconstruction purposes.
+// 	type TwitchUserInfoResponse struct {
+// 		Data []struct {
+// 			ID              string
+// 			Login           string
+// 			DisplayName     string
+// 			Type            string
+// 			BroadcasterType string
+// 			Description     string
+// 			ProfileImageURL string
+// 			OfflineImageURL string
+// 			ViewCount       int
+// 			Email           string
+// 			CreatedAt       time.Time
+//	 	}
+//	}
 func GetUserInfo(token string) (*models.TwitchUserInfoResponse, error) {
 	url := "https://api.twitch.tv/helix/users"
 	client := http.Client{}
@@ -101,7 +131,7 @@ func GetUserInfo(token string) (*models.TwitchUserInfoResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Authorization", "Bearer " + token)
+	req.Header.Add("Authorization", "Bearer "+token)
 	req.Header.Add("Client-Id", os.Getenv("TWITCH_CLIENT_ID"))
 	resp, err := client.Do(req)
 	if err != nil {
