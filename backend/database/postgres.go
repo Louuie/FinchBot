@@ -26,20 +26,16 @@ type ClientSong struct {
 }
 
 func InitializeConnection() *sql.DB {
-	dbChan := make(chan *sql.DB)
-	go func() {
-		db, err := sql.Open("postgres", os.Getenv("POSTGRES_CONN"))
-		if err != nil {
-			log.Fatalln(err)
-		}
-		ping := db.Ping()
-		if ping != nil {
-			log.Fatalln(ping)
-		}
-		db.SetMaxOpenConns(4)
-		dbChan <- db
-	}()
-	return <-dbChan
+	db, err := sql.Open("postgres", os.Getenv("POSTGRES_CONN"))
+	if err != nil {
+		log.Fatalln(err)
+	}
+	ping := db.Ping()
+	if ping != nil {
+		log.Fatalln(ping)
+	}
+	db.SetMaxOpenConns(4)
+	return db
 }
 
 func CreateTable(channel string, db *sql.DB) error {

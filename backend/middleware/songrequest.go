@@ -5,15 +5,14 @@ import (
 	"backend/twitch-bot/database"
 	"backend/twitch-bot/models"
 	"log"
-	"runtime"
 	"strconv"
-	"strings"
 
 	"github.com/gofiber/fiber/v2"
 )
 
+// Middleware SongRequest
 func SongRequest(c *fiber.Ctx) error {
-	runtime.GOMAXPROCS(4)
+	// Creates a Query Struct for the query parameters the GET request will take in
 	type Query struct {
 		Channel string `query:"channel"`
 		User    string `query:"user"`
@@ -26,6 +25,7 @@ func SongRequest(c *fiber.Ctx) error {
 			"error": err,
 		})
 	}
+	// Checks if query is empty if it is then return back to the request that the query is missing
 	if query.Q == "" {
 		clientData := models.ClientData{
 			Status:  "fail",
@@ -36,7 +36,7 @@ func SongRequest(c *fiber.Ctx) error {
 			"error": clientData.Message,
 		})
 	}
-
+	// Checks if user is empty if it is then return back to the request that the user is missing
 	if query.User == "" {
 		clientData := models.ClientData{
 			Status:  "fail",
@@ -47,7 +47,7 @@ func SongRequest(c *fiber.Ctx) error {
 			"error": clientData.Message,
 		})
 	}
-
+	// Checks if channel is empty if it is then return back to the request that the channel is missing
 	if query.Channel == "" {
 		clientData := models.ClientData{
 			Status:  "fail",
@@ -58,6 +58,7 @@ func SongRequest(c *fiber.Ctx) error {
 			"error": clientData.Message,
 		})
 	}
+	// Gets the songData from the youtube api using the query q(uery) from the request
 	songData := api.GetSongFromSearch(query.Q)
 	if songData.PageInfo.TotalResults == 0 {
 		clientData := models.ClientData{
@@ -69,8 +70,7 @@ func SongRequest(c *fiber.Ctx) error {
 			"error": clientData.Message,
 		})
 	}
-	songData.Items[0].Snippet.Title = strings.ReplaceAll(songData.Items[0].Snippet.Title, "&amp;", "&")
-	//songData.Items[0].Snippet.Title = strings.ReplaceAll(songData.Items[0].Snippet.Title, "&#39;", "'")
+	// Gets the duration of the video using the videoID, we have to make separate API calls here because the search api doesn't return the video duration
 	songDuration := api.GetVideoDuration(songData.Items[0].ID.VideoID)
 	if songDuration.IsLiveStream {
 		clientData := models.ClientData{
@@ -92,11 +92,13 @@ func SongRequest(c *fiber.Ctx) error {
 			"error": clientData.Message,
 		})
 	}
+	// Makes the initial DB connection and attempts to create the table
 	db := database.InitializeConnection()
 	err := database.CreateTable(query.Channel, db)
 	if err != nil {
 		log.Fatalln(err)
 	}
+	// Attempts to get the latestSongPosition
 	latestSongPos, err := database.GetLatestSongPosition(db, query.Channel)
 
 	// if the table is being created for the first time, the GetLatestSongPosition function can't query through because it thinks that the table was never created so it throws a pq error of undefined_table
@@ -121,7 +123,6 @@ func SongRequest(c *fiber.Ctx) error {
 			VideoID:  songData.Items[0].ID.VideoID,
 			Position: latestSongPos + 1,
 		}
-		
 		err := database.CreateTable(query.Channel, db)
 		if err != nil {
 			dataError := database.InsertSong(db, song, query.Channel)
@@ -205,11 +206,6 @@ func FetchAllSongs(c *fiber.Ctx) error {
 		Channel string `query:"channel"`
 	}
 	query := new(Query)
-	if err := c.QueryParser(query); err != nil {
-		return c.JSON(&fiber.Map{
-			"error": err,
-		})
-	}
 	if query.Channel == "" {
 		clientData := models.ClientData{
 			Status:  "fail",
