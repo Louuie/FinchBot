@@ -6,8 +6,8 @@ import (
 	"errors"
 	"log"
 	"os"
-	"strings"
 
+	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 )
 
@@ -42,56 +42,54 @@ func InitializeConnection() *sql.DB {
 	return <-dbChan
 }
 
-func CreateTable(channel string, db *sql.DB) {
-	go func() {
-		res, err := db.Exec("CREATE TABLE IF NOT EXISTS " + channel + " (artist VARCHAR NOT NULL, duration INT NOT NULL, id SERIAL, title VARCHAR NOT NULL, userid VARCHAR NOT NULL, videoid VARCHAR NOT NULL, PRIMARY KEY (videoid, title))")
-		if err != nil {
-			log.Fatalln(err)
-		}
-		log.Println(res)
-	}()
+func CreateTable(channel string, db *sql.DB) error {
+	res, err := db.Exec("CREATE TABLE IF NOT EXISTS " + channel + " (artist VARCHAR NOT NULL, duration INT NOT NULL, id SERIAL, title VARCHAR NOT NULL, userid VARCHAR NOT NULL, videoid VARCHAR NOT NULL, PRIMARY KEY (videoid, title))")
+	if err, ok := err.(*pq.Error); ok {
+		return errors.New(err.Code.Name())
+	}
+	log.Println(res)
+	return nil
 }
 
-func InsertSong(db *sql.DB, song ClientSong, tableName string) string {
-	insertDataChan := make(chan string)
-	go func() {
-		res, err := db.Exec("INSERT INTO "+tableName+" VALUES ($1, $2, $3, $4, $5, $6)", song.Artist, song.Duration, song.Position, song.Title, song.User, song.VideoID)
-		if err != nil {
-			if strings.Contains(err.Error(), "duplicate key") {
-				insertDataChan <- "That song is already in the queue"
-			}
-		} else {
-			insertDataChan <- ""
+func InsertSong(db *sql.DB, song ClientSong, tableName string) error {
+	res, err := db.Exec("INSERT INTO "+tableName+" VALUES ($1, $2, $3, $4, $5, $6)", song.Artist, song.Duration, song.Position, song.Title, song.User, song.VideoID)
+	if err, ok := err.(*pq.Error); ok {
+		// 23505: unique_violation
+		// 42P01: undefined_table
+		if err.Code.Name() == "unique_violation" {
+			return errors.New("that song is already in the queue")
 		}
-		log.Println(res)
-	}()
-	return <-insertDataChan
+	} 
+	log.Println(res)
+	return nil
 }
 
 //TODO: Catch errors when the iteration is over. i.e. when there are no entries just return 1 instead of those position
-func GetLatestSongPosition(db *sql.DB, tableName string) int {
+func GetLatestSongPosition(db *sql.DB, tableName string) (int, error) {
+	log.Println(tableName)
 	res, err := db.Query("SELECT id FROM " + tableName + " ORDER BY id DESC LIMIT 1")
-	if err != nil {
-		if strings.Contains(err.Error(), "relation") {
-			return 0
+	if err, ok := err.(*pq.Error); ok {
+		// 42P01: undefined_table
+		if err.Code == "42P01" {
+			return 0, errors.New(err.Code.Name())
 		}
 	}
 	if res.Next() {
 		var result int
 		res.Scan(&result)
 		log.Println("result:", result)
-		return result
+		return result, nil
 	}
 	defer res.Close()
-	return 0
+	return 0, nil
 }
 
 func GetAllSongRequests(tableName string, db *sql.DB) (*[]models.DatabaseQuery, error) {
 	res, err := db.Query("SELECT * FROM " + tableName)
-	if err != nil {
-		if strings.Contains(err.Error(), "relation") {
+	if err, ok := err.(*pq.Error); ok {
+		if err.Code == "42P01" {
 			songs := make([]models.DatabaseQuery, 0)
-			return &songs, errors.New("table does not exist")
+			return &songs, errors.New(err.Code.Name())
 		}
 	}
 	songs := make([]models.DatabaseQuery, 0)
@@ -110,8 +108,8 @@ func GetAllSongRequests(tableName string, db *sql.DB) (*[]models.DatabaseQuery, 
 
 func DeleteSong(tableName string, Id int, db *sql.DB) error {
 	res, err := db.Exec("DELETE FROM "+tableName+" WHERE id = $1", Id)
-	if err != nil {
-		return err
+	if err, ok := err.(*pq.Error); ok {
+		return errors.New(err.Code.Name())
 	}
 	numofRows, err := res.RowsAffected()
 	if err != nil {

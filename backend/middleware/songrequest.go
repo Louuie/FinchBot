@@ -4,6 +4,7 @@ import (
 	"backend/twitch-bot/api"
 	"backend/twitch-bot/database"
 	"backend/twitch-bot/models"
+	"log"
 	"runtime"
 	"strconv"
 	"strings"
@@ -92,8 +93,64 @@ func SongRequest(c *fiber.Ctx) error {
 		})
 	}
 	db := database.InitializeConnection()
-	database.CreateTable(query.Channel, db)
-	latestSongPos := database.GetLatestSongPosition(db, query.Channel)
+	err := database.CreateTable(query.Channel, db)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	latestSongPos, err := database.GetLatestSongPosition(db, query.Channel)
+
+	// if the table is being created for the first time, the GetLatestSongPosition function can't query through because it thinks that the table was never created so it throws a pq error of undefined_table
+	// so we catch this error and if we do get the "undefined_table" error then create the table "again"(even though it was never created) then insert it
+	if err != nil {
+		if latestSongPos >= 20 {
+			clientData := models.ClientData{
+				Status:  "fail",
+				Message: "The song queue is full!",
+				Data:    nil,
+			}
+			return c.JSON(map[string]interface{}{
+				"error": clientData.Message,
+			})
+		}
+		song := database.ClientSong{
+			User:     query.User,
+			Channel:  query.Channel,
+			Title:    songData.Items[0].Snippet.Title,
+			Artist:   songData.Items[0].Snippet.ChannelTitle,
+			Duration: songDuration.Duration,
+			VideoID:  songData.Items[0].ID.VideoID,
+			Position: latestSongPos + 1,
+		}
+		
+		err := database.CreateTable(query.Channel, db)
+		if err != nil {
+			dataError := database.InsertSong(db, song, query.Channel)
+			if dataError != nil {
+				clientData := models.ClientData{
+					Status:  "fail",
+					Message: dataError.Error(),
+					Data:    nil,
+				}
+				return c.JSON(map[string]interface{}{
+					"error": clientData.Message,
+				})
+			}
+		}
+		
+		clientData := models.ClientData{
+			Status:  "success (table did not exist!)",
+			Message: "inserted into db",
+			Data: []models.Data{
+				{Name: song.Title, Artist: song.Artist, Duration: song.Duration, Position: latestSongPos + 1},
+			},
+		}
+		//insertSong(song)
+		return c.JSON(clientData)
+	}
+
+
+
+
 	if latestSongPos >= 20 {
 		clientData := models.ClientData{
 			Status:  "fail",
@@ -115,10 +172,10 @@ func SongRequest(c *fiber.Ctx) error {
 	}
 
 	dataError := database.InsertSong(db, song, query.Channel)
-	if dataError != "" {
+	if dataError != nil {
 		clientData := models.ClientData{
 			Status:  "fail",
-			Message: dataError,
+			Message: dataError.Error(),
 			Data:    nil,
 		}
 		return c.JSON(map[string]interface{}{
@@ -136,6 +193,12 @@ func SongRequest(c *fiber.Ctx) error {
 	//insertSong(song)
 	return c.JSON(clientData)
 }
+
+
+
+
+
+
 
 func FetchAllSongs(c *fiber.Ctx) error {
 	type Query struct {
