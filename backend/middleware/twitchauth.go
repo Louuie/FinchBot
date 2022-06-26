@@ -8,11 +8,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-
-
-
-
-func TwitchAuth(c *fiber.Ctx) error{
+// Middleware function used for Authorizing/Logging in the user into Twitch.
+func TwitchAuth(c *fiber.Ctx) error {
 	type Query struct {
 		Code string `query:"code"`
 	}
@@ -39,7 +36,7 @@ func TwitchAuth(c *fiber.Ctx) error{
 			"error": twitchData.Message,
 		})
 	}
-	
+
 	sess, err := store.Get(c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
@@ -52,8 +49,7 @@ func TwitchAuth(c *fiber.Ctx) error{
 	return c.JSON(twitchData)
 }
 
-
-
+// Middleware function that checks if the user still has a valid access token
 func TwitchAuthCheck(c *fiber.Ctx) error {
 	sess, err := store.Get(c)
 	if err != nil {
@@ -72,7 +68,8 @@ func TwitchAuthCheck(c *fiber.Ctx) error {
 		})
 	}
 	token := fmt.Sprintf("%v", sess.Get("access_token"))
-	err = api.ValidateAccessToken(token); if err != nil {		
+	err = api.ValidateAccessToken(token)
+	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
 			"error": err,
 		})
@@ -86,10 +83,11 @@ func TwitchAuthCheck(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusAccepted).JSON(&fiber.Map{
 		"authenticated": sess.Get("authenticated"),
-		"display_name": userInfo.Data[0].DisplayName,
+		"display_name":  userInfo.Data[0].DisplayName,
 	})
 }
 
+// Middleware function that revokes the twitch access token and destroys the session
 func TwitchAuthRevoke(c *fiber.Ctx) error {
 	sess, err := store.Get(c)
 	if err != nil {
@@ -116,14 +114,12 @@ func TwitchAuthRevoke(c *fiber.Ctx) error {
 	sess.Destroy()
 	return c.Status(fiber.StatusAccepted).JSON(&fiber.Map{
 		"authenticated": sess.Get("authenticated"),
-		"message": "logged out",
+		"message":       "logged out",
 	})
 }
 
-
-
-
-func TwitchUserInfo(c * fiber.Ctx) error {
+// Middleware function that uses the session data to grab the users twitch information.
+func TwitchUserInfo(c *fiber.Ctx) error {
 	sess, err := store.Get(c)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
