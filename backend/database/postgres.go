@@ -25,19 +25,19 @@ type ClientSong struct {
 	Position int     `json:"position,omitempty"`
 }
 
-func InitializeConnection() *sql.DB {
+// Initializes the connection with the database and if everything went okay then it will return the db. if not it will return an error.
+func InitializeConnection() (*sql.DB, error) {
 	db, err := sql.Open("postgres", os.Getenv("POSTGRES_CONN"))
-	if err != nil {
-		log.Fatalln(err)
+	if err, ok := err.(*pq.Error); ok {
+		return nil, errors.New(err.Code.Name())
 	}
 	ping := db.Ping()
 	if ping != nil {
-		log.Fatalln(ping)
+		return nil, ping
 	}
-	db.SetMaxOpenConns(4)
-	return db
+	return db, nil
 }
-
+// Creates a table with the channel name and if everything goes well it return no error but if something does go wrong it will return an error 
 func CreateTable(channel string, db *sql.DB) error {
 	res, err := db.Exec("CREATE TABLE IF NOT EXISTS " + channel + " (artist VARCHAR NOT NULL, duration INT NOT NULL, id SERIAL, title VARCHAR NOT NULL, userid VARCHAR NOT NULL, videoid VARCHAR NOT NULL, PRIMARY KEY (videoid, title))")
 	if err, ok := err.(*pq.Error); ok {
