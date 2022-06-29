@@ -1,4 +1,4 @@
-import { NextPage } from "next";
+import * as React from 'react';
 import { Button } from '@mui/material';
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -9,7 +9,7 @@ interface Auth {
 }
 
 
-const Login: NextPage = () => {
+export const Login: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [displayName, setDisplayName] = useState('');
     const [loading, setLoading] = useState(true);
@@ -108,5 +108,3 @@ const Login: NextPage = () => {
         </> 
     )
 }
-
-export default Login
