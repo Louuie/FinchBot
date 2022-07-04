@@ -3,6 +3,8 @@ import { Button } from '@mui/material';
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Spinner from "../components/spinner/Spinner";
+import { Navigate, NavLink } from 'react-router-dom';
+import { Home } from './Home';
 
 interface Auth {
     error?: string,
@@ -11,7 +13,6 @@ interface Auth {
 
 export const Login: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [displayName, setDisplayName] = useState('');
     const [loading, setLoading] = useState(true);
     axios.defaults.withCredentials = true;
 
@@ -19,7 +20,6 @@ export const Login: React.FC = () => {
         axios.get('http://localhost:3030/auth/twitch/validate').then((res) => {
             const login: Auth = res.data;
             if (!login.error) setIsLoggedIn(true);
-            setDisplayName(res.data.display_name);
         }).catch((err) => {  })
         setLoading(false);
     }, [])
@@ -44,10 +44,10 @@ export const Login: React.FC = () => {
             if (loginData.error) console.log(loginData.error);
             else {
                 setIsLoggedIn(true);
-                axios.get('http://localhost:3030/auth/twitch/user').then((res) => {
-                    const userData : Auth = res.data
-                    if (!userData.error) setDisplayName(res.data[0].display_name);
-                }).catch((err) => {  })
+                // axios.get('http://localhost:3030/auth/twitch/user').then((res) => {
+                //     const userData : Auth = res.data
+                //     if (!userData.error) setDisplayName(res.data[0].display_name);
+                // }).catch((err) => {  })
                 setLoading(false);
             }
         }).catch((err) => console.log(err))
@@ -98,10 +98,7 @@ export const Login: React.FC = () => {
                         <Button variant="contained" sx={{backgroundColor: '#772CE8', fontWeight: 'bold', mt: 1.5, ':hover': { backgroundColor: '#620be4' }} } onClick={onLogin}>Log in with Twitch</Button>
                     </div>
                 </div>
-        : <div className="">
-            <div>Hello, {displayName}!</div>
-            <Button variant="contained" sx={{backgroundColor: '#772CE8', fontWeight: 'bold', mt: 1.5, ':hover': { backgroundColor: '#620be4' }} } fullWidth={true} onClick={onLogout} >Log out</Button>    
-        </div>
+        : <Navigate to={'/'}/>
         }
     </div> 
         }
