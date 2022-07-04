@@ -1,5 +1,7 @@
+
+import type { NextPage } from 'next'
 import { useEffect, useState } from 'react'
-import { DrawerMenu } from '../components/DrawerMenu';
+import { DrawerMenu } from '../../components/DrawerMenu';
 import axios from 'axios';
 
 interface Songs {
@@ -11,7 +13,7 @@ interface Songs {
   videoid: string,
 }
 
-export const SongRequests: React.FC = () => {
+const SongRequests: NextPage = () => {
   const [songs, setSongs] = useState([]);
   const songMap = songs?.map((song : Songs) =>
     <div key={song.id} className='text-gray-300 ml-[15.5rem] mt-5'>
@@ -43,3 +45,5 @@ export const SongRequests: React.FC = () => {
    </div>
   )
 }
+
+export default SongRequests
