@@ -1,5 +1,5 @@
 export interface Auth {
-    isSignedIn: boolean,
-    displayName: string,
+    authenticated?: boolean,
+    displayName?: string,
     error?: string,
 }

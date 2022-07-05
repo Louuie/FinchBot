@@ -22,7 +22,8 @@ export const MUIMenu: React.FC = () => {
     }
     return (
         <div>
-            {!isLoading ? <div>          
+            {!isLoading ? 
+            <div>          
                 <IconButton
                 children={<Avatar sx={{ width: 60, height: 60 }} src='https://i.imgur.com/uGSH8Ct.jpg' />}
                 id="basic-button"
@@ -41,7 +42,8 @@ export const MUIMenu: React.FC = () => {
                     }}
                 >
                     <MenuItem onClick={onLogout}>Logout</MenuItem>
-                </Menu></div>
+                </Menu>
+            </div>
                 : <Spinner />}
         </div>
     );

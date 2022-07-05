@@ -3,7 +3,8 @@ import axios from 'axios';
 import * as React from 'react';
 import { Auth } from '../../auth/auth';
 
-export const AuthButton: React.FC = () => {
+export const AuthButton: React.FC<Auth> = ({authenticated}) => {
+    const [auth, setAuth] = React.useState(authenticated);
     const onLogin = async () => {
         const authUri = `https://id.twitch.tv/oauth2/authorize` +
             `?response_type=code` +
@@ -19,7 +20,7 @@ export const AuthButton: React.FC = () => {
             const loginData: Auth = res.data;
             if (loginData.error) console.log(loginData.error);
             else {
-                setIsSignedIn(true);
+                setAuth(true);
                 // axios.get('http://localhost:3030/auth/twitch/user').then((res) => {
                 //     const userData : Auth = res.data
                 //     if (!userData.error) setDisplayName(res.data[0].display_name);
@@ -32,7 +33,7 @@ export const AuthButton: React.FC = () => {
     const onLogout = async () => {
         axios.post('http://localhost:3030/auth/twitch/revoke').then((res) => {
             const logoutData: Auth = res.data;
-            if (!logoutData.error) setIsSignedIn(false); console.log(res.data)
+            if (!logoutData.error) setAuth(false); console.log(res.data)
         }).catch((err) => { console.log(err) })
     }
 
@@ -59,17 +60,6 @@ export const AuthButton: React.FC = () => {
         })
     };
 
-
-    // TODO: grab whether the user is signed in through a prop that the MUIMenu component fetches from the server, this way if the user logs out the AuthButton component also updates with that state.
-    const [isSignedIn, setIsSignedIn] = React.useState(false);
-    React.useEffect(() => {
-        axios.defaults.withCredentials = true;
-        axios.get('http://localhost:3030/auth/twitch/validate').then((res) => {
-            const auth: Auth = res.data;
-            if (!auth.error) setIsSignedIn(true);
-        })
-    })
-
-    if(!isSignedIn) return <Button variant="contained" sx={{ backgroundColor: '#772CE8', fontWeight: 'bold', mt: 1.5, ':hover': { backgroundColor: '#620be4' } }} onClick={onLogin}>Log in with Twitch</Button>
+    if(!authenticated) return <Button variant="contained" sx={{ backgroundColor: '#772CE8', fontWeight: 'bold', mt: 1.5, ':hover': { backgroundColor: '#620be4' } }} onClick={onLogin}>Log in with Twitch</Button>
     else return <Button variant="contained" sx={{ backgroundColor: '#772CE8', fontWeight: 'bold', mt: 1.5, ':hover': { backgroundColor: '#620be4' } }} onClick={onLogout} >Log out</Button>
 }
