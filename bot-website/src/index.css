@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Roboto:ital,wght@0,400;1,400;1,900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
             
 body {
-    @apply dark:bg-[#0B101A] bg-[#0E1420] text-gray-100 antialiased font-poppins;
+    @apply dark:bg-[#0B101A] bg-[#0E1420] text-gray-100 antialiased;
 }
