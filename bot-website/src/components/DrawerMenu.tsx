@@ -1,4 +1,3 @@
-import { NextPage } from "next";
 import {
   Drawer,
   IconButton,
@@ -7,7 +6,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-export const DrawerMenu: NextPage = () => {
+export const DrawerMenu: React.FC = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   return (
       <Drawer

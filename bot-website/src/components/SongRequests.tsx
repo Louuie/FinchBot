@@ -1,5 +1,3 @@
-
-import type { NextPage } from 'next'
 import { useEffect, useState } from 'react'
 import { DrawerMenu } from '../components/DrawerMenu';
 import axios from 'axios';
@@ -13,9 +11,9 @@ interface Songs {
   videoid: string,
 }
 
-const Home: NextPage = () => {
+export const SongRequests: React.FC = () => {
   const [songs, setSongs] = useState([]);
-  const songMap = songs.map((song : Songs) =>
+  const songMap = songs?.map((song : Songs) =>
     <div key={song.id} className='text-gray-300 ml-[15.5rem] mt-5'>
       ID: {song.id}<br></br>
       Title: {song.title}<br></br>
@@ -40,9 +38,8 @@ const Home: NextPage = () => {
   }, [])
   return (
    <div className='flex'>
-     Home page goes here
+     <DrawerMenu/>
+     <div className='flex-col bg-gray-800 h-full text-gray-300'>{songMap}</div>
    </div>
   )
 }
-
-export default Home
