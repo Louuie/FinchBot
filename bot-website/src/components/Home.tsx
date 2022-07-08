@@ -3,6 +3,7 @@ import axios from 'axios';
 import * as React from 'react'
 import { Auth } from '../auth/auth';
 import { HomeNavBar } from './HomeNavBar';
+import gif from '../3.0.gif';
 
 export const Home: React.FC = () => {
   const [authenticated, setAuthenticated] = React.useState(false);
@@ -18,8 +19,11 @@ export const Home: React.FC = () => {
   return (
     <div>
       <HomeNavBar/>
-      <div className='flex justify-center items-center flex-wrap w-full'>
-        <span className='hidden md:block mr-[395px] mt-8 font-semibold text-[58px] whitespace-pre-line w-[439px] h-[364px] leading-[96px]'>Free, Simple and easy to use Twitch Bot catered to DaCommunity.</span>
+      <div className='flex flex-1 justify-center items-center w-full'>
+        <span className='md:mr-[395px] whitespace-pre-line md:w-[439px] md:h-[364px] mt-4 font-semibold text-[58px] w-full h-full leading-[96px]'>Free, Simple and easy to use Twitch Bot catered to DaCommunity.</span>
+      </div>
+      <div className='flex flex-1 justify-center items-center flex-wrap w-full'>
+        <img src={gif} className='hidden md:block w-[186px] h-[178px] ml-[40rem] -mt-[15rem]'/>
       </div>
     </div>
   )
