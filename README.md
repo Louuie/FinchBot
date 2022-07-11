@@ -3,7 +3,7 @@
 
 ## **SETTING UP YOUR ENVIRONMENT**
 
-[bot-website](##bot-website) | [twitch-bot](##twitch-bot)
+[bot-website](#bot-website) | [twitch-bot](#twitch-bot)
 
 ## bot-website
 
