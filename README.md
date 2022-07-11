@@ -1,9 +1,13 @@
 
 # **LouieBot - Client(s)**
 
+## **What is LouieBot?**
+
+LouieBot is an open source, free, simple and easy to use song request twitch bot. Users may use the bot-website to have the bot join their twitch channel. After joining their twitch channel viewers may begin using the bot to add their favorite songs/videos to the queue.  
+
 ## **SETTING UP YOUR ENVIRONMENT**
 
-[bot-website](#bot-website) | [twitch-bot](#twitch-bot)
+[bot-website](#bot-website) | [twitch-bot](#twitch-bot) | [backend](https://github.com/Louuie/LouieBot-backend)
 
 ## bot-website
 
