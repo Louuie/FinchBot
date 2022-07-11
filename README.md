@@ -1,9 +1,12 @@
 
-# **LouieBot**
+# **LouieBot - Client(s)**
 
 ## **SETTING UP YOUR ENVIRONMENT**
 
+[bot-website](##bot-website) | [twitch-bot](##twitch-bot)
+
 ## bot-website
+
 
 Direct into the bot-website directory
 
@@ -24,3 +27,5 @@ yarn start
 ```
 
 If the react-app complied the terminal should tell you that the app complied successfully.
+
+## twitch-bot
