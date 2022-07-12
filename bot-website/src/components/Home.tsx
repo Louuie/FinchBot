@@ -20,7 +20,7 @@ export const Home: React.FC = () => {
     <div>
       <HomeNavBar/>
       <div className='flex flex-1 justify-center items-center w-full'>
-        <span className='md:mr-[395px] md:whitespace-pre-line md:w-[439px] md:h-[364px] mt-4 font-semibold text-[58px] w-full h-full leading-[96px]'>Free, Simple and easy to use Twitch Bot catered to DaCommunity.</span>
+        <span className='md:mr-[395px] md:whitespace-pre-line md:w-[420px] md:h-[300px] mt-4 font-semibold text-[58px] w-full h-full leading-[96px]'>Free, Simple and easy to use Song Request Twitch Bot.</span>
       </div>
       <div className='flex flex-1 justify-center items-center flex-wrap w-full'>
         <img src={gif} className='hidden md:block w-[186px] h-[178px] ml-[40rem] -mt-[15rem]'/>
