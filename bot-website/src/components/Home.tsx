@@ -19,11 +19,11 @@ export const Home: React.FC = () => {
   return (
     <div>
       <HomeNavBar/>
-      <div className='flex flex-1 justify-center items-center w-full'>
-        <span className='md:mr-[395px] md:whitespace-pre-line md:w-[420px] md:h-[300px] mt-4 font-semibold text-[58px] w-full h-full leading-[96px]'>Free, Simple and easy to use Song Request Twitch Bot.</span>
+      <div className='flex justify-center items-center w-full'>
+        <span className='md:mr-[425px] md:whitespace-pre-line md:w-[420px] md:h-[300px] md:mt-[28rem] font-semibold lg:text-[58px] text-[38px] w-full h-full leading-[96px]'>Open Source, Free, Simple and easy to use Song Request Twitch Bot.</span>
       </div>
-      <div className='flex flex-1 justify-center items-center flex-wrap w-full'>
-        <img src={gif} className='hidden md:block w-[186px] h-[178px] ml-[40rem] -mt-[15rem]'/>
+      <div className='flex justify-center items-center flex-wrap w-full'>
+        <img src={gif} className='md:w-[389px] md:h-[275px] w-[186px] h-[178px] lg:ml-[40rem] md:-mt-[62rem] -mt-[63rem]'/>
       </div>
     </div>
   )

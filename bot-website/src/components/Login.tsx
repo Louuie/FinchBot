@@ -32,25 +32,26 @@ export const Login: React.FC = () => {
         `?response_type=code` +
         `&client_id=wtaln1ogegdpmq0cw7x1mxw1nmwpsx` +
         `&redirect_uri=http://localhost:3000/auth/callback` +
-        `&scope=openid user_read&`
+        `&scope=openid user_read channel:manage:broadcast&`
         const code = await getCode(authUri);
         setLoading(true);
-        axios.post('http://localhost:3030/auth/twitch', null, {
-            params: {
-                code: code,
-            }
-        }).then((res) => {
-            const loginData: Auth = res.data;
-            if (loginData.error) console.log(loginData.error);
-            else {
-                setIsLoggedIn(true);
-                // axios.get('http://localhost:3030/auth/twitch/user').then((res) => {
-                //     const userData : Auth = res.data
-                //     if (!userData.error) setDisplayName(res.data[0].display_name);
-                // }).catch((err) => {  })
-                setLoading(false);
-            }
-        }).catch((err) => console.log(err))
+        console.log(code);
+        // axios.post('http://localhost:3030/auth/twitch', null, {
+        //     params: {
+        //         code: code,
+        //     }
+        // }).then((res) => {
+        //     const loginData: Auth = res.data;
+        //     if (loginData.error) console.log(loginData.error);
+        //     else {
+        //         setIsLoggedIn(true);
+        //         // axios.get('http://localhost:3030/auth/twitch/user').then((res) => {
+        //         //     const userData : Auth = res.data
+        //         //     if (!userData.error) setDisplayName(res.data[0].display_name);
+        //         // }).catch((err) => {  })
+        //         setLoading(false);
+        //     }
+        // }).catch((err) => console.log(err))
     }
 
     const onLogout = async () => {
