@@ -13,15 +13,18 @@ interface Auth {
 
 export const Login: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [displayName, setDisplayName] = useState('');
     axios.defaults.withCredentials = true;
 
     useEffect(() => {
-        axios.get('http://localhost:3030/auth/twitch/validate').then((res) => {
+        setLoading(true);
+        axios.post('http://localhost:3030/auth/twitch/validate').then((res) => {
             const login: Auth = res.data;
+            console.log(login);
             if (!login.error) setIsLoggedIn(true);
-        }).catch((err) => {  })
-        setLoading(false);
+        }).catch((err) => { /* console.log(err); */ })
+        setTimeout(() => setLoading(false), 250);
     }, [])
 
 
@@ -36,22 +39,20 @@ export const Login: React.FC = () => {
         const code = await getCode(authUri);
         setLoading(true);
         console.log(code);
-        // axios.post('http://localhost:3030/auth/twitch', null, {
-        //     params: {
-        //         code: code,
-        //     }
-        // }).then((res) => {
-        //     const loginData: Auth = res.data;
-        //     if (loginData.error) console.log(loginData.error);
-        //     else {
-        //         setIsLoggedIn(true);
-        //         // axios.get('http://localhost:3030/auth/twitch/user').then((res) => {
-        //         //     const userData : Auth = res.data
-        //         //     if (!userData.error) setDisplayName(res.data[0].display_name);
-        //         // }).catch((err) => {  })
-        //         setLoading(false);
-        //     }
-        // }).catch((err) => console.log(err))
+        axios.post('http://localhost:3030/auth/twitch', null, {
+            params: {
+                code: code,
+            }
+        }).then((res) => {
+            const loginData: Auth = res.data;
+            console.log(res.data, loginData);
+            setIsLoggedIn(true);
+            axios.get('http://localhost:3030/twitch/user').then((res) => {
+                const userData : Auth = res.data
+                if (!userData.error) setDisplayName(res.data[0].display_name); console.log(displayName);
+            }).catch((err) => { console.log(err); })
+        }).catch((err) => console.log(err))
+        setTimeout(() => setLoading(false), 1000);
     }
 
     const onLogout = async () => {
@@ -86,19 +87,22 @@ export const Login: React.FC = () => {
 
     return (
         <>
+        {/* if the state (loading) is true then display the Spinner component. */}
         {loading ? <Spinner/>
         :
         <div className="flex h-screen items-center justify-center">
+        {/* if the user isn't logged in then display the login page. */}
         {!isLoggedIn ? 
                     <div className="mb-20">
-                    <div className='text-center font-bold text-3xl'>DaCommunityBot</div>
+                    <div className='text-center font-bold text-4xl'>LouieBot</div>
                     <div className="mt-4 w-80 h-40 rounded-md bg-gray-900 text-center">
-                        <div className="flex">
-                            <div className="mt-4 text-md">Welcome to the DaCommunityBot! Login to get Started!</div>
+                        <div className="flex ml-8">
+                            <div className="mt-4 text-md whitespace-pre-line">Welcome to LouieBot!      Login to get Started!</div>
                         </div>
                         <Button variant="contained" sx={{backgroundColor: '#772CE8', fontWeight: 'bold', mt: 1.5, ':hover': { backgroundColor: '#620be4' }} } onClick={onLogin}>Log in with Twitch</Button>
                     </div>
                 </div>
+        //   if the user IS logged in then navigate them to the index page.      
         : <Navigate to={'/'}/>
         }
     </div> 
