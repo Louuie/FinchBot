@@ -25,7 +25,15 @@ export const Home: React.FC = () => {
       <div className='flex justify-center items-center flex-wrap w-full'>
         <img src={gif} alt='NODDERS' className='md:w-[375px] md:h-[265px] md:ml-[25rem] md:-mt-[22rem] w-[186px] h-[178px] lg:ml-[40rem] lg:-mt-60 lg:w-[275px] lg:h-[225px] -mt-[65rem]'/>
       </div>
-      { !authenticated ? <Button variant="contained" className='ml-[24rem] bg-[#121E40] mt-3 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]'>Login</Button> : <Button className='ml-[24rem] bg-[#121E40] mt-3 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]'>Dashboard</Button> }
+      <div className='flex justify-center items-center mt-56 mr-[36rem]'>
+          <Button variant="contained" className='bg-[#121E40] mr-8 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]'>Learn More</Button>
+          { !authenticated ? <Button variant="contained" className='bg-[#121E40] bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]'>Login</Button> : <Button className='ml-[24rem] bg-[#121E40] bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]'>Dashboard</Button> }
+      </div>
+      <div className='flex justify-center items-center'>
+        <div className='mt-36 bg-[#171E32] w-[856px] h-[331px] rounded-3xl'>
+          <a className='font-semibold text-3xl'>LouieBot is finally here.</a>
+        </div>
+      </div>
     </div>
   )
 }

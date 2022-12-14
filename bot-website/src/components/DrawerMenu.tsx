@@ -6,7 +6,11 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 
-export const DrawerMenu: React.FC = () => {
+interface Streamer {
+  name: string;
+}
+
+export const DrawerMenu: React.FC<Streamer> = ({name}) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   return (
       <Drawer
@@ -21,11 +25,11 @@ export const DrawerMenu: React.FC = () => {
         onClose={() => setIsDrawerOpen(false)}
       >
         <div className=" w-60 text-center text-gray-200">
-            <div className="text-2xl font-bold">Chenzo</div>
-          <ListItemButton component="a" href="/chenzo/song-request">
+            <div className="text-2xl font-bold">{name}</div>
+          <ListItemButton component="a" href={`${name}/song-requests`}>
             <ListItemText primary="Song Requests" />
           </ListItemButton>
-          <ListItemButton component="a" href="/chenzo/commands">
+          <ListItemButton component="a" href={`${name}/commands`}>
             <ListItemText primary="Commands" />
           </ListItemButton>
         </div>
