@@ -1,5 +1,19 @@
 import * as React from 'react';
 import { Twitch, Discord, Github } from 'react-bootstrap-icons';
+const Socials = {
+  Twitch: {
+    icon: Twitch,
+    link: 'https://twitch.tv/DaCommunityBot'
+  },
+  Discord: {
+    icon: Discord,
+    link: 'https://discord.gg'
+  },
+  Github: {
+    icon: Github,
+    link: 'https://github.com/Louuie/LouieBot'
+  },
+}
 
 export const HomeNavBar: React.FC = () => {
     return (
@@ -10,9 +24,9 @@ export const HomeNavBar: React.FC = () => {
           </div>
             <div className='hidden w-full md:block md:w-auto items-center ml-[28rem]'>
               <div className='flex flex-1 -ml-20'>
-                <Twitch size={22}/>
-                <Discord size={22} className='ml-4'/>
-                <Github size={22} className='ml-4'/>
+                <Socials.Twitch.icon size={22} className='hover:cursor-pointer' onClick={(() => window.open(Socials.Twitch.link))}/>
+                <Socials.Discord.icon size={22} className='ml-4 hover:cursor-pointer' onClick={(() => window.open(Socials.Discord.link))}/>
+                <Socials.Github.icon size={22} className='ml-4 hover:cursor-pointer' onClick={(() => window.open(Socials.Github.link))}/>
               </div> 
             </div>
         </div>
