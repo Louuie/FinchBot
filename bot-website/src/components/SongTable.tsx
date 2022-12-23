@@ -1,4 +1,4 @@
-import { SongArray, Songs } from "../../interfaces/SongInterface"
+import { SongArray, Songs } from "../interfaces/SongInterface"
 
 
 
