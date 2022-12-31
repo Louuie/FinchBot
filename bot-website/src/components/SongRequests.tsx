@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Alert, AlertTitle } from '@mui/material';
-import { DrawerMenu } from '../components/DrawerMenu';
 import axios from 'axios';
+import { Alert, AlertTitle, Button } from '@mui/material';
+import { DrawerMenu } from '../components/DrawerMenu';
 import { Songs } from '../interfaces/SongInterface';
-
+import { Trash, Arrow90degUp } from 'react-bootstrap-icons';
 // <div onClick={() => {deleteSong(initialSong.Id, initialSong.Title); setSongs(songs.filter((song : Songs) => song.Id !== initialSong.Id));}}>X</div>
 export const SongRequests: React.FC = () => {
   const [songs, setSongs] = React.useState([]);
@@ -11,6 +11,7 @@ export const SongRequests: React.FC = () => {
   const [songDeleteStatus, setSongDeleteStatus] = React.useState(false);
   const [songDeletedTitle, setDeletedTitle] = React.useState('');
 
+  let date = new Date();
   React.useEffect(() => {
     const pathname = window.location.pathname.slice(1, 14);
     setStreamerName(pathname);
@@ -76,11 +77,18 @@ export const SongRequests: React.FC = () => {
                     <tr className='bg-[#1B1E1F] border-b'>
                       <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200'>{initialSong.Id}</td>
                       <td className='text-sm text-gray-200 font-light px-6 py-4 whitespace-nowrap'>{initialSong.Title}</td>
-                      <td className='text-sm text-gray-200 font-light px-6 py-4 whitespace-nowrap'>{initialSong.Artist}</td>
-                      <td className='text-sm text-gray-200 font-light px-6 py-4 whitespace-nowrap'>{initialSong.Userid}</td>
-                      <td className='text-sm text-gray-200 font-light px-6 py-4 whitespace-nowrap'>{initialSong.Duration}</td>
-                      <td className='text-sm text-gray-200 font-light px-6 py-4 whitespace-nowrap'>{initialSong.Videoid}</td>
-                      <td className='text-sm text-red-900 font-light px-6 py-4 whitespace-nowrap' onClick={() => { deleteSong(initialSong.Id, initialSong.Title); setSongs(songs.filter((song: Songs) => song.Id !== initialSong.Id)); }}>X</td>
+                      <td className='text-sm text-gray-200 font-light px-3 py-4 whitespace-nowrap'>{initialSong.Artist}</td>
+                      <td className='text-sm text-gray-200 font-light px-10 py-4 whitespace-nowrap'>{initialSong.Userid}</td>
+                      <td className='text-sm text-gray-200 font-light px-10 py-4 whitespace-nowrap'>{initialSong.Duration}s</td>
+                      <td className='text-sm text-gray-200 font-light px-4 py-4 whitespace-nowrap'>{initialSong.Videoid}</td>
+                      <td className='text-sm text-gray-200 font-light px-7 py-4 whitespace-nowrap flex flex-1'>
+                        <div className='h-4 bg-gray-800'>
+                          <Arrow90degUp className='hover:cursor-pointer transform -scale-x-100'/>
+                        </div>
+                        <div className='h-4 py-[11px] bg-red-800 hover:cursor-pointer' onClick={() => { deleteSong(initialSong.Id, initialSong.Title); setSongs(songs.filter((song: Songs) => song.Id !== initialSong.Id)); }}>
+                          <Trash color='white'/>
+                        </div>
+                      </td>
                     </tr>
                   )}
                   <tr className='bg-gray-100 border-b'></tr>
