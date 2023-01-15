@@ -61,10 +61,10 @@ export const SongTable: React.FC = () => {
                     <th scope="col" className="text-sm font-medium text-gray-200 px-6 py-4 text-left">
                       #
                     </th>
-                    <th scope="col" className="text-sm font-medium text-gray-200 px-6 py-4 text-left">
+                    <th scope="col" className="text-sm font-medium text-gray-200 px-24 py-4 text-left">
                       Title
                     </th>
-                    <th scope="col" className="text-sm font-medium text-gray-200 px-6 py-4 text-left">
+                    <th scope="col" className="text-sm font-medium text-gray-200 px-8 py-4 text-left">
                       Artist
                     </th>
                     <th scope="col" className="text-sm font-medium text-gray-200 px-6 py-4 text-left">
@@ -73,7 +73,7 @@ export const SongTable: React.FC = () => {
                     <th scope="col" className="text-sm font-medium text-gray-200 px-6 py-4 text-left">
                       Duration
                     </th>
-                    <th scope="col" className="text-sm font-medium text-gray-200 px-6 py-4 text-left">
+                    <th scope="col" className="text-sm font-medium text-gray-200 px-7 py-4 text-left">
                       VideoID
                     </th>
                     <th scope="col" className="text-sm font-medium text-gray-200 px-6 py-4 text-left">
@@ -85,10 +85,10 @@ export const SongTable: React.FC = () => {
                   {songs.sort((a:never, b:never) => a - b).map((initialSong: Songs) =>
                     <tr className='bg-[#1B1E1F] border-b' key={initialSong.Id}>
                       <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200'>{initialSong.Id}</td>
-                      <td className='text-sm text-gray-200 font-light px-6 py-4 whitespace-nowrap'>{initialSong.Title}</td>
-                      <td className='text-sm text-gray-200 font-light px-3 py-4 whitespace-nowrap'>{initialSong.Artist}</td>
+                      <td className='text-sm text-gray-200 font-light py-4 whitespace-nowrap'>{initialSong.Title}</td>
+                      <td className='text-sm text-gray-200 font-light -px-4 py-4 whitespace-nowrap'>{initialSong.Artist}</td>
                       <td className='text-sm text-gray-200 font-light px-10 py-4 whitespace-nowrap'>{initialSong.Userid}</td>
-                      <td className='text-sm text-gray-200 font-light px-10 py-4 whitespace-nowrap'>{initialSong.Duration}s</td>
+                      <td className='text-sm text-gray-200 font-light px-7 py-4 whitespace-nowrap'>{initialSong.Duration}</td>
                       <td className='text-sm text-gray-200 font-light px-4 py-4 whitespace-nowrap'>{initialSong.Videoid}</td>
                       <td className='text-sm text-gray-200 font-light px-7 py-4 whitespace-nowrap flex flex-1'>
                         <div className='h-4 bg-gray-800'>
