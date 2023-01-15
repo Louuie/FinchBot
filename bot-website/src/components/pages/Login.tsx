@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button } from '@mui/material';
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Spinner from "../components/spinner/Spinner";
+import Spinner from "../spinner/Spinner";
 import { Navigate, NavLink } from 'react-router-dom';
 import { Home } from './Home';
 

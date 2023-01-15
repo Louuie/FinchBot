@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { Routes, Route } from 'react-router-dom';
-import { Home } from './components/Home';
-import { Login } from './components/Login';
-import { Callback } from './components/Callback';
-import { SongRequests } from './components/SongRequests';
+import { Home } from './components/pages/Home';
+import { Login } from './components/pages/Login';
+import { Callback } from './components/pages/Callback';
+import { SongRequests } from './components/pages/SongRequests';
 export const App: React.FC = () => {
   return (
    <Routes>

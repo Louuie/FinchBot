@@ -9,6 +9,6 @@ export interface Songs {
   
   
  export interface SongArray {
-    data: any[],
+    data: Songs[],
   }
   
