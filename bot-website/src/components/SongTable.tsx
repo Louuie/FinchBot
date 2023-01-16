@@ -18,7 +18,6 @@ export const SongTable: React.FC = () => {
         songs.sort((a: Songs, b: Songs) => a.Id - b.Id);
         if (songs != readjustedSongs) {
           setSongs(songs);
-          console.log(songs);
         } 
         return () => clearInterval(fetchSongs);
       }, [songs, readjustedSongs]);

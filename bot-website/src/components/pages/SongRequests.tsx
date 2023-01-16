@@ -1,14 +1,16 @@
 import * as React from 'react';
 import { DrawerMenu } from '../ui/DrawerMenu';
 import { SongTable } from '../SongTable';
+import { SongPlayer } from '../SongPlayer';
+
+
 export const SongRequests: React.FC = () => {
 
-
-
   return (
-   <div className='flex justify-center w-full h-full'>
+   <div className='flex flex-col w-full h-full'>
      <DrawerMenu name={'LouieBot'}/>
-     <div className='flex-1 text-gray-300 ml-[17rem] mt-2'>
+     <SongPlayer/>
+     <div className='flex flex-1 text-gray-300 mt-[4rem] ml-[10rem]'>
       <SongTable/>
      </div>
    </div>
