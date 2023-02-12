@@ -2,7 +2,7 @@ import axios from "axios";
 import * as React from "react"
 import { ClockFill, Link45deg, PersonFill } from "react-bootstrap-icons";
 import YouTube from "react-youtube";
-import { Songs } from "../interfaces/SongInterface";
+import {Songs} from "../interfaces/Songs";
 
 
 
@@ -48,6 +48,7 @@ export const SongPlayer: React.FC = () => {
   return (
     <div className='flex flex-col h-[25rem] w-[80rem] mt-[14rem] ml-[16rem] bg-gray-800'>
     <div className='flex flex-1 mt-4 ml-2 font-bold text-lg'>Current Song</div>
+    <hr className="mb-8"/>
     <div className='flex flex-1 mb-20 px-2'>
       <YouTube videoId={firstSong?.Videoid} opts={youtubeOpts} onEnd={() => onSongEnd(firstSong?.Id)}/>
       <div className='flex flex-col ml-2 h-1'>

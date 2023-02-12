@@ -1,7 +1,7 @@
 import axios from "axios";
 import React from "react";
 import { Arrow90degUp, Trash } from "react-bootstrap-icons";
-import { Songs } from "../interfaces/SongInterface";
+import { Songs } from "../interfaces/Songs";
 
 export const SongTable: React.FC = () => {
     const [songs, setSongs] = React.useState([]);
@@ -51,7 +51,6 @@ export const SongTable: React.FC = () => {
 
     return (
         <div className='flex flex-col'>
-        <div className=''>
           <div className='py-2 inline-block min-w-full sm:px-6 lg:px-24'>
             <div className=''>
               <table className='min-w-full bg-[#181A1B] overflow-auto'>
@@ -104,7 +103,6 @@ export const SongTable: React.FC = () => {
               </table>
             </div>
           </div>
-        </div>
       </div>
     );
 }

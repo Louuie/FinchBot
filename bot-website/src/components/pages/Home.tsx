@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 import * as React from 'react'
-import { Auth } from '../../auth/auth';
+import { Auth } from '../../interfaces/Auth';
 import { HomeNavBar } from '../ui/HomeNavBar';
 import gif from '../../3.0.gif';
 import { Button } from '@mui/material';

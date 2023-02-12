@@ -1,7 +1,7 @@
 import { IconButton, Menu, MenuItem, Avatar } from '@mui/material';
 import axios from 'axios';
 import * as React from 'react';
-import { Auth } from '../../auth/auth';
+import { Auth } from '../../interfaces/Auth';
 import Spinner from '../spinner/Spinner';
 
 

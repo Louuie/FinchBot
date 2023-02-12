@@ -1,6 +1,6 @@
 export interface Songs {
     Artist: string, 
-    Duration: number,
+    Duration: string,
     Id: number,
     Title: string,
     Userid: string,
