@@ -51,6 +51,7 @@ export const SongTable: React.FC = () => {
 
     return (
         <div className='flex flex-col'>
+        <div className=''>
           <div className='py-2 inline-block min-w-full sm:px-6 lg:px-24'>
             <div className=''>
               <table className='min-w-full bg-[#181A1B] overflow-auto'>
@@ -103,6 +104,7 @@ export const SongTable: React.FC = () => {
               </table>
             </div>
           </div>
+        </div>
       </div>
     );
 }
