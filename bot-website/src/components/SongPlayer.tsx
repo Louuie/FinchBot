@@ -1,3 +1,4 @@
+import { Alert } from "@mui/material";
 import axios from "axios";
 import * as React from "react"
 import { ClockFill, Link45deg, PersonFill } from "react-bootstrap-icons";
@@ -12,6 +13,7 @@ export const SongPlayer: React.FC = () => {
     
   // State variable used for songs?
   const [firstSong, setFirstSong] = React.useState<Songs | null>(null);
+  const [showPlayer, setShowPlayer] = React.useState(true);
 
   // Setting the options for the YouTube Video Player.
   const youtubeOpts = {
@@ -29,7 +31,7 @@ export const SongPlayer: React.FC = () => {
         params: {
           channel: 'louiee_tv'
         }
-      }).then((res) => { setFirstSong(res.data.songs[0]);  }).catch((err) => console.log(err))
+      }).then((res) => { setFirstSong(res.data.songs[0]); console.log('data', firstSong); if (firstSong === null) { setShowPlayer(false); }}).catch((err) => setShowPlayer(false))
     }, 3000);
     return () => clearInterval(fetchSong)
   }, [firstSong]);
@@ -49,24 +51,30 @@ export const SongPlayer: React.FC = () => {
     <div className='flex flex-col h-[25rem] w-[80rem] mt-[14rem] ml-[16rem] bg-gray-800'>
     <div className='flex flex-1 mt-4 ml-2 font-bold text-lg'>Current Song</div>
     <hr className="mb-8"/>
-    <div className='flex flex-1 mb-20 px-2'>
-      <YouTube videoId={firstSong?.Videoid} opts={youtubeOpts} onEnd={() => onSongEnd(firstSong?.Id)}/>
-      <div className='flex flex-col ml-2 h-1'>
-        <a className='font-bold text-lg'>{firstSong?.Title}</a>
-        <div className='flex flex-1'>
-          <ClockFill className='mt-[3px]'/>
-          <a className='px-1 text-sm'>{firstSong?.Duration}</a>
-        </div>
-        <div className='flex flex-1 py-2'>
-          <Link45deg className='mt-1'/>
-          <a href={`http://youtu.be/${firstSong?.Videoid}`}>{`http://youtu.be/${firstSong?.Videoid}`}</a>
-        </div>
-        <div className='flex'>
-          <PersonFill className='mt-[3px]'/>
-          <a>{firstSong?.Userid}</a>
+    {showPlayer ? 
+      <div className='flex flex-1 mb-20 px-2'>
+        <YouTube videoId={firstSong?.Videoid} opts={youtubeOpts} onEnd={() => onSongEnd(firstSong?.Id)}/>
+        <div className='flex flex-col ml-2 h-1'>
+          <a className='font-bold text-lg'>{firstSong?.Title}</a>
+          <div className='flex flex-1'>
+            <ClockFill className='mt-[3px]'/>
+            <a className='px-1 text-sm'>{firstSong?.Duration}</a>
+          </div>
+          <div className='flex flex-1 py-2'>
+            <Link45deg className='mt-1'/>
+            <a href={`http://youtu.be/${firstSong?.Videoid}`}>{`http://youtu.be/${firstSong?.Videoid}`}</a>
+          </div>
+          <div className='flex'>
+            <PersonFill className='mt-[3px]'/>
+            <a>{firstSong?.Userid}</a>
+          </div>
         </div>
       </div>
+    : 
+    <div className="flex flex-col mb-[24rem]">
+      <Alert severity="error">Song Queue is Empty</Alert>
     </div>
+    }
    </div>
   )
 }
