@@ -1,88 +1,108 @@
-import * as React from "react";
-import {
-  AppBar,
-  Avatar,
-  Box,
-  Button,
-  Container,
-  IconButton,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
+import * as React from 'react';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Menu from '@mui/material/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
+import Container from '@mui/material/Container';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import AdbIcon from '@mui/icons-material/Adb';
+
+const pages = ['Dashboard', 'Documentation', 'About'];
+const settings = ['Sign out'];
 
 export const ResponsiveAppBar: React.FC = () => {
-  const pages = ["Dashboard", "Documentation", "About"];
-  const settings = ["Sign out"];
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
-  // State Variables that are Required for the ResponsiveAppBar to work correctly.
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
-
-  // Event Handler Functions that control the NavBar when it's opened
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) =>
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) =>
+  };
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
+  };
 
-  // Event Handler Functions that control the NavBar when it's closed
-  const handleCloseNavMenu = () => setAnchorElNav(null);
-  const handleCloseUserMenu = () => setAnchorElUser(null);
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
 
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          {/* ICON/LOGO GOES HERE */}
+        <Toolbar disableGutters className='w-full bg-[#212121]'>
+          <AdbIcon className='sm: none md: flex mr-1 ml-1'/>
           <Typography
             variant="h6"
             noWrap
             component="a"
             href="/"
-            className=" mr-2 md:flex font-bold tracking-[0.3rem]"
+            className='mr-2 ml-2 sm: none md: flex font-bold tracking-[0.3rem]'
           >
             FINCHBOT
           </Typography>
 
-          {/* Box used for Pages /*/}
-          <Box className="flex flex-1 sm:flex-none md:flex-1">
+          <Box className='flex flex-1 sm:flex-none md:none'>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorElNav}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              open={Boolean(anchorElNav)}
+              onClose={handleCloseNavMenu}
+              className='sm:block md:flex-none'
+            >
+              {pages.map((page) => (
+                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">{page}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
+
+          <Box className='flex flex-1 sm:none md:flex'>
             {pages.map((page) => (
               <Button
                 key={page}
                 onClick={handleCloseNavMenu}
-                className="mr-2 text-gray-200 block"
+                className='my-2 text-gray-200 block'
               >
                 {page}
               </Button>
             ))}
           </Box>
 
-          {/* Box used for Avatar Menu /*/}
-          <Box className="grow-0">
+          <Box className='flex mr-1'>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} className="p-0">
+              <IconButton onClick={handleOpenUserMenu} className='p-0'>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
             <Menu
-              className="mt-[45px]"
+              sx={{ mt: '45px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right',
               }}
               keepMounted
               transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
+                vertical: 'top',
+                horizontal: 'right',
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
@@ -95,7 +115,5 @@ export const ResponsiveAppBar: React.FC = () => {
             </Menu>
           </Box>
         </Toolbar>
-      </Container>
-    </AppBar>
   );
-};
+}
