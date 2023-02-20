@@ -90,11 +90,13 @@ export const FormDialog: React.FC = () => {
             label="Query"
             fullWidth
             variant="standard"
+            color="success"
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleAddSongClose}>Cancel</Button>
+          <Button color="error" onClick={handleAddSongClose}>Cancel</Button>
           <Button
+            color="success"
             onClick={() => {
               onSubmit();
               handleAddSongClose();
@@ -122,6 +124,26 @@ export const FormDialog: React.FC = () => {
         <DialogActions>
           <Button onClick={handleDisableClose}>Disagree</Button>
           <Button onClick={handleDisableClose}>Agree</Button>
+        </DialogActions>
+      </Dialog>
+
+
+      <Dialog
+        open={open3}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleClearQueueClose}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>{"Clear Queue"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            Are you sure you clear your song request queue?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button color="error" onClick={handleClearQueueClose}>Cancel</Button>
+          <Button color="success" onClick={handleClearQueueClose}>Clear</Button>
         </DialogActions>
       </Dialog>
     </div>
