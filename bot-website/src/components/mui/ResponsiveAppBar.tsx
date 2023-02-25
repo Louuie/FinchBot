@@ -1,24 +1,48 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Menu from "@mui/material/Menu";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
+import MenuItem from "@mui/material/MenuItem";
+import AdbIcon from "@mui/icons-material/Adb";
+import {
+  AuthenticationStatusInterface,
+  TwitchUserInfoInterface,
+} from "../../interfaces/Auth";
+import axios from "axios";
 
-const pages = ['Dashboard', 'Documentation', 'About'];
-const settings = ['Sign out'];
+const pages = ["Dashboard", "Documentation", "About"];
+const settings = ["Sign out"];
 
-export const ResponsiveAppBar: React.FC = () => {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
+  authenticated,
+}) => {
+  // state variable that sets the userData so that way we can use it
+  const [userData, setUserData] = React.useState<TwitchUserInfoInterface>();
+
+  // useEffect that checks if the user is Authenticated, if so fetch their displayName and avatar
+  React.useEffect(() => {
+    if (authenticated) {
+      axios
+        .get("http://localhost:3030/twitch/user", { withCredentials: true })
+        .then((res) => {
+          const userData: TwitchUserInfoInterface = res.data[0];
+          setUserData(userData);
+        })
+        .catch((err) => console.log(err));
+    } else console.log("not authed for some reason!");
+  }, [authenticated]);
+
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -36,73 +60,75 @@ export const ResponsiveAppBar: React.FC = () => {
   };
 
   return (
-        <Toolbar disableGutters className='w-full bg-[#212121]'>
-          <AdbIcon className='sm: none md: flex mr-1 ml-1'/>
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            className='mr-2 ml-2 sm: none md: flex font-bold tracking-[0.3rem]'
+    <Toolbar disableGutters className="w-full bg-[#212121]">
+      <AdbIcon className="sm:none md:flex mr-1 ml-1" />
+      <Typography
+        variant="h6"
+        noWrap
+        component="a"
+        href="/"
+        className="mr-2 ml-2 hidden md:visible md:flex font-bold tracking-[0.3rem]"
+      >
+        FINCHBOT
+      </Typography>
+
+      <Box className="flex flex-1 sm:flex-none md:none">
+        <Menu
+          id="menu-appbar"
+          anchorEl={anchorElNav}
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+          open={Boolean(anchorElNav)}
+          onClose={handleCloseNavMenu}
+          className="sm:block md:flex-none"
+        >
+          {pages.map((page) => (
+            <MenuItem key={page} onClick={handleCloseNavMenu}>
+              <Typography textAlign="center">{page}</Typography>
+            </MenuItem>
+          ))}
+        </Menu>
+      </Box>
+
+      <Box className="flex flex-1 sm:none md:flex">
+        {pages.map((page) => (
+          <Button
+            key={page}
+            onClick={handleCloseNavMenu}
+            className="my-2 text-gray-200 block"
           >
-            FINCHBOT
-          </Typography>
+            {page}
+          </Button>
+        ))}
+      </Box>
 
-          <Box className='flex flex-1 sm:flex-none md:none'>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              className='sm:block md:flex-none'
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-
-          <Box className='flex flex-1 sm:none md:flex'>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                className='my-2 text-gray-200 block'
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
-
-          <Box className='flex mr-1'>
+      <Box className="flex mr-1">
+        {authenticated ?
+          <div>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} className='p-0'>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+              <IconButton onClick={handleOpenUserMenu} className="p-0">
+                <Avatar alt="Remy Sharp" src={userData?.profile_image_url} />
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: "45px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               keepMounted
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
@@ -113,7 +139,10 @@ export const ResponsiveAppBar: React.FC = () => {
                 </MenuItem>
               ))}
             </Menu>
-          </Box>
-        </Toolbar>
+          </div>
+          :
+          <Button variant="contained">Login</Button>}
+      </Box>
+    </Toolbar>
   );
-}
+};

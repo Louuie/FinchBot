@@ -2,18 +2,21 @@ import * as React from "react";
 import axios from "axios";
 import {
   Button,
+  Container,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
   TextField,
+  Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { Transition } from "./Transitions";
-export const FormDialog: React.FC = () => {
+import { AuthenticationStatusInterface } from "../../interfaces/Auth";
+export const FormDialog: React.FC<AuthenticationStatusInterface> = ({ authenticated }) => {
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
   const [open3, setOpen3] = React.useState(false);
@@ -42,14 +45,15 @@ export const FormDialog: React.FC = () => {
   };
 
   return (
-    <div className="flex">
+    <Container className="flex w-full md:w-full" maxWidth={false}>
       <hr />
-      <div className="flex flex-1 justify-center items-center">
-        <div className="text-gray-200 text-3xl mr-[31rem] font-poppins">
-          Song Requests
-        </div>
+      <div className="flex flex-1 justify-start items-start mx-2">
+        <Typography textAlign="center" variant="h4">Song Requests</Typography>
       </div>
-      <div className="mr-[29.5rem]">
+      {authenticated
+        ?
+        <div>
+      <Container className="hidden md:visible md:flex flex-1 items-end justify-end w-full md:mx-6" maxWidth={false}>
         <Button
           variant="contained"
           className="bg-[#127707] text-gray-200 mr-2 mt-4"
@@ -74,7 +78,11 @@ export const FormDialog: React.FC = () => {
           <DeleteForeverIcon fontSize="small" />
           Clear Queue
         </Button>
-      </div>
+      </Container>
+        </div>
+        :
+        <div className="hidden"></div>
+        }
 
       <Dialog open={open1} onClose={handleAddSongClose} TransitionComponent={Transition}>
         <DialogTitle>Add Song to Queue</DialogTitle>
@@ -146,6 +154,6 @@ export const FormDialog: React.FC = () => {
           <Button color="success" onClick={handleClearQueueClose}>Clear</Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Container>
   );
 };

@@ -2,24 +2,10 @@ import React from "react";
 import axios from "axios";
 import { TableContainer, Paper, TableHead, Table, TableRow, TableCell, TableBody } from "@mui/material";
 import { Delete, Upgrade } from "@mui/icons-material";
-import { Songs } from "../interfaces/Songs";
+import { SongArray, Songs } from "../interfaces/Songs";
 
-export const SongTable: React.FC = () => {
-    const [songs, setSongs] = React.useState([]);
-    
-    React.useEffect(() => {
-        const fetchSongs = setInterval(() => {
-          axios.get('http://localhost:3030/songs', {
-            params: {
-              channel: 'louiee_tv'
-            }
-          }).then((res) => { setSongs(res.data.songs); console.log('TableSongs', res.data)  }).catch((err) => console.log(err))
-        }, 5000);
-        return () => clearInterval(fetchSongs);
-      }, [songs]);
-    
-    
-      const deleteSong = async (id: number, title: string) => {
+export const SongTable = ({songs} : SongArray) => {
+      const deleteSong = async (id: number | undefined, title: string | undefined) => {
         axios.get('http://localhost:3030/song-request-delete', {
             params: {
               channel: 'louiee_tv',
@@ -28,7 +14,8 @@ export const SongTable: React.FC = () => {
           }).then((res) => console.log(res.data)).catch((err) => console.log(err));
       }
 
-      const promoteSong = async (videoID: string, pos1: number, pos2: number) => {
+      const promoteSong = async (videoID: string | undefined, pos1: number | undefined, pos2: number | undefined) => {
+        console.log(pos1, pos2)
         axios.post('http://localhost:3030/promote-song', null, {
           params: {
             channel: 'louiee_tv',
@@ -40,19 +27,19 @@ export const SongTable: React.FC = () => {
       }
 
     return (
-      <TableContainer component={Paper} className="w-[100rem]">
-        <Table className="min-w-[450px]" aria-label="simple table">
+      <TableContainer component={Paper} className="w-full md:mx-[2rem] mx-[1rem] ">
+        <Table className="md:min-w-[450px] min-w-[350px]" aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>Title</TableCell>
               <TableCell align="right">Artist</TableCell>
               <TableCell align="right">Requested by</TableCell>
               <TableCell align="right">Duration</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <TableCell className="md:block hidden" align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {songs.map((intialSong: Songs) => (
+            {songs?.map((intialSong: Songs) => (
               <TableRow key={intialSong.Id}>
                 <TableCell component="th" scope="row">
                   {intialSong.Title}
@@ -60,7 +47,7 @@ export const SongTable: React.FC = () => {
                 <TableCell align="right">{intialSong.Artist}</TableCell>
                 <TableCell align="right">{intialSong.Userid}</TableCell>
                 <TableCell align="right">{intialSong.Duration}</TableCell>
-                <TableCell align="right">
+                <TableCell className="md:block hidden" align="right">
                   <div className="flex flex-1 justify-end items-end">
                     <div className="hover:cursor-pointer" onClick={() => deleteSong(intialSong.Id, intialSong.Title)}>
                       <Delete color="error"/>

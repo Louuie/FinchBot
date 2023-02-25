@@ -1,18 +1,18 @@
 
 import axios from 'axios';
 import * as React from 'react'
-import { Auth } from '../../interfaces/Auth';
+import { AuthenticationStatusInterface } from '../../interfaces/Auth';
 import { HomeNavBar } from '../ui/HomeNavBar';
 import gif from '../../3.0.gif';
 import { Button } from '@mui/material';
 
 export const Home: React.FC = () => {
-  const [authenticated, setAuthenticated] = React.useState(false);
+  const [authData, setAuthData] = React.useState<AuthenticationStatusInterface>();
   React.useEffect(() => {
     axios.defaults.withCredentials = true;
     axios.post('http://localhost:3030/auth/twitch/validate').then((res) => {
-      const auth : Auth = res.data;
-      if (!auth.error) setAuthenticated(true);
+      const auth : AuthenticationStatusInterface = res.data
+      if (!auth.error) setAuthData(auth);
     })
   }, []);
 
@@ -27,7 +27,7 @@ export const Home: React.FC = () => {
       </div>
       <div className='flex justify-center items-center mt-56 mr-[36rem]'>
           <Button variant="contained" className='bg-[#121E40] text-gray-200 mr-8 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]'>Learn More</Button>
-          { !authenticated ? <Button variant="contained" className='bg-[#121E40] text-gray-200 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]'>Login</Button> : <Button className='ml-[24rem] text-gray-200 bg-[#121E40] bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]'>Dashboard</Button> }
+          { !authData?.authenticated ? <Button variant="contained" className='bg-[#121E40] text-gray-200 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]'>Login</Button> : <Button className='bg-[#121E40] text-gray-200 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]' href={`/dashboard/${authData.display_name}`}>Dashboard</Button> }
       </div>
       <div className='flex justify-center items-center'>
         <div className='mt-36 bg-[#171E32] w-[856px] h-[331px] rounded-3xl'>

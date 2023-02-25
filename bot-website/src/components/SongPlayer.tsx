@@ -1,18 +1,18 @@
-import { Alert, Box, CircularProgress, Container } from "@mui/material";
+import { Alert, Box, CircularProgress, Container, Typography, Link } from "@mui/material";
 import axios from "axios";
 import * as React from "react"
-import { WatchLater, Link, Person } from "@mui/icons-material";
+import { WatchLater, Person } from "@mui/icons-material";
+import LinkIcon from "@mui/icons-material/Link";
 import YouTube from "react-youtube";
-import { Songs } from "../interfaces/Songs";
+import { SongArray, Songs } from "../interfaces/Songs";
 
 
 
 
-export const SongPlayer: React.FC = () => {
+export const SongPlayer: React.FC<Songs> = ({Id, Videoid, Title, Artist, Duration, Userid}) => {
 
 
   // State variable used for songs?
-  const [firstSong, setFirstSong] = React.useState<Songs | null>(null);
   const [showSpinner, setShowSpinner] = React.useState(true);
   const [showPlayer, setShowPlayer] = React.useState(true);
 
@@ -27,17 +27,8 @@ export const SongPlayer: React.FC = () => {
 
   // useEffect that fetches the videoID of the Song/Video in the first position.
   React.useEffect(() => {
-    const fetchSong = setInterval(() => {
-      axios.get('http://localhost:3030/songs', {
-        params: {
-          channel: 'louiee_tv'
-        }
-      }).then((res) => { setFirstSong(res.data.songs[0]); console.log('data', firstSong); if (firstSong === undefined) { setShowPlayer(false); } else setShowPlayer(true); }).catch((err) => setShowPlayer(false))
-    }, 3000);
-    return () => clearInterval(fetchSong)
-
-    // 
-  }, [firstSong]);
+      if (Title === undefined) { setShowPlayer(false); setShowSpinner(true); } else setShowPlayer(true);
+  }, [Title, Videoid, Artist, Duration, Userid]);
 
   // useEffect that sets the Spinner to stop showing/displaying after 1000ms
   React.useEffect(() => {
@@ -56,8 +47,8 @@ export const SongPlayer: React.FC = () => {
   }
 
   return (
-    <Container className="bg-[#2f2e2e] mt-9 w-[100rem] h-full" maxWidth={false}>
-      <div className='flex flex-1 mt-4 ml-2 font-bold text-lg'>Current Song</div>
+    <Container className="bg-[#2f2e2e] mt-9 w-full h-full md:mx-[2rem] hidden md:block" maxWidth={false}>
+      <Typography className="mt-4 ml-2 font-bold" variant="h6">Current Song</Typography>
       <hr className="mb-8" />
       <div>
         {showSpinner ? 
@@ -68,20 +59,20 @@ export const SongPlayer: React.FC = () => {
           <div>
             {showPlayer ?
               <div className='flex flex-1 mb-20 px-2'>
-                <YouTube videoId={firstSong?.Videoid} opts={youtubeOpts} onEnd={() => {onSongEnd(firstSong?.Id); setShowSpinner(true); setTimeout(() => setShowSpinner(false), 3250)}} />
+                <YouTube videoId={Videoid} opts={youtubeOpts} onEnd={() => {onSongEnd(Id); setShowSpinner(true); setTimeout(() => setShowSpinner(false), 3250)}} />
                 <div className='flex flex-col ml-2 h-1'>
-                  <a className='font-bold text-lg'>{firstSong?.Title}</a>
+                  <Typography variant="h6" className="font-bold">{Title}</Typography>
                   <div className='flex flex-1'>
-                    <WatchLater fontSize="small" className='mt-[1px]' />
-                    <a className='px-1 text-sm'>{firstSong?.Duration}</a>
+                    <WatchLater fontSize="small" className='mt-[4px] mr-1' />
+                    <Typography variant="subtitle1">{Duration}</Typography>
                   </div>
                   <div className='flex flex-1 py-2'>
-                    <Link fontSize="small" className='mt-[2px]' />
-                    <a href={`http://youtu.be/${firstSong?.Videoid}`}>{`http://youtu.be/${firstSong?.Videoid}`}</a>
+                    <LinkIcon fontSize="small" className='mt-[2px]' />
+                    <Link className="ml-1" href={`http://youtu.be/${Videoid}`}>{`http://youtu.be/${Videoid}`}</Link>
                   </div>
                   <div className='flex'>
                     <Person fontSize="small" className='mt-[3px]' />
-                    <a>{firstSong?.Userid}</a>
+                    <Typography variant="subtitle1">{Userid}</Typography>
                   </div>
                 </div>
               </div>
