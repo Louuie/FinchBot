@@ -27,7 +27,7 @@ export const Home: React.FC = () => {
       </div>
       <div className='flex justify-center items-center mt-56 mr-[36rem]'>
           <Button variant="contained" className='bg-[#121E40] text-gray-200 mr-8 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]'>Learn More</Button>
-          { !authData?.authenticated ? <Button variant="contained" className='bg-[#121E40] text-gray-200 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]'>Login</Button> : <Button className='bg-[#121E40] text-gray-200 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]' href={`/dashboard/${authData.display_name}`}>Dashboard</Button> }
+          { !authData?.authenticated ? <Button href='/login' variant="contained" className='bg-[#121E40] text-gray-200 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]'>Login</Button> : <Button className='bg-[#121E40] text-gray-200 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]' href={`/dashboard/${authData.display_name}`}>Dashboard</Button> }
       </div>
       <div className='flex justify-center items-center'>
         <div className='mt-36 bg-[#171E32] w-[856px] h-[331px] rounded-3xl'>

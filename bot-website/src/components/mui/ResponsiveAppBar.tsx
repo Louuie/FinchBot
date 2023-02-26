@@ -113,8 +113,8 @@ export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
         {authenticated ?
           <div>
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} className="p-0">
-                <Avatar alt="Remy Sharp" src={userData?.profile_image_url} />
+              <IconButton onClick={handleOpenUserMenu} className="p-2">
+                <Avatar alt={userData?.display_name} src={userData?.profile_image_url} />
               </IconButton>
             </Tooltip>
             <Menu

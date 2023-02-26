@@ -47,7 +47,7 @@ export const SongPlayer: React.FC<Songs> = ({Id, Videoid, Title, Artist, Duratio
   }
 
   return (
-    <Container className="bg-[#2f2e2e] mt-9 w-full h-full md:mx-[2rem] hidden md:block" maxWidth={false}>
+    <Container className="bg-[#1E1E1E] mt-9 w-full h-[10rem] md:h-[30rem] md:mx-[2rem] hidden md:block" maxWidth={false}>
       <Typography className="mt-4 ml-2 font-bold" variant="h6">Current Song</Typography>
       <hr className="mb-8" />
       <div>
