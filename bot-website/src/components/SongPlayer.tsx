@@ -53,7 +53,7 @@ export const SongPlayer: React.FC<Songs> = ({Id, Videoid, Title, Artist, Duratio
       <div>
         {showSpinner ? 
         <Box className="flex flex-col justify-center items-center">
-          <CircularProgress/>
+          <CircularProgress color="success"/>
         </Box> 
         :
           <div>

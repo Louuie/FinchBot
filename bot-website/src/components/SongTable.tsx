@@ -18,6 +18,7 @@ import { SongArray, Songs } from "../interfaces/Songs";
 import { TableHead } from "@mui/material";
 import { Delete, Upgrade } from "@mui/icons-material";
 import { deleteSong, promoteSong } from "../api/api";
+import { AuthenticationStatusInterface } from "../interfaces/Auth";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -99,7 +100,10 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-export const SongTable = ({ songs }: SongArray) => {
+type Props = SongArray | AuthenticationStatusInterface;
+export const SongTable: React.FC<Props> = (props) => {
+  const { authenticated } = props as AuthenticationStatusInterface
+  const { songs } = props as SongArray
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -136,9 +140,12 @@ export const SongTable = ({ songs }: SongArray) => {
             <TableCell align="right">Artist</TableCell>
             <TableCell align="right">Requested by</TableCell>
             <TableCell align="right">Duration</TableCell>
-            <TableCell className="md:block hidden" align="right">
-              Actions
-            </TableCell>
+            {authenticated ?
+              <div>
+                <TableCell className="md:block hidden" align="right">
+                  Actions
+                </TableCell>
+              </div> : <div className="hidden"></div>}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -159,28 +166,29 @@ export const SongTable = ({ songs }: SongArray) => {
               <TableCell style={{ width: 160 }} align="right">
                 {song.Duration}
               </TableCell>
-              <TableCell style={{ width: 160 }} align="right">
-                <div className="flex flex-1 justify-end items-end">
-                  <div
-                    className="hover:cursor-pointer"
-                    onClick={() => deleteSong(song.Id, song.Title)}
-                  >
-                    <Delete color="error" />
-                  </div>
-                  <div
-                    className="hover:cursor-pointer"
-                    onClick={() =>
-                      promoteSong(
-                        song.Videoid,
-                        song.Id,
-                        song.Id - 1
-                      )
-                    }
-                  >
-                    <Upgrade />
-                  </div>
-                </div>
-              </TableCell>
+              {authenticated ?
+                  <TableCell style={{ width: 160 }} align="right">
+                    <div className="flex flex-1 justify-end items-end">
+                      <div
+                        className="hover:cursor-pointer"
+                        onClick={() => deleteSong(song.Id, song.Title)}
+                      >
+                        <Delete color="error" />
+                      </div>
+                      <div
+                        className="hover:cursor-pointer"
+                        onClick={() =>
+                          promoteSong(
+                            song.Title,
+                            song.Id,
+                            song.Id - 1
+                          )
+                        }
+                      >
+                        <Upgrade />
+                      </div>
+                    </div>
+                  </TableCell> : <div className="hidden"></div>}
             </TableRow>
           ))}
           {emptyRows > 0 && (
@@ -192,8 +200,8 @@ export const SongTable = ({ songs }: SongArray) => {
         <TableFooter>
           <TableRow>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25, { label: "All", value: -1 }]}
-              colSpan={5}
+              rowsPerPageOptions={[5, 10]}
+              colSpan={6}
               count={songs.length}
               rowsPerPage={rowsPerPage}
               page={page}

@@ -15,6 +15,12 @@ export interface Songs {
     Userid: string,
     Videoid: string,
   }
+
+  export interface SongEntry {
+    name: string,
+    artist: string, 
+    position: number,
+  }
   
   
  export interface SongArray {

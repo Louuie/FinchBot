@@ -14,6 +14,7 @@ import {
   TwitchUserInfoInterface,
 } from "../../interfaces/Auth";
 import axios from "axios";
+import { logout } from "../../api/api";
 
 const pages = ["Dashboard", "Documentation", "About"];
 const settings = ["Sign out"];
@@ -133,15 +134,15 @@ export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem href="/" onClick={() => { setAnchorElUser(null); }}>
+                <a href="/" onClick={() => logout()}>
+                  <Typography textAlign="center" >Sign out</Typography>
+                </a>
+              </MenuItem>
             </Menu>
           </div>
           :
-          <Button variant="contained">Login</Button>}
+          <Button variant="contained" className="mr-2 bg-[#127707] text-gray-100" href="/login">Login</Button>}
       </Box>
     </Toolbar>
   );

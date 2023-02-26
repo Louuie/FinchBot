@@ -1,6 +1,7 @@
 import * as React from "react";
 import axios from "axios";
 import {
+  Alert,
   Button,
   Container,
   Dialog,
@@ -8,6 +9,9 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  FormGroup,
+  Snackbar,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -16,21 +20,50 @@ import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { Transition } from "./Transitions";
 import { AuthenticationStatusInterface } from "../../interfaces/Auth";
-export const FormDialog: React.FC<AuthenticationStatusInterface> = ({ authenticated }) => {
+import { SongArray, SongEntry, Songs } from "../../interfaces/Songs";
+
+type Props = AuthenticationStatusInterface | SongArray;
+
+export const FormDialog: React.FC<Props> = (props) => {
+  const { authenticated } = props as AuthenticationStatusInterface;
+
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
   const [open3, setOpen3] = React.useState(false);
+
+
 
   const queryRef = React.useRef<HTMLInputElement>(null);
 
   const handleAddSongClick = () => setOpen1(true);
   const handleAddSongClose = () => setOpen1(false);
 
-  const handleDisableClick = () => setOpen2(true);
-  const handleDisableClose = () => setOpen2(false);
+  const handleDisableQueueClick = () => setOpen2(true);
+  const handleDisableQueueClose = () => setOpen2(false);
+
+
 
   const handleClearQueueClick = () => setOpen3(true);
   const handleClearQueueClose = () => setOpen3(false);
+
+  const [newSongTitle, setNewSongTitle] = React.useState('');
+  const [songEntryErrorMessage, setSongEntryErrorMessage] = React.useState('');
+
+
+  const [successSnackBarStatus, setSucessSnackBarStatus] = React.useState(false);
+  const [errorSnackBarStatus, setErrorSnackBarStatus] = React.useState(false);
+
+
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setSucessSnackBarStatus(false);
+    setErrorSnackBarStatus(false);
+  };
+
 
   const onSubmit = () => {
     axios
@@ -40,8 +73,16 @@ export const FormDialog: React.FC<AuthenticationStatusInterface> = ({ authentica
           user: "testuser4588",
           q: queryRef.current?.value,
         },
+      }).then((res) => {
+        const song : SongEntry = res.data.data[0];
+        console.log(res.data)
+        setNewSongTitle(song.name);
+        setSucessSnackBarStatus(true);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setErrorSnackBarStatus(true);
+        setSongEntryErrorMessage(err.response.data.error);
+      });
   };
 
   return (
@@ -53,36 +94,39 @@ export const FormDialog: React.FC<AuthenticationStatusInterface> = ({ authentica
       {authenticated
         ?
         <div>
-      <Container className="hidden md:visible md:flex flex-1 items-end justify-end w-full md:mx-6" maxWidth={false}>
-        <Button
-          variant="contained"
-          className="bg-[#127707] text-gray-200 mr-2 mt-4"
-          onClick={handleAddSongClick}
-        >
-          <AddIcon fontSize="small" />
-          Add Song
-        </Button>
-        <Button
-          variant="contained"
-          className="bg-[#127707] text-gray-200 mr-2 mt-4"
-          onClick={handleDisableClick}
-        >
-          <PowerSettingsNewIcon fontSize="small" />
-          Disable
-        </Button>
-        <Button
-          variant="contained"
-          className="bg-[#127707] text-gray-200 mr-2 mt-4"
-          onClick={handleClearQueueClick}
-        >
-          <DeleteForeverIcon fontSize="small" />
-          Clear Queue
-        </Button>
-      </Container>
+          <Container className="hidden md:visible md:flex flex-1 items-end justify-end w-full md:mx-6" maxWidth={false}>
+            <FormGroup>
+              <Switch color="success" defaultChecked />
+            </FormGroup>
+            <Button
+              variant="contained"
+              className="bg-[#127707] text-gray-200 mr-2 mt-4"
+              onClick={handleAddSongClick}
+            >
+              <AddIcon fontSize="small" />
+              Add Song
+            </Button>
+            <Button
+              variant="contained"
+              className="bg-[#127707] text-gray-200 mr-2 mt-4"
+              onClick={handleDisableQueueClick}
+            >
+              <PowerSettingsNewIcon fontSize="small" />
+              Disable Queue
+            </Button>
+            <Button
+              variant="contained"
+              className="bg-[#127707] text-gray-200 mr-2 mt-4"
+              onClick={handleClearQueueClick}
+            >
+              <DeleteForeverIcon fontSize="small" />
+              Clear Queue
+            </Button>
+          </Container>
         </div>
         :
         <div className="hidden"></div>
-        }
+      }
 
       <Dialog open={open1} onClose={handleAddSongClose} TransitionComponent={Transition}>
         <DialogTitle>Add Song to Queue</DialogTitle>
@@ -115,23 +159,36 @@ export const FormDialog: React.FC<AuthenticationStatusInterface> = ({ authentica
         </DialogActions>
       </Dialog>
 
+
+      <Snackbar open={successSnackBarStatus} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{vertical: 'top', horizontal: 'right'}}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          {`"${newSongTitle}" has been added to the queue!`}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar open={errorSnackBarStatus} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{vertical: 'top', horizontal: 'right'}}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+          {`${songEntryErrorMessage}`}
+        </Alert>
+      </Snackbar>
+
+
       <Dialog
         open={open2}
         TransitionComponent={Transition}
         keepMounted
-        onClose={handleDisableClose}
+        onClose={handleDisableQueueClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+        <DialogTitle>{"Clear Queue"}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-            Let Google help apps determine location. This means sending
-            anonymous location data to Google, even when no apps are running.
+          <DialogContentText>
+            Are you sure you want to disable the queue?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleDisableClose}>Disagree</Button>
-          <Button onClick={handleDisableClose}>Agree</Button>
+          <Button color="error" onClick={handleClearQueueClose}>Cancel</Button>
+          <Button color="success" onClick={handleClearQueueClose}>Disable</Button>
         </DialogActions>
       </Dialog>
 
@@ -145,8 +202,8 @@ export const FormDialog: React.FC<AuthenticationStatusInterface> = ({ authentica
       >
         <DialogTitle>{"Clear Queue"}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-            Are you sure you clear your song request queue?
+          <DialogContentText>
+            Are you sure you want to disable the queue? There is no going back!
           </DialogContentText>
         </DialogContent>
         <DialogActions>
