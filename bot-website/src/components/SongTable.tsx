@@ -177,12 +177,14 @@ export const SongTable: React.FC<Props> = (props) => {
                       </div>
                       <div
                         className="hover:cursor-pointer"
-                        onClick={() =>
+                        onClick={() => {
                           promoteSong(
                             song.Title,
                             song.Id,
                             song.Id - 1
-                          )
+                          );
+                          console.log('promoteid', song.Id)
+                        }
                         }
                       >
                         <Upgrade />

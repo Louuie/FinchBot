@@ -27,8 +27,11 @@ export const SongPlayer: React.FC<Songs> = ({Id, Videoid, Title, Artist, Duratio
 
   // useEffect that fetches the videoID of the Song/Video in the first position.
   React.useEffect(() => {
-      if (Title === undefined) { setShowPlayer(false); setShowSpinner(true); } else setShowPlayer(true);
-  }, [Title, Videoid, Artist, Duration, Userid]);
+    setShowPlayer(false); setShowSpinner(true);
+    console.log(Title);
+    if (Title === '' || Title === undefined) { setShowPlayer(false); setShowSpinner(true); setTimeout(() => setShowSpinner(false), 550); } else setShowPlayer(true);
+    if (Title !== undefined) setTimeout(() =>  { setShowPlayer(true); setShowSpinner(false); }, 250);
+  }, [Title, Videoid, Artist, Duration, Userid, Id]);
 
   // useEffect that sets the Spinner to stop showing/displaying after 1000ms
   React.useEffect(() => {

@@ -2,6 +2,7 @@ import * as React from "react";
 import axios from "axios";
 import {
   Alert,
+  Box,
   Button,
   Container,
   Dialog,
@@ -10,6 +11,10 @@ import {
   DialogContentText,
   DialogTitle,
   FormGroup,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   Snackbar,
   Switch,
   TextField,
@@ -21,11 +26,14 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { Transition } from "./Transitions";
 import { AuthenticationStatusInterface } from "../../interfaces/Auth";
 import { SongArray, SongEntry, Songs } from "../../interfaces/Songs";
+import { promoteSong } from "../../api/api";
+import { MoveUp } from "@mui/icons-material";
 
 type Props = AuthenticationStatusInterface | SongArray;
 
 export const FormDialog: React.FC<Props> = (props) => {
   const { authenticated } = props as AuthenticationStatusInterface;
+  const { songs } = props as SongArray;
 
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
@@ -54,6 +62,25 @@ export const FormDialog: React.FC<Props> = (props) => {
   const [errorSnackBarStatus, setErrorSnackBarStatus] = React.useState(false);
 
 
+  const [song1ID, setSong1ID] = React.useState('');
+  const [song1Title, setSong1Title] = React.useState('');
+  const [song2ID, setSong2ID] = React.useState('');
+
+  const handleSong1Change = (event: SelectChangeEvent) => {
+    setSong1ID(event.target.value as string);
+    console.log(song1ID);
+  };
+
+  const handleSong2Change = (event: SelectChangeEvent) => {
+    setSong2ID(event.target.value as string);
+    console.log(song2ID);
+  };
+
+  const handleMenuItemClick = (event: any) => {
+    console.log(event.nativeEvent.target.outerText);
+    setSong1Title(event.nativeEvent.target.outerText);
+  }
+
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
@@ -74,7 +101,7 @@ export const FormDialog: React.FC<Props> = (props) => {
           q: queryRef.current?.value,
         },
       }).then((res) => {
-        const song : SongEntry = res.data.data[0];
+        const song: SongEntry = res.data.data[0];
         console.log(res.data)
         setNewSongTitle(song.name);
         setSucessSnackBarStatus(true);
@@ -111,8 +138,8 @@ export const FormDialog: React.FC<Props> = (props) => {
               className="bg-[#127707] text-gray-200 mr-2 mt-4"
               onClick={handleDisableQueueClick}
             >
-              <PowerSettingsNewIcon fontSize="small" />
-              Disable Queue
+              <MoveUp fontSize="small" />
+              Promote Song
             </Button>
             <Button
               variant="contained"
@@ -160,13 +187,13 @@ export const FormDialog: React.FC<Props> = (props) => {
       </Dialog>
 
 
-      <Snackbar open={successSnackBarStatus} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{vertical: 'top', horizontal: 'right'}}>
+      <Snackbar open={successSnackBarStatus} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
           {`"${newSongTitle}" has been added to the queue!`}
         </Alert>
       </Snackbar>
 
-      <Snackbar open={errorSnackBarStatus} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{vertical: 'top', horizontal: 'right'}}>
+      <Snackbar open={errorSnackBarStatus} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
         <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
           {`${songEntryErrorMessage}`}
         </Alert>
@@ -180,15 +207,40 @@ export const FormDialog: React.FC<Props> = (props) => {
         onClose={handleDisableQueueClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>{"Clear Queue"}</DialogTitle>
+        <DialogTitle>{"Promote Song"}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Are you sure you want to disable the queue?
-          </DialogContentText>
+          <Box padding={6}>
+            <InputLabel id="demo-simple-select-label">Song #1</InputLabel>
+            <Box paddingBottom={2}>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={song1ID}
+                label="Song #1"
+                onChange={handleSong1Change}
+              >
+                {songs.map((song: Songs) => 
+                  <MenuItem value={song.Id} onClick={handleMenuItemClick} key={song.Id}>{song.Title}</MenuItem>
+                )}
+              </Select>
+            </Box>
+            <InputLabel id="demo-simple-select-label">Song #2</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={song2ID}
+              label="Song #2"
+              onChange={handleSong2Change}
+            >
+              {songs.map((song: Songs) => 
+                <MenuItem value={song.Id} key={song.Id}>{song.Title}</MenuItem>
+              )}
+            </Select>
+          </Box>
         </DialogContent>
         <DialogActions>
-          <Button color="error" onClick={handleClearQueueClose}>Cancel</Button>
-          <Button color="success" onClick={handleClearQueueClose}>Disable</Button>
+          <Button color="error" onClick={handleDisableQueueClose}>Cancel</Button>
+          <Button color="success" onClick={() => { promoteSong(song1Title, Number(song1ID), Number(song2ID)); setOpen2(false); setSong1ID(''); setSong2ID('');  }}>Promote</Button>
         </DialogActions>
       </Dialog>
 
