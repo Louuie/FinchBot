@@ -7,7 +7,7 @@ FinchBot is an open source, simple, free and easy to use Song Request twitch bot
 
 ### **Setting Up your Enviroment**
 
-[bot-website](#bot-website) | [twitch-bot](#twitch-bot) | [backend](https://github.com/Louuie/LouieBot-backend)
+[bot-website](#bot-website) | [twitch-bot](#twitch-bot) | [backend](https://github.com/Louuie/FinchBot-backend)
 
 ---
 
