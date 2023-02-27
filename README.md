@@ -3,7 +3,7 @@
 
 ## **What is FinchBot?**
 
-FinchBot is an open source, simple, free and easy to use Song Request twitch bot. LouieBot Client(s) is written in TypeScript while the backend is written in Go for fast API calls.
+FinchBot is an open source, simple, free and easy to use Song Request twitch bot. FinchBot Client(s) is written in TypeScript while the backend is written in Go for fast API calls.
 
 ### **Setting Up your Enviroment**
 
