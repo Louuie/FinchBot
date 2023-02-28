@@ -105,7 +105,7 @@ export const SongTable: React.FC<Props> = (props) => {
   const { authenticated } = props as AuthenticationStatusInterface
   const { songs } = props as SongArray
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(4);
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
@@ -128,11 +128,14 @@ export const SongTable: React.FC<Props> = (props) => {
   return (
     <TableContainer
       component={Paper}
-      className="w-full md:mx-[2rem] mx-[1rem] my-[2rem]"
+      className="md:mx-[2rem] h-full mx-[1rem] my-4"
+      style={{maxHeight: '450px'}}
     >
       <Table
         className="md:min-w-[450px] min-w-[350px]"
         aria-label="custom pagination table"
+        size="small"
+        
       >
         <TableHead>
           <TableRow>
@@ -202,7 +205,7 @@ export const SongTable: React.FC<Props> = (props) => {
         <TableFooter>
           <TableRow>
             <TablePagination
-              rowsPerPageOptions={[5, 10]}
+              rowsPerPageOptions={[]}
               colSpan={6}
               count={songs.length}
               rowsPerPage={rowsPerPage}

@@ -10,12 +10,14 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  FormControlLabel,
   FormGroup,
   InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
   Snackbar,
+  Stack,
   Switch,
   TextField,
   Typography,
@@ -113,18 +115,19 @@ export const FormDialog: React.FC<Props> = (props) => {
   };
 
   return (
-    <Container className="flex w-full md:w-full" maxWidth={false}>
+    <Container className="flex w-full md:w-full -my-[0.45rem]" maxWidth={false}>
       <hr />
       <div className="flex flex-1 justify-start items-start mx-2">
-        <Typography textAlign="center" variant="h4">Song Requests</Typography>
+        <Typography textAlign="center" variant="h4" className="mt-3">Song Requests</Typography>
       </div>
       {authenticated
         ?
         <div>
           <Container className="hidden md:visible md:flex flex-1 items-end justify-end w-full md:mx-6" maxWidth={false}>
-            <FormGroup>
-              <Switch color="success" defaultChecked />
-            </FormGroup>
+            <Stack direction={"row"}>
+              <Typography className="mt-[6px]">Song Queue Status</Typography>
+              <Switch color="success"/>
+            </Stack>
             <Button
               variant="contained"
               className="bg-[#127707] text-gray-200 mr-2 mt-4"
@@ -187,13 +190,13 @@ export const FormDialog: React.FC<Props> = (props) => {
       </Dialog>
 
 
-      <Snackbar open={successSnackBarStatus} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+      <Snackbar open={successSnackBarStatus} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
         <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
           {`"${newSongTitle}" has been added to the queue!`}
         </Alert>
       </Snackbar>
 
-      <Snackbar open={errorSnackBarStatus} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+      <Snackbar open={errorSnackBarStatus} autoHideDuration={3000} onClose={handleClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
         <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
           {`${songEntryErrorMessage}`}
         </Alert>
