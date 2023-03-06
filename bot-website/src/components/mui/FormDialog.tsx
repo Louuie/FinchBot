@@ -10,8 +10,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  FormControlLabel,
-  FormGroup,
   InputLabel,
   MenuItem,
   Select,
@@ -23,12 +21,11 @@ import {
   Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { Transition } from "./Transitions";
 import { AuthenticationStatusInterface } from "../../interfaces/Auth";
 import { SongArray, SongEntry, Songs } from "../../interfaces/Songs";
-import { promoteSong } from "../../api/api";
+import { deleteAllSongs, promoteSong } from "../../api/api";
 import { MoveUp } from "@mui/icons-material";
 
 type Props = AuthenticationStatusInterface | SongArray;
@@ -94,12 +91,13 @@ export const FormDialog: React.FC<Props> = (props) => {
   };
 
 
+
   const onSubmit = () => {
     axios
       .get("http://localhost:3030/song-request", {
         params: {
           channel: "Louiee_tv",
-          user: "testuser4588",
+          user: 'testuser_'+(Math.random() + 1).toString(36).substring(7),
           q: queryRef.current?.value,
         },
       }).then((res) => {
@@ -115,7 +113,7 @@ export const FormDialog: React.FC<Props> = (props) => {
   };
 
   return (
-    <Container className="flex w-full md:w-full -my-[0.45rem]" maxWidth={false}>
+    <Container className="flex w-full md:w-full -my-[0.45rem] lg:-my-[0.45rem]" maxWidth={false}>
       <hr />
       <div className="flex flex-1 justify-start items-start mx-2">
         <Typography textAlign="center" variant="h4" className="mt-3">Song Requests</Typography>
@@ -125,7 +123,7 @@ export const FormDialog: React.FC<Props> = (props) => {
         <div>
           <Container className="hidden md:visible md:flex flex-1 items-end justify-end w-full md:mx-6" maxWidth={false}>
             <Stack direction={"row"}>
-              <Typography className="mt-[6px]">Song Queue Status</Typography>
+              <Typography className="mt-[6px]">Song Queue:</Typography>
               <Switch color="success"/>
             </Stack>
             <Button
@@ -263,7 +261,7 @@ export const FormDialog: React.FC<Props> = (props) => {
         </DialogContent>
         <DialogActions>
           <Button color="error" onClick={handleClearQueueClose}>Cancel</Button>
-          <Button color="success" onClick={handleClearQueueClose}>Clear</Button>
+          <Button color="success" onClick={(() => { deleteAllSongs(); handleClearQueueClose() } )}>Clear</Button>
         </DialogActions>
       </Dialog>
     </Container>

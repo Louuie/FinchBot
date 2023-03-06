@@ -26,3 +26,13 @@ export const deleteSong = async (id: number | undefined, title: string | undefin
   export const logout = async () => {
     axios.post('http://localhost:3030/auth/twitch/revoke', null, {withCredentials: true}).then((res) => console.log(res.data)).catch((err) => console.log(err))
   }
+
+
+
+  export const deleteAllSongs = async (channel?: string) => {
+    axios.post('http://localhost:3030/delete-all-songs', null, {
+      params: {
+        channel: 'louiee_tv',
+      }
+    }).then((res) => console.log(res.data)).catch((err) => console.log(err));
+  }

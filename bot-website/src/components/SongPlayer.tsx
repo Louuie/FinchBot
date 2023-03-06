@@ -4,6 +4,7 @@ import * as React from "react"
 import { WatchLater, Person } from "@mui/icons-material";
 import LinkIcon from "@mui/icons-material/Link";
 import YouTube from "react-youtube";
+import YouTubeIcon from '@mui/icons-material/YouTube';
 import { SongArray, Songs } from "../interfaces/Songs";
 
 
@@ -21,7 +22,16 @@ export const SongPlayer: React.FC<Songs> = ({Id, Videoid, Title, Artist, Duratio
     height: '195',
     width: '380',
     playerVars: {
-      autoplay: 1,
+      autoplay: 0,
+    }
+  };
+
+  // Large Video Options
+  const youtubeLargeOpts = {
+    height: '380',
+    width: '560',
+    playerVars: {
+      autoplay: 0,
     }
   };
 
@@ -50,8 +60,8 @@ export const SongPlayer: React.FC<Songs> = ({Id, Videoid, Title, Artist, Duratio
   }
 
   return (
-    <Container className="bg-[#1E1E1E] mt-3 w-full h-[10rem] md:h-[18rem] md:mx-[2rem] hidden md:block" maxWidth={false}>
-      <Typography className="mt-4 ml-2 font-bold" variant="h6">Current Song</Typography>
+    <Container className="bg-[#1E1E1E] mt-3 lg:mt-12 w-full h-[10rem] md:h-[18rem] lg:h-[30rem] md:mx-[2rem] hidden md:block" maxWidth={false}>
+      <Typography className="mt-4 ml-2 font-bold" variant="h4">Current Song</Typography>
       <hr className="mb-8" />
       <div>
         {showSpinner ? 
@@ -61,21 +71,55 @@ export const SongPlayer: React.FC<Songs> = ({Id, Videoid, Title, Artist, Duratio
         :
           <div>
             {showPlayer ?
-              <div className='flex flex-1 mb-20 px-2'>
-                <YouTube videoId={Videoid} opts={youtubeOpts} onEnd={() => {onSongEnd(Id); setShowSpinner(true); setTimeout(() => setShowSpinner(false), 3250)}} />
-                <div className='flex flex-col ml-2 h-1'>
-                  <Typography variant="h6" className="font-bold">{Title}</Typography>
-                  <div className='flex flex-1'>
-                    <WatchLater fontSize="small" className='mt-[4px] mr-1' />
-                    <Typography variant="subtitle1">{Duration}</Typography>
+            <div>
+              {/* Small/Middle Sized Width Display **/ }
+                <div className='flex flex-1 mb-20 px-2 lg:hidden'>
+                  <YouTube videoId={Videoid} opts={youtubeOpts} onEnd={() => {onSongEnd(Id); setShowSpinner(true); setTimeout(() => setShowSpinner(false), 3250)}} />
+                  <div className='flex flex-col ml-2 h-1'>
+                    <Typography variant="h6" className="font-bold">{Title}</Typography>
+                    <div className='flex flex-1'>
+                      <WatchLater fontSize="small" className='mt-[4px] mr-1' />
+                      <Typography variant="subtitle1">{Duration}</Typography>
+                    </div>
+                    <div className='flex flex-1 py-2'>
+                      <LinkIcon fontSize="small" className='mt-[2px]' />
+                      <Link className="ml-1" href={`http://youtu.be/${Videoid}`}>{`http://youtu.be/${Videoid}`}</Link>
+                    </div>
+                    <div className='flex'>
+                      <Person fontSize="small" className='mt-[3px]' />
+                      <Typography variant="subtitle1">{Userid}</Typography>
+                    </div>
+                    <div className="flex mr-4 py-2 hover:cursor-pointer" onClick={(() => window.open('https://youtube.com'))}>
+                        <YouTubeIcon fontSize='medium' color="error"/>
+                        <Link color='error'>
+                          <Typography className="ml-[0.5px]">Powered by YouTube</Typography>
+                        </Link>
+                    </div>
                   </div>
-                  <div className='flex flex-1 py-2'>
-                    <LinkIcon fontSize="small" className='mt-[2px]' />
-                    <Link className="ml-1" href={`http://youtu.be/${Videoid}`}>{`http://youtu.be/${Videoid}`}</Link>
-                  </div>
-                  <div className='flex'>
-                    <Person fontSize="small" className='mt-[3px]' />
-                    <Typography variant="subtitle1">{Userid}</Typography>
+                </div>
+
+                <div className='hidden lg:flex lg:flex-1 mb-20 px-2'>
+                  <YouTube videoId={Videoid} opts={youtubeLargeOpts} onEnd={() => {onSongEnd(Id); setShowSpinner(true); setTimeout(() => setShowSpinner(false), 3250)}} />
+                  <div className='flex flex-col ml-2 h-1'>
+                    <Typography variant="h5" className="font-bold">{Title}</Typography>
+                    <div className='flex flex-1'>
+                      <WatchLater fontSize="large" className='mt-[8px] mr-1' />
+                      <Typography variant="h6" className="mt-2">{Duration}</Typography>
+                    </div>
+                    <div className='flex flex-1 py-2'>
+                      <LinkIcon fontSize="large" />
+                      <Link className="ml-1" variant="h6" href={`http://youtu.be/${Videoid}`}>{`http://youtu.be/${Videoid}`}</Link>
+                    </div>
+                    <div className='flex'>
+                      <Person fontSize="large" className='-mt-[0.5px]' />
+                      <Typography variant="h6">{Userid}</Typography>
+                    </div>
+                    <div className="flex mr-4 py-2 hover:cursor-pointer" onClick={(() => window.open('https://youtube.com'))}>
+                        <YouTubeIcon fontSize='large' color="error"/>
+                        <Link color='error'>
+                          <Typography className="ml-[0.5px]" variant="h6">Powered by YouTube</Typography>
+                        </Link>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -30,7 +30,7 @@ export const SongRequests: React.FC<AuthenticationStatusInterface> = ({authentic
 
 
   return (
-    <div className='w-full h-full bg-[#292929] overflow-hidden'>
+    <div className='w-full md:h-screen lg:h-screen bg-[#292929] overflow-hidden'>
         <ResponsiveAppBar authenticated={authenticated}/> 
         <div className='flex flex-col w-full h-full'>
           <FormDialog songs={songs} authenticated={authenticated}/>
