@@ -17,8 +17,9 @@ import LastPageIcon from "@mui/icons-material/LastPage";
 import { SongArray, Songs } from "../interfaces/Songs";
 import { TableHead, useMediaQuery } from "@mui/material";
 import { Delete, Upgrade } from "@mui/icons-material";
-import { deleteSong, promoteSong } from "../api/api";
+import { deleteSong, formatDuration, promoteSong } from "../api/api";
 import { AuthenticationStatusInterface } from "../interfaces/Auth";
+import { Streamer } from "../interfaces/Streamer";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -101,11 +102,13 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   );
 }
 
-type Props = SongArray | AuthenticationStatusInterface;
+type Props = SongArray & AuthenticationStatusInterface & Streamer;
+
 export const SongTable: React.FC<Props> = (props) => {
   
-  const { authenticated } = props as AuthenticationStatusInterface
-  const { songs } = props as SongArray
+  const { authenticated } = props as AuthenticationStatusInterface;
+  const { songs } = props as SongArray;
+  const { Streamer } = props as Streamer;
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(4);
   const [rowsPerPageLG, setRowsPerPageLG] = React.useState(5);
@@ -152,10 +155,10 @@ export const SongTable: React.FC<Props> = (props) => {
   return (
     <TableContainer
       component={Paper}
-      className="md:mx-[2rem] lg:mx-[2rem] lg:h-full mx-[1rem] mt-8"
+      className="md:mx-[2rem] xxxl:mx-[2rem] xxxl:h-full mx-[1rem] mt-8"
     >
       <Table
-        className="md:min-w-[450px] min-w-[350px] lg:hidden"
+        className="md:min-w-[450px] min-w-[350px] xxxl:hidden"
         aria-label="custom pagination table"
         size={'small'}
         
@@ -190,14 +193,14 @@ export const SongTable: React.FC<Props> = (props) => {
                 {song.Userid}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
-                {song.Duration}
+                {formatDuration(song.DurationInSeconds)}
               </TableCell>
               {authenticated ?
                   <TableCell style={{ width: 160 }} align="right">
                     <div className="flex flex-1 justify-end items-end">
                       <div
                         className="hover:cursor-pointer"
-                        onClick={() => deleteSong(song.Id, song.Title)}
+                        onClick={() => deleteSong(Streamer, song.Id, song.Title)}
                       >
                         <Delete color="error" />
                       </div>
@@ -205,6 +208,7 @@ export const SongTable: React.FC<Props> = (props) => {
                         className="hover:cursor-pointer"
                         onClick={() => {
                           promoteSong(
+                            Streamer,
                             song.Title,
                             song.Id,
                             song.Id - 1
@@ -253,7 +257,7 @@ export const SongTable: React.FC<Props> = (props) => {
 
 
       <Table
-        className="hidden lg:inline-table lg:min-w-[350px]"
+        className="hidden xxxl:inline-table xxxl:min-w-[350px]"
         aria-label="custom pagination table"
       >
         <TableHead>
@@ -286,14 +290,14 @@ export const SongTable: React.FC<Props> = (props) => {
                 {song.Userid}
               </TableCell>
               <TableCell style={{ width: 160 }} align="right">
-                {song.Duration}
+                {formatDuration(song.DurationInSeconds)}
               </TableCell>
               {authenticated ?
                   <TableCell style={{ width: 160 }} align="right">
                     <div className="flex flex-1 justify-end items-end">
                       <div
                         className="hover:cursor-pointer"
-                        onClick={() => deleteSong(song.Id, song.Title)}
+                        onClick={() => deleteSong(Streamer, song.Id, song.Title)}
                       >
                         <Delete color="error" />
                       </div>
@@ -301,6 +305,7 @@ export const SongTable: React.FC<Props> = (props) => {
                         className="hover:cursor-pointer"
                         onClick={() => {
                           promoteSong(
+                            Streamer,
                             song.Title,
                             song.Id,
                             song.Id - 1

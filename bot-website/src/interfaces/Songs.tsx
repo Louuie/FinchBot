@@ -1,6 +1,6 @@
 export interface Songs {
     Artist: string, 
-    Duration: number,
+    DurationInSeconds: number,
     Id: number,
     Title: string,
     Userid: string,
@@ -26,4 +26,7 @@ export interface Songs {
  export interface SongArray {
     songs: Songs[],
   }
+
+
+
   

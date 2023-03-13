@@ -1,0 +1,23 @@
+/* 720p Displays */
+@media screen and (max-width: 1280px) {
+    .youtubePlayer {
+        max-height: 180px;
+        max-width: 380px;
+    }
+}
+
+/* 1080p Displays */
+@media screen and (max-width: 1920px) {
+    .youtubePlayer {
+        max-height: 250px;
+        max-width: 420px;
+    }
+}
+
+/* 1440p/2k Displays */
+@media screen and (min-width: 2560px) {
+    .youtubePlayer {
+        max-height: 320px;
+        max-width: 680px;
+    }
+}

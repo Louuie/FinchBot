@@ -1,47 +1,44 @@
-import { Alert, Box, CircularProgress, Container, Typography, Link } from "@mui/material";
+import { Alert, Box, CircularProgress, Container, Typography, Link, Slider, Stack, useTheme, IconButton } from "@mui/material";
 import axios from "axios";
 import * as React from "react"
-import { WatchLater, Person } from "@mui/icons-material";
+import { WatchLater, Person, VolumeDown, VolumeUp, FastForwardRounded, FastRewindRounded, PauseRounded, PlayArrowRounded } from "@mui/icons-material";
 import LinkIcon from "@mui/icons-material/Link";
-import YouTube from "react-youtube";
+import YouTube from "react-player/youtube";
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import { SongArray, Songs } from "../interfaces/Songs";
+import '../styles/YoutubePlayer.css';
+import { formatDuration, onSongEnd } from "../api/api";
+import { Streamer } from "../interfaces/Streamer";
 
 
 
+type Props = Songs & SongArray & Streamer;
 
-export const SongPlayer: React.FC<Songs> = ({Id, Videoid, Title, Artist, Duration, Userid}) => {
+export const SongPlayer: React.FC<Props> = (props) => {
 
 
+  // Getting props
+  const { Title, Artist, DurationInSeconds, Id, Userid, Videoid  } = props as Songs;
+  const { songs } = props as SongArray;
+  const { Streamer } = props as Streamer;
   // State variable used for songs?
   const [showSpinner, setShowSpinner] = React.useState(true);
   const [showPlayer, setShowPlayer] = React.useState(true);
 
-  // Setting the options for the YouTube Video Player.
-  const youtubeOpts = {
-    height: '195',
-    width: '380',
-    playerVars: {
-      autoplay: 0,
-    }
-  };
+  // State variables for song player
+  const [paused, setPaused] = React.useState(true);
 
-  // Large Video Options
-  const youtubeLargeOpts = {
-    height: '380',
-    width: '560',
-    playerVars: {
-      autoplay: 0,
-    }
-  };
+  // Video Player ref
+  const videoRef = React.useRef<YouTube>(null);
 
   // useEffect that fetches the videoID of the Song/Video in the first position.
   React.useEffect(() => {
     setShowPlayer(false); setShowSpinner(true);
-    console.log(Title);
-    if (Title === '' || Title === undefined) { setShowPlayer(false); setShowSpinner(true); setTimeout(() => setShowSpinner(false), 550); } else setShowPlayer(true);
-    if (Title !== undefined) setTimeout(() =>  { setShowPlayer(true); setShowSpinner(false); }, 250);
-  }, [Title, Videoid, Artist, Duration, Userid, Id]);
+    console.log(paused)
+    if (Title === '' || Title === undefined) { setShowPlayer(false); setShowSpinner(true); setTimeout(() => setShowSpinner(false), 850); } else setShowPlayer(true);
+    if (Title !== undefined) setTimeout(() => { setShowPlayer(true); setShowSpinner(false); }, 650);
+    console.log(volume);
+  }, [Title, Videoid, Artist, DurationInSeconds, Userid, Id]);
 
   // useEffect that sets the Spinner to stop showing/displaying after 1000ms
   React.useEffect(() => {
@@ -49,37 +46,121 @@ export const SongPlayer: React.FC<Songs> = ({Id, Videoid, Title, Artist, Duratio
   }, []);
 
 
-  // onEnd function that deletes the song/video that was playing that has "just ended".
-  const onSongEnd = (songID: number | undefined): void => {
-    axios.get('http://localhost:3030/song-request-delete', {
-      params: {
-        channel: 'Louiee_tv',
-        id: songID,
-      }
-    }).then((res) => (console.log(res.data))).catch((err) => console.log(err));
+  const [volume, setVolume] = React.useState<number>(30);
+
+  const handleChange = (event: Event, newValue: number | number[]) => {
+    setVolume(newValue as number);
+  };
+  const theme = useTheme();
+  const [position, setPosition] = React.useState(0);
+
+
+  const onReady = () => {
+      const internalPlayer = videoRef.current?.getInternalPlayer();
+      console.log(internalPlayer);
+      internalPlayer?.addEventListener('onVolumeChange', function (event : any) {
+        setVolume(event.data.volume)
+      }, false)
   }
 
   return (
-    <Container className="bg-[#1E1E1E] mt-3 lg:mt-12 w-full h-[10rem] md:h-[18rem] lg:h-[30rem] md:mx-[2rem] hidden md:block" maxWidth={false}>
+    <Container className="bg-[#1E1E1E] mt-3 xxxl:mt-12 w-full h-[10rem] lg:h-[18rem] xxl:h-[30rem] xxxl:h-[35rem] lg:mx-[2rem] hidden lg:block" maxWidth={false}>
       <Typography className="mt-4 ml-2 font-bold" variant="h4">Current Song</Typography>
       <hr className="mb-8" />
       <div>
-        {showSpinner ? 
-        <Box className="flex flex-col justify-center items-center">
-          <CircularProgress color="success"/>
-        </Box> 
-        :
+        {showSpinner ?
+          <Box className="flex flex-col justify-center items-center">
+            <CircularProgress color="success" />
+          </Box>
+          :
           <div>
             {showPlayer ?
-            <div>
-              {/* Small/Middle Sized Width Display **/ }
-                <div className='flex flex-1 mb-20 px-2 lg:hidden'>
-                  <YouTube videoId={Videoid} opts={youtubeOpts} onEnd={() => {onSongEnd(Id); setShowSpinner(true); setTimeout(() => setShowSpinner(false), 3250)}} />
+              <div className="">
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'start',
+                    justifyContent: 'start',
+                    mt: -1,
+                  }}
+                >
+                  <IconButton
+                    aria-label={paused ? 'play' : 'pause'}
+                    onClick={() => {setPaused(!paused); console.log(paused)}}
+                  >
+                    {!paused ? (
+                      <PlayArrowRounded
+                        sx={{ fontSize: '2.5rem' }}                        
+                        
+                      />
+                    ) : (
+                      <PauseRounded sx={{ fontSize: '2.5rem' }} />
+                    )}
+                  </IconButton>
+                  {songs.length <= 1 ? <div className="hidden"></div> :                
+                    <IconButton aria-label="next song">
+                      <FastForwardRounded fontSize="large"  />
+                    </IconButton>
+                  }
+                </Box>
+                <Slider
+                  aria-label="time-indicator"
+                  size="small"
+                  value={position}
+                  min={0}
+                  step={1}
+                  color="primary"
+                  max={DurationInSeconds}
+                  onChange={(_, value) => { setPosition(value as number); videoRef.current?.seekTo(value as number); }}
+                  sx={{
+                    color: theme.palette.mode === 'dark' ? '#FF0000' : 'rgba(0,0,0,0.87)',
+                    height: 4,
+                    '& .MuiSlider-thumb': {
+                      width: 8,
+                      height: 8,
+                      transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
+                      '&:before': {
+                        boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
+                      },
+                      '&:hover, &.Mui-focusVisible': {
+                        boxShadow: `0px 0px 0px 8px ${theme.palette.mode === 'dark'
+                          ? 'rgb(255 255 255 / 16%)'
+                          : 'rgb(0 0 0 / 16%)'
+                          }`,
+                      },
+                      '&.Mui-active': {
+                        width: 20,
+                        height: 20,
+                      },
+                    },
+                    '& .MuiSlider-rail': {
+                      opacity: 0.28,
+                    },
+                  }}
+                />
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    mt: -2,
+                  }}
+                >
+                  <Typography>{formatDuration(position)}</Typography>
+                  <Typography>-{formatDuration(DurationInSeconds - position)}</Typography>
+                </Box>
+                <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+                  <VolumeDown />
+                  <Slider aria-label="Volume" defaultValue={volume} value={volume} onChange={handleChange} size="small" sx={{color: theme.palette.mode === 'dark' ? '#FFF' : 'rgba(0,0,0,0.87)'}}/>
+                  <VolumeUp />
+                </Stack>
+                <div className='flex flex-1 mb-20 px-2'>
+                  <YouTube className="youtubePlayer" url={`https://www.youtube.com/watch?v=${Videoid}`} ref={videoRef} onReady={onReady} controls={true} playing={paused} volume={volume / 100} onEnded={() => { onSongEnd(Streamer, Id); setShowSpinner(true); setTimeout(() => setShowSpinner(false), 3250) }} onProgress={(progress) => setPosition(Math.round(progress.playedSeconds))} />
                   <div className='flex flex-col ml-2 h-1'>
                     <Typography variant="h6" className="font-bold">{Title}</Typography>
                     <div className='flex flex-1'>
                       <WatchLater fontSize="small" className='mt-[4px] mr-1' />
-                      <Typography variant="subtitle1">{Duration}</Typography>
+                      <Typography variant="subtitle1">{formatDuration(DurationInSeconds)}</Typography>
                     </div>
                     <div className='flex flex-1 py-2'>
                       <LinkIcon fontSize="small" className='mt-[2px]' />
@@ -90,35 +171,10 @@ export const SongPlayer: React.FC<Songs> = ({Id, Videoid, Title, Artist, Duratio
                       <Typography variant="subtitle1">{Userid}</Typography>
                     </div>
                     <div className="flex mr-4 py-2 hover:cursor-pointer" onClick={(() => window.open('https://youtube.com'))}>
-                        <YouTubeIcon fontSize='medium' color="error"/>
-                        <Link color='error'>
-                          <Typography className="ml-[0.5px]">Powered by YouTube</Typography>
-                        </Link>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='hidden lg:flex lg:flex-1 mb-20 px-2'>
-                  <YouTube videoId={Videoid} opts={youtubeLargeOpts} onEnd={() => {onSongEnd(Id); setShowSpinner(true); setTimeout(() => setShowSpinner(false), 3250)}} />
-                  <div className='flex flex-col ml-2 h-1'>
-                    <Typography variant="h5" className="font-bold">{Title}</Typography>
-                    <div className='flex flex-1'>
-                      <WatchLater fontSize="large" className='mt-[8px] mr-1' />
-                      <Typography variant="h6" className="mt-2">{Duration}</Typography>
-                    </div>
-                    <div className='flex flex-1 py-2'>
-                      <LinkIcon fontSize="large" />
-                      <Link className="ml-1" variant="h6" href={`http://youtu.be/${Videoid}`}>{`http://youtu.be/${Videoid}`}</Link>
-                    </div>
-                    <div className='flex'>
-                      <Person fontSize="large" className='-mt-[0.5px]' />
-                      <Typography variant="h6">{Userid}</Typography>
-                    </div>
-                    <div className="flex mr-4 py-2 hover:cursor-pointer" onClick={(() => window.open('https://youtube.com'))}>
-                        <YouTubeIcon fontSize='large' color="error"/>
-                        <Link color='error'>
-                          <Typography className="ml-[0.5px]" variant="h6">Powered by YouTube</Typography>
-                        </Link>
+                      <YouTubeIcon fontSize='medium' color="error" />
+                      <Link color='error'>
+                        <Typography className="ml-[0.5px]">Powered by YouTube</Typography>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -130,7 +186,7 @@ export const SongPlayer: React.FC<Songs> = ({Id, Videoid, Title, Artist, Duratio
             }
           </div>
         }
-        </div>
+      </div>
     </Container>
   )
 }
