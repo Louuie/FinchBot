@@ -16,15 +16,16 @@
 /* 1080p Displays */
 @media screen and (min-width: 1920px) {
     .youtubePlayer {
-        max-height: 250px;
-        max-width: 420px;
+        max-height: 290px;
+        max-width: 620px;
     }
 }
 
 /* 1440p/2k Displays */
 @media screen and (min-width: 2560px) {
     .youtubePlayer {
-        max-height: 320px;
-        max-width: 680px;
+        max-height: 420px;
+        max-width: 780px;
+        margin-top: -20px;
     }
 }

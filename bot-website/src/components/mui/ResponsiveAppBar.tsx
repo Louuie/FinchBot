@@ -62,7 +62,7 @@ export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
 
   return (
     <Toolbar disableGutters className="w-full bg-[#212121]">
-      <AdbIcon className="sm:none md:flex mr-1 ml-1" />
+      <AdbIcon className="md:flex mr-1 ml-1" />
       <Typography
         variant="h6"
         noWrap
@@ -73,41 +73,25 @@ export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
         FINCHBOT
       </Typography>
 
-      <Box className="flex flex-1 sm:flex-none md:none">
-        <Menu
-          id="menu-appbar"
-          anchorEl={anchorElNav}
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
-          }}
-          keepMounted
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "left",
-          }}
-          open={Boolean(anchorElNav)}
-          onClose={handleCloseNavMenu}
-          className="sm:block md:flex-none"
+      <Box className="flex flex-1 md:flex">
+        <Button
+          onClick={handleCloseNavMenu}
+          className="my-2 text-gray-200 hidden md:block lg:block xl:block xxl:block xxxl:block"
         >
-          {pages.map((page) => (
-            <MenuItem key={page} onClick={handleCloseNavMenu}>
-              <Typography textAlign="center">{page}</Typography>
-            </MenuItem>
-          ))}
-        </Menu>
-      </Box>
-
-      <Box className="flex flex-1 sm:none md:flex">
-        {pages.map((page) => (
-          <Button
-            key={page}
-            onClick={handleCloseNavMenu}
-            className="my-2 text-gray-200 block"
-          >
-            {page}
-          </Button>
-        ))}
+          {pages[0]}
+        </Button>
+        <Button
+          onClick={handleCloseNavMenu}
+          className="my-2 text-gray-200 block xsm:hidden"
+        >
+          {pages[1]}
+        </Button>
+        <Button
+          onClick={handleCloseNavMenu}
+          className="my-2 text-gray-200 block"
+        >
+          {pages[2]}
+        </Button>
       </Box>
 
       <Box className="flex mr-1">

@@ -34,19 +34,16 @@ type Props = AuthenticationStatusInterface & SongArray & Streamer;
 export const FormDialog: React.FC<Props> = (props) => {
   const { authenticated } = props as AuthenticationStatusInterface;
   const { songs } = props as SongArray;
-  const { Streamer } = props as Streamer
+  const { Streamer } = props as Streamer;
 
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
   const [open3, setOpen3] = React.useState(false);
 
-
   // // useEffect to test something
   // React.useEffect(() => {
   //   console.log(songs.length);
   // }, [])
-
-
 
   const queryRef = React.useRef<HTMLInputElement>(null);
 
@@ -56,29 +53,38 @@ export const FormDialog: React.FC<Props> = (props) => {
   const handleDisableQueueClick = () => setOpen2(true);
   const handleDisableQueueClose = () => setOpen2(false);
 
-
-
   const handleClearQueueClick = () => setOpen3(true);
   const handleClearQueueClose = () => setOpen3(false);
 
-  const [newSongTitle, setNewSongTitle] = React.useState('');
-  const [songEntryErrorMessage, setSongEntryErrorMessage] = React.useState('');
-  const [ clearSongRequestResponse, setClearSongRequestResponse ] = React.useState('');
+  const [newSongTitle, setNewSongTitle] = React.useState("");
+  const [songEntryErrorMessage, setSongEntryErrorMessage] = React.useState("");
+  const [clearSongRequestResponse, setClearSongRequestResponse] =
+    React.useState("");
 
+  const [successAddSongSnackBarStatus, setSucessAddSongSnackBarStatus] =
+    React.useState(false);
+  const [errorAddSongSnackBarStatus, setAddSongErrorSnackBarStatus] =
+    React.useState(false);
 
-  const [successAddSongSnackBarStatus, setSucessAddSongSnackBarStatus] = React.useState(false);
-  const [errorAddSongSnackBarStatus, setAddSongErrorSnackBarStatus] = React.useState(false);
+  const [
+    successPromoteSongSnackBarStatus,
+    setSuccessPromoteSongSnackBarStatus,
+  ] = React.useState(false);
+  const [errorPromoteSongSnackBarStatus, setPromoteSongErrorSnackBarStatus] =
+    React.useState(false);
 
-  const [successPromoteSongSnackBarStatus, setSuccessPromoteSongSnackBarStatus] = React.useState(false);
-  const [errorPromoteSongSnackBarStatus, setPromoteSongErrorSnackBarStatus] = React.useState(false);
+  const [
+    successDeleteAllSongsSnackBarStatus,
+    setSuccessDeleteAllSongsSnackBarStatus,
+  ] = React.useState(false);
+  const [
+    errorDeleteAllSongsSnackBarStatus,
+    setErrorDeleteAllSongsSnackBarStatus,
+  ] = React.useState(false);
 
-  const [successDeleteAllSongsSnackBarStatus, setSuccessDeleteAllSongsSnackBarStatus] = React.useState(false);
-  const [errorDeleteAllSongsSnackBarStatus, setErrorDeleteAllSongsSnackBarStatus] = React.useState(false);
-
-
-  const [song1ID, setSong1ID] = React.useState('');
-  const [song1Title, setSong1Title] = React.useState('');
-  const [song2ID, setSong2ID] = React.useState('');
+  const [song1ID, setSong1ID] = React.useState("");
+  const [song1Title, setSong1Title] = React.useState("");
+  const [song2ID, setSong2ID] = React.useState("");
 
   const handleSong1Change = (event: SelectChangeEvent) => {
     setSong1ID(event.target.value as string);
@@ -93,11 +99,13 @@ export const FormDialog: React.FC<Props> = (props) => {
   const handleMenuItemClick = (event: any) => {
     console.log(event.nativeEvent.target.outerText);
     setSong1Title(event.nativeEvent.target.outerText);
-  }
+  };
 
-
-  const handleSnackBarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
+  const handleSnackBarClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
       return;
     }
 
@@ -109,29 +117,33 @@ export const FormDialog: React.FC<Props> = (props) => {
     setErrorDeleteAllSongsSnackBarStatus(false);
   };
 
-
   const deleteAllSongs = async (channel: string) => {
-    axios.post('http://localhost:3030/delete-all-songs', null, {
-      params: {
-        channel: channel,
-      }
-    }).then((res) => {  setClearSongRequestResponse(res.data.message); setSuccessDeleteAllSongsSnackBarStatus(true);  }).catch((err) => console.log(err));
-    return ''
-  }
-
-
+    axios
+      .post("http://localhost:3030/delete-all-songs", null, {
+        params: {
+          channel: channel,
+        },
+      })
+      .then((res) => {
+        setClearSongRequestResponse(res.data.message);
+        setSuccessDeleteAllSongsSnackBarStatus(true);
+      })
+      .catch((err) => console.log(err));
+    return "";
+  };
 
   const onSubmit = () => {
     axios
       .get("http://localhost:3030/song-request", {
         params: {
           channel: Streamer,
-          user: 'testuser_'+(Math.random() + 1).toString(36).substring(7),
+          user: "testuser_" + (Math.random() + 1).toString(36).substring(7),
           q: queryRef.current?.value,
         },
-      }).then((res) => {
+      })
+      .then((res) => {
         const song: SongEntry = res.data.data[0];
-        console.log(res.data)
+        console.log(res.data);
         setNewSongTitle(song.name);
         setSucessAddSongSnackBarStatus(true);
       })
@@ -142,17 +154,24 @@ export const FormDialog: React.FC<Props> = (props) => {
   };
 
   return (
-    <Container className="flex w-full md:w-full -my-[0.45rem] xxxl:-my-[0.45rem]" maxWidth={false}>
+    <Container
+      className="flex w-full md:w-full -my-[0.45rem] xxxl:-my-[0.45rem]"
+      maxWidth={false}
+    >
       <div className="flex flex-1 justify-start items-start mx-2">
-        <Typography textAlign="center" variant="h4" className="mt-3">Song Requests</Typography>
+        <Typography textAlign="center" variant="h4" className="mt-3">
+          Song Requests
+        </Typography>
       </div>
-      {authenticated
-        ?
+      {authenticated ? (
         <div>
-          <Container className="hidden md:visible md:flex flex-1 items-end justify-end w-full md:mx-6" maxWidth={false}>
+          <Container
+            className="hidden md:visible md:flex flex-1 items-end justify-end w-full md:mx-6"
+            maxWidth={false}
+          >
             <Stack direction={"row"}>
               <Typography className="mt-[6px]">Song Queue:</Typography>
-              <Switch color="success"/>
+              <Switch color="success" />
             </Stack>
             <Button
               variant="contained"
@@ -180,15 +199,16 @@ export const FormDialog: React.FC<Props> = (props) => {
             </Button>
           </Container>
         </div>
-        :
+      ) : (
         <div className="hidden"></div>
-      }
+      )}
 
-
-
-
-      { /*  First Dialog that is used to enter a Song into the song queue */ }
-      <Dialog open={open1} onClose={handleAddSongClose} TransitionComponent={Transition}>
+      {/*  First Dialog that is used to enter a Song into the song queue */}
+      <Dialog
+        open={open1}
+        onClose={handleAddSongClose}
+        TransitionComponent={Transition}
+      >
         <DialogTitle>Add Song to Queue</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -206,7 +226,9 @@ export const FormDialog: React.FC<Props> = (props) => {
           />
         </DialogContent>
         <DialogActions>
-          <Button color="error" onClick={handleAddSongClose}>Cancel</Button>
+          <Button color="error" onClick={handleAddSongClose}>
+            Cancel
+          </Button>
           <Button
             color="success"
             onClick={() => {
@@ -219,10 +241,7 @@ export const FormDialog: React.FC<Props> = (props) => {
         </DialogActions>
       </Dialog>
 
-
-
-
-    { /*  Second Dialog that is used to Promote a Song in the queue */ }
+      {/*  Second Dialog that is used to Promote a Song in the queue */}
       <Dialog
         open={open2}
         TransitionComponent={Transition}
@@ -231,47 +250,75 @@ export const FormDialog: React.FC<Props> = (props) => {
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle>{"Promote Song"}</DialogTitle>
-        {songs.length !== 0 ?
-         <DialogContent>
-         <Box padding={6}>
-           <InputLabel id="demo-simple-select-label">Song #1</InputLabel>
-           <Box paddingBottom={2}>
-             <Select
-               labelId="demo-simple-select-label"
-               id="demo-simple-select"
-               value={song1ID}
-               label="Song #1"
-               onChange={handleSong1Change}
-             >
-               {songs.map((song: Songs) => 
-                 <MenuItem value={song.Id} onClick={handleMenuItemClick} key={song.Id}>{song.Title}</MenuItem>
-               )}
-             </Select>
-           </Box>
-           <InputLabel id="demo-simple-select-label">Song #2</InputLabel>
-           <Select
-             labelId="demo-simple-select-label"
-             id="demo-simple-select"
-             value={song2ID}
-             label="Song #2"
-             onChange={handleSong2Change}
-           >
-             {songs.map((song: Songs) => 
-               <MenuItem value={song.Id} key={song.Id}>{song.Title}</MenuItem>
-             )}
-           </Select>
-         </Box>
-       </DialogContent>
-         : 
-         <DialogContent><Typography>Song Queue is empty</Typography></DialogContent>}
+        {songs.length !== 0 ? (
+          <DialogContent>
+            <Box padding={4}>
+              <InputLabel id="demo-simple-select-label">Song #1</InputLabel>
+              <Box paddingBottom={2}>
+                <Select
+                  labelId="demo-simple-select-label"
+                  value={song1ID}
+                  label="Song #1"
+                  onChange={handleSong1Change}
+                  sx={{ width: '380px' }}
+                >
+                  {songs.map((song: Songs) => (
+                    <MenuItem
+                      value={song.Id}
+                      onClick={handleMenuItemClick}
+                      key={song.Id}
+                    >
+                      {song.Title}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Box>
+              <InputLabel id="demo-simple-select-label">Song #2</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                value={song2ID}
+                label="Song #2"
+                onChange={handleSong2Change}
+                sx={{ width: '380px' }}
+              >
+                {songs.map((song: Songs) => (
+                  <MenuItem value={song.Id} key={song.Id} sx={{ width: '380px' }}>
+                    {song.Title}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
+          </DialogContent>
+        ) : (
+          <DialogContent>
+            <Typography>Song Queue is empty</Typography>
+          </DialogContent>
+        )}
         <DialogActions>
-          <Button color="error" onClick={handleDisableQueueClose}>Cancel</Button>
-          <Button color="success" onClick={() => { promoteSong(Streamer, song1Title, Number(song1ID), Number(song2ID)); setOpen2(false); setSong1ID(''); setSong2ID(''); setSuccessPromoteSongSnackBarStatus(true);  }}>Promote</Button>
+          <Button color="error" onClick={handleDisableQueueClose}>
+            Cancel
+          </Button>
+          <Button
+            color="success"
+            onClick={() => {
+              promoteSong(
+                Streamer,
+                song1Title,
+                Number(song1ID),
+                Number(song2ID)
+              );
+              setOpen2(false);
+              setSong1ID("");
+              setSong2ID("");
+              setSuccessPromoteSongSnackBarStatus(true);
+            }}
+          >
+            Promote
+          </Button>
         </DialogActions>
       </Dialog>
 
-
-    { /*  Third Dialog that is used to Clear the song queue */ }
+      {/*  Third Dialog that is used to Clear the song queue */}
       <Dialog
         open={open3}
         TransitionComponent={Transition}
@@ -286,56 +333,113 @@ export const FormDialog: React.FC<Props> = (props) => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button color="error" onClick={handleClearQueueClose}>Cancel</Button>
-          <Button color="success" onClick={(() => { deleteAllSongs(Streamer);  handleClearQueueClose() } )}>Clear</Button>
+          <Button color="error" onClick={handleClearQueueClose}>
+            Cancel
+          </Button>
+          <Button
+            color="success"
+            onClick={() => {
+              deleteAllSongs(Streamer);
+              handleClearQueueClose();
+            }}
+          >
+            Clear
+          </Button>
         </DialogActions>
       </Dialog>
 
-
-  { /*  Two Snackbar's used for the First Dialog, being the one where we enter a song in the queue. */ }
-      <Snackbar open={successAddSongSnackBarStatus} autoHideDuration={3000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
-        <Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
+      {/*  Two Snackbar's used for the First Dialog, being the one where we enter a song in the queue. */}
+      <Snackbar
+        open={successAddSongSnackBarStatus}
+        autoHideDuration={3000}
+        onClose={handleSnackBarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackBarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           {`"${newSongTitle}" has been added to the queue!`}
         </Alert>
       </Snackbar>
 
-      <Snackbar open={errorAddSongSnackBarStatus} autoHideDuration={3000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
-        <Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
+      <Snackbar
+        open={errorAddSongSnackBarStatus}
+        autoHideDuration={3000}
+        onClose={handleSnackBarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackBarClose}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
           {`${songEntryErrorMessage}`}
         </Alert>
       </Snackbar>
 
-
-      { /*  Two Snackbar's used for the Second Dialog, being the one where we promote a song in the queue. */ }
-      <Snackbar open={successPromoteSongSnackBarStatus} autoHideDuration={3000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
-        <Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
+      {/*  Two Snackbar's used for the Second Dialog, being the one where we promote a song in the queue. */}
+      <Snackbar
+        open={successPromoteSongSnackBarStatus}
+        autoHideDuration={3000}
+        onClose={handleSnackBarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackBarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           {`"${song1Title}" has been promoted in the queue!`}
         </Alert>
       </Snackbar>
 
-      <Snackbar open={errorPromoteSongSnackBarStatus} autoHideDuration={3000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
-        <Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
+      <Snackbar
+        open={errorPromoteSongSnackBarStatus}
+        autoHideDuration={3000}
+        onClose={handleSnackBarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackBarClose}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
           {`${songEntryErrorMessage}`}
         </Alert>
       </Snackbar>
 
-
-
-      { /*  Two Snackbar's used for the Third Dialog, being the one where we delete all the songs in the queue. */ }
-      <Snackbar open={successDeleteAllSongsSnackBarStatus} autoHideDuration={3000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
-        <Alert onClose={handleSnackBarClose} severity="success" sx={{ width: '100%' }}>
+      {/*  Two Snackbar's used for the Third Dialog, being the one where we delete all the songs in the queue. */}
+      <Snackbar
+        open={successDeleteAllSongsSnackBarStatus}
+        autoHideDuration={3000}
+        onClose={handleSnackBarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackBarClose}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           {`${clearSongRequestResponse}`}
         </Alert>
       </Snackbar>
 
-      <Snackbar open={errorDeleteAllSongsSnackBarStatus} autoHideDuration={3000} onClose={handleSnackBarClose} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
-        <Alert onClose={handleSnackBarClose} severity="error" sx={{ width: '100%' }}>
+      <Snackbar
+        open={errorDeleteAllSongsSnackBarStatus}
+        autoHideDuration={3000}
+        onClose={handleSnackBarClose}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleSnackBarClose}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
           {`${songEntryErrorMessage}`}
         </Alert>
       </Snackbar>
-
-
-
     </Container>
   );
 };
