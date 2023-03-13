@@ -64,7 +64,7 @@ export const SongPlayer: React.FC<Props> = (props) => {
   }
 
   return (
-    <Container className="bg-[#1E1E1E] mt-3 xxxl:mt-12 w-full h-[10rem] lg:h-[18rem] xxl:h-[30rem] xxxl:h-[35rem] lg:mx-[2rem] hidden lg:block" maxWidth={false}>
+    <Container className="bg-[#1E1E1E] mt-3 xxxl:mt-12 w-full h-[10rem] lg:h-[19rem] xxxl:h-[35rem] lg:mx-[2rem] hidden lg:block" maxWidth={false}>
       <Typography className="mt-4 ml-2 font-bold" variant="h4">Current Song</Typography>
       <hr className="mb-8" />
       <div>
@@ -75,88 +75,89 @@ export const SongPlayer: React.FC<Props> = (props) => {
           :
           <div>
             {showPlayer ?
-              <div className="">
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'start',
-                    justifyContent: 'start',
-                    mt: -1,
-                  }}
-                >
-                  <IconButton
-                    aria-label={paused ? 'play' : 'pause'}
-                    onClick={() => {setPaused(!paused); console.log(paused)}}
+              <div className="lg:-mt-6">
+                <Stack direction={'row'} spacing={1}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'start',
+                      justifyContent: 'start',
+                      mt: -1,
+                    }}
                   >
-                    {!paused ? (
-                      <PlayArrowRounded
-                        sx={{ fontSize: '2.5rem' }}                        
-                        
-                      />
-                    ) : (
-                      <PauseRounded sx={{ fontSize: '2.5rem' }} />
-                    )}
-                  </IconButton>
-                  {songs.length <= 1 ? <div className="hidden"></div> :                
-                    <IconButton aria-label="next song">
-                      <FastForwardRounded fontSize="large"  />
+                    <IconButton
+                      aria-label={paused ? 'play' : 'pause'}
+                      onClick={() => {setPaused(!paused); console.log(paused)}}
+                    >
+                      {!paused ? (
+                        <PlayArrowRounded
+                          sx={{ fontSize: '2.5rem' }}                        
+                          
+                        />
+                      ) : (
+                        <PauseRounded sx={{ fontSize: '2.5rem' }} />
+                      )}
                     </IconButton>
-                  }
-                </Box>
-                <Slider
-                  aria-label="time-indicator"
-                  size="small"
-                  value={position}
-                  min={0}
-                  step={1}
-                  color="primary"
-                  max={DurationInSeconds}
-                  onChange={(_, value) => { setPosition(value as number); videoRef.current?.seekTo(value as number); }}
-                  sx={{
-                    color: theme.palette.mode === 'dark' ? '#FF0000' : 'rgba(0,0,0,0.87)',
-                    height: 4,
-                    '& .MuiSlider-thumb': {
-                      width: 8,
-                      height: 8,
-                      transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
-                      '&:before': {
-                        boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
+                    {songs.length <= 1 ? <div className="hidden"></div> :                
+                      <IconButton aria-label="next song">
+                        <FastForwardRounded fontSize="large"  />
+                      </IconButton>
+                    }
+                  </Box>
+                  <Typography className="mt-[2px]">{formatDuration(position)}</Typography>
+                  <Slider
+                    aria-label="time-indicator"
+                    size="small"
+                    value={position}
+                    min={0}
+                    step={1}
+                    color="primary"
+                    max={DurationInSeconds}
+                    onChange={(_, value) => { setPosition(value as number); videoRef.current?.seekTo(value as number); }}
+                    sx={{
+                      color: theme.palette.mode === 'dark' ? '#FF0000' : 'rgba(0,0,0,0.87)',
+                      height: 4,
+                      '& .MuiSlider-thumb': {
+                        width: 8,
+                        height: 8,
+                        transition: '0.3s cubic-bezier(.47,1.64,.41,.8)',
+                        '&:before': {
+                          boxShadow: '0 2px 12px 0 rgba(0,0,0,0.4)',
+                        },
+                        '&:hover, &.Mui-focusVisible': {
+                          boxShadow: `0px 0px 0px 8px ${theme.palette.mode === 'dark'
+                            ? 'rgb(255 255 255 / 16%)'
+                            : 'rgb(0 0 0 / 16%)'
+                            }`,
+                        },
+                        '&.Mui-active': {
+                          width: 20,
+                          height: 20,
+                        },
                       },
-                      '&:hover, &.Mui-focusVisible': {
-                        boxShadow: `0px 0px 0px 8px ${theme.palette.mode === 'dark'
-                          ? 'rgb(255 255 255 / 16%)'
-                          : 'rgb(0 0 0 / 16%)'
-                          }`,
+                      '& .MuiSlider-rail': {
+                        opacity: 0.28,
                       },
-                      '&.Mui-active': {
-                        width: 20,
-                        height: 20,
-                      },
-                    },
-                    '& .MuiSlider-rail': {
-                      opacity: 0.28,
-                    },
-                  }}
-                />
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    mt: -2,
-                  }}
-                >
-                  <Typography>{formatDuration(position)}</Typography>
-                  <Typography>-{formatDuration(DurationInSeconds - position)}</Typography>
-                </Box>
-                <Stack spacing={2} direction="row" sx={{ mb: 1 }} alignItems="center">
+                    }}
+                  />
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      mt: -2,
+                    }}
+                  >
+                    <Typography className="mb-5">-{formatDuration(DurationInSeconds - position)}</Typography>
+                  </Box>
+                </Stack>
+                <Stack spacing={2} direction="row" className="mb-2" alignItems="center">
                   <VolumeDown />
                   <Slider aria-label="Volume" defaultValue={volume} value={volume} onChange={handleChange} size="small" sx={{color: theme.palette.mode === 'dark' ? '#FFF' : 'rgba(0,0,0,0.87)'}}/>
                   <VolumeUp />
                 </Stack>
                 <div className='flex flex-1 mb-20 px-2'>
                   <YouTube className="youtubePlayer" url={`https://www.youtube.com/watch?v=${Videoid}`} ref={videoRef} onReady={onReady} controls={true} playing={paused} volume={volume / 100} onEnded={() => { onSongEnd(Streamer, Id); setShowSpinner(true); setTimeout(() => setShowSpinner(false), 3250) }} onProgress={(progress) => setPosition(Math.round(progress.playedSeconds))} />
-                  <div className='flex flex-col ml-2 h-1'>
+                  <div className='flex flex-col lg:-my-4 ml-2 h-1'>
                     <Typography variant="h6" className="font-bold">{Title}</Typography>
                     <div className='flex flex-1'>
                       <WatchLater fontSize="small" className='mt-[4px] mr-1' />

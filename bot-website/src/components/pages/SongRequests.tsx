@@ -42,7 +42,7 @@ export const SongRequests: React.FC<AuthenticationStatusInterface> = ({authentic
           <div className='flex justify-center align-middle items-center'>
             <SongPlayer Streamer={params.streamer as string} songs={songs} Id={song?.Id} Videoid={song?.Videoid} Title={song?.Title} Artist={song?.Artist} DurationInSeconds={song?.DurationInSeconds} Userid={song?.Userid}  />
           </div>
-          <div className='flex flex-1 items-center align-top md:align-middle text-gray-300 md:mb-[32rem] mb-[47rem] sm:mb-[69rem]'>
+          <div className='flex flex-1 items-center align-middle text-gray-300 lg:mb-[12rem] lg:-my-6'>
             <SongTable Streamer={params.streamer as string} songs={songs} authenticated={authenticated}/>
           </div>
         </div>

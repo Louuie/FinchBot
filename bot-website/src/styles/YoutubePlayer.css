@@ -1,13 +1,20 @@
 /* 720p Displays */
-@media screen and (max-width: 1280px) {
+@media screen and (max-width: 1190px) {
     .youtubePlayer {
-        max-height: 180px;
+        max-height: 140px;
+        max-width: 380px;
+    }
+}
+
+@media screen and (min-width: 1280px) {
+    .youtubePlayer {
+        max-height: 140px;
         max-width: 380px;
     }
 }
 
 /* 1080p Displays */
-@media screen and (max-width: 1920px) {
+@media screen and (min-width: 1920px) {
     .youtubePlayer {
         max-height: 250px;
         max-width: 420px;
