@@ -35,7 +35,7 @@ export const SongRequests: React.FC<AuthenticationStatusInterface> = ({authentic
 
 
   return (
-    <div className='w-full h-screen md:h-screen xxxl:h-screen bg-[#292929] overflow-hidden'>
+    <div className='w-full min-h-screen md:min-h-screen xl:min-h-screen scrollbar-hide xxxl:min-h-screen bg-[#292929]'>
         <ResponsiveAppBar authenticated={authenticated}/> 
         <div className='flex flex-col w-full h-full'>
           <FormDialog Streamer={params.streamer as string} songs={songs} authenticated={authenticated}/>
