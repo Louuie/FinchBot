@@ -106,7 +106,7 @@ export const SongPlayer: React.FC<Props> = (props) => {
                         </IconButton>
                       }
                     </Box>
-                    <Typography className="xl:mt-[9px] xxl:mt-[2px] xxxl:mt-[2px]">{formatDuration(position)}</Typography>
+                    <Typography className="xl:mt-[3.5px] xxl:mt-[2px] xxxl:mt-[2px]">{formatDuration(position)}</Typography>
                     <Slider
                       aria-label="time-indicator"
                       size="small"
@@ -149,7 +149,7 @@ export const SongPlayer: React.FC<Props> = (props) => {
                         mt: -2,
                       }}
                     >
-                      <Typography className="xxl:mb-5 xxxl:mb-5">-{formatDuration(DurationInSeconds - position)}</Typography>
+                      <Typography className="xl:mb-5 xxl:mb-5 xxxl:mb-5">-{formatDuration(DurationInSeconds - position)}</Typography>
                     </Box>
                   </Stack>
                   <Stack spacing={2} direction="row" className="mb-2" alignItems="center">

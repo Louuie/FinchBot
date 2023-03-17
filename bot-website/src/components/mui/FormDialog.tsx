@@ -14,6 +14,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Slider,
   Snackbar,
   Stack,
   Switch,
@@ -26,7 +27,7 @@ import { Transition } from "./Transitions";
 import { AuthenticationStatusInterface } from "../../interfaces/Auth";
 import { SongArray, SongEntry, Songs } from "../../interfaces/Songs";
 import { promoteSong } from "../../api/api";
-import { MoveUp } from "@mui/icons-material";
+import { MoveUp, Settings } from "@mui/icons-material";
 import { Streamer } from "../../interfaces/Streamer";
 
 type Props = AuthenticationStatusInterface & SongArray & Streamer;
@@ -39,6 +40,8 @@ export const FormDialog: React.FC<Props> = (props) => {
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
   const [open3, setOpen3] = React.useState(false);
+  const [open4, setOpen4] = React.useState(false);
+
 
   // // useEffect to test something
   // React.useEffect(() => {
@@ -55,6 +58,9 @@ export const FormDialog: React.FC<Props> = (props) => {
 
   const handleClearQueueClick = () => setOpen3(true);
   const handleClearQueueClose = () => setOpen3(false);
+
+  const handleSettingsMenuClick = () => setOpen4(true);
+  const handleSettingsMenuClose = () => setOpen4(false);
 
   const [newSongTitle, setNewSongTitle] = React.useState("");
   const [songEntryErrorMessage, setSongEntryErrorMessage] = React.useState("");
@@ -169,10 +175,6 @@ export const FormDialog: React.FC<Props> = (props) => {
             className="hidden md:visible md:flex flex-1 items-end justify-end w-full md:mx-6"
             maxWidth={false}
           >
-            <Stack direction={"row"}>
-              <Typography className="mt-[6px]">Song Queue:</Typography>
-              <Switch color="success" />
-            </Stack>
             <Button
               variant="contained"
               className="bg-[#127707] text-gray-200 mr-2 mt-4"
@@ -187,7 +189,7 @@ export const FormDialog: React.FC<Props> = (props) => {
               onClick={handleDisableQueueClick}
             >
               <MoveUp fontSize="small" />
-              Promote Song
+              <div className="ml-1">Promote Song</div>
             </Button>
             <Button
               variant="contained"
@@ -196,6 +198,15 @@ export const FormDialog: React.FC<Props> = (props) => {
             >
               <DeleteForeverIcon fontSize="small" />
               Clear Queue
+            </Button>
+
+            <Button
+              variant="contained"
+              className="bg-[#127707] text-gray-200 mr-2 mt-4"
+              onClick={handleSettingsMenuClick}
+            >
+              <Settings fontSize="small" />
+              <div className="ml-1">Settings</div>
             </Button>
           </Container>
         </div>
@@ -348,6 +359,79 @@ export const FormDialog: React.FC<Props> = (props) => {
         </DialogActions>
       </Dialog>
 
+      {/*  Fourth Dialog that is used for the Settings menu */}
+      <Dialog
+        open={open4}
+        TransitionComponent={Transition}
+        keepMounted
+        onClose={handleSettingsMenuClose}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>{"Song Queue Settings"}</DialogTitle>
+          <div className="flex flex-1">
+            <DialogContent>
+              <Typography fontSize={'large'}>General</Typography>
+              <InputLabel id="demo-simple-select-label">Song Queue Status</InputLabel>
+              <div className="justify-center items-center align-center">
+                <Select
+                  labelId="demo-simple-select-label"
+                  label="Song Queue Status"
+                  onChange={handleSong1Change}
+                  sx={{ width: '140px' }}
+                >
+                  <MenuItem
+                    value={true as any}
+                    onClick={handleMenuItemClick}
+                  >
+                    Enabled
+                  </MenuItem>
+                  <MenuItem
+                    value={false as any}
+                    onClick={handleMenuItemClick}
+                  >
+                    Disabled
+                  </MenuItem>
+                </Select>
+              </div>
+              <Box padding={8}>
+
+              </Box>
+              <Typography fontSize={'large'}>Limits</Typography>
+              <InputLabel id="demo-simple-select-label">Song Limit</InputLabel>
+              <Slider
+                aria-label="Song Limit"
+                defaultValue={20}
+                valueLabelDisplay="auto"
+                step={5}
+                marks
+                min={20}
+                max={50}
+              />
+              <InputLabel id="demo-simple-select-label">User Limit</InputLabel>
+              <Slider
+                aria-label="User Limit"
+                defaultValue={30}
+                valueLabelDisplay="auto"
+                step={2}
+                marks
+                min={2}
+                max={10}
+              />
+            </DialogContent>
+          </div>
+        <DialogActions>
+          <Button color="error" onClick={handleSettingsMenuClose}>
+            Cancel
+          </Button>
+          <Button
+            color="success"
+            onClick={() => { console.log('Settings button confirmed'); }}
+          >
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       {/*  Two Snackbar's used for the First Dialog, being the one where we enter a song in the queue. */}
       <Snackbar
         open={successAddSongSnackBarStatus}
@@ -440,6 +524,6 @@ export const FormDialog: React.FC<Props> = (props) => {
           {`${songEntryErrorMessage}`}
         </Alert>
       </Snackbar>
-    </Container>
+    </Container >
   );
 };
