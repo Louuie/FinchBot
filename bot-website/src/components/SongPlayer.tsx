@@ -65,7 +65,7 @@ export const SongPlayer: React.FC<Props> = (props) => {
   }
 
   return (
-    <Container className="bg-[#1E1E1E] mt-3 xxxl:mt-12 w-full h-[10rem] md:h-[10rem] lg:hidden xl:h-[23rem] xxl:h-[30rem] xxxl:h-[36rem] lg:mx-[2rem] xxl:mx-[2rem] xxxl:mx-[2rem] hidden xl:block xxl:block xxxl:block" maxWidth={false}>
+    <Container className="bg-[#1E1E1E] mt-3 xxxl:mt-8 w-full h-[10rem] md:h-[10rem] lg:hidden xl:h-[23rem] xxl:h-[30rem] xxxl:h-[36rem] lg:mx-[2rem] xxl:mx-[2rem] xxxl:mx-[2rem] hidden xl:block xxl:block xxxl:block" maxWidth={false}>
       <Typography className="mt-4 ml-2 font-bold" variant="h4">Current Song</Typography>
       <hr className="mb-8" />
       <div>

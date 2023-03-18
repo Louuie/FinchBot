@@ -37,6 +37,8 @@ export const FormDialog: React.FC<Props> = (props) => {
   const { songs } = props as SongArray;
   const { Streamer } = props as Streamer;
 
+  const songQueueOptions = ['Enabled', 'Disabled'];
+
   const [open1, setOpen1] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
   const [open3, setOpen3] = React.useState(false);
@@ -92,20 +94,37 @@ export const FormDialog: React.FC<Props> = (props) => {
   const [song1Title, setSong1Title] = React.useState("");
   const [song2ID, setSong2ID] = React.useState("");
 
+  // state variable for song queue status
+  const [songQueueStatus, setSongQueueStatus] = React.useState<Boolean>();
+  const [songLimit, setSongLimit] = React.useState(20);
+  const [userLimit, setUserLimit] = React.useState(2);
+
   const handleSong1Change = (event: SelectChangeEvent) => {
     setSong1ID(event.target.value as string);
-    console.log(song1ID);
   };
 
   const handleSong2Change = (event: SelectChangeEvent) => {
     setSong2ID(event.target.value as string);
-    console.log(song2ID);
   };
 
   const handleMenuItemClick = (event: any) => {
-    console.log(event.nativeEvent.target.outerText);
     setSong1Title(event.nativeEvent.target.outerText);
   };
+
+  const handleSettingMenuItemClick = (event: SelectChangeEvent) => {
+    if (event.target.value === 'Enabled') setSongQueueStatus(true); else setSongQueueStatus(false);
+  };
+
+
+  const handleSongLimitChange = (event: Event, newValue: number | number[]) => {
+    setSongLimit(newValue as number);
+  };
+
+  const handleUserLimitChange = (event: Event, newValue: number | number[]) => {
+    setUserLimit(newValue as number);
+  };
+
+
 
   const handleSnackBarClose = (
     event?: React.SyntheticEvent | Event,
@@ -268,6 +287,7 @@ export const FormDialog: React.FC<Props> = (props) => {
               <Box paddingBottom={2}>
                 <Select
                   labelId="demo-simple-select-label"
+                  defaultValue=""
                   value={song1ID}
                   label="Song #1"
                   onChange={handleSong1Change}
@@ -289,6 +309,7 @@ export const FormDialog: React.FC<Props> = (props) => {
                 labelId="demo-simple-select-label"
                 value={song2ID}
                 label="Song #2"
+                defaultValue=""
                 onChange={handleSong2Change}
                 sx={{ width: '380px' }}
               >
@@ -368,57 +389,51 @@ export const FormDialog: React.FC<Props> = (props) => {
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle>{"Song Queue Settings"}</DialogTitle>
-          <div className="flex flex-1">
-            <DialogContent>
-              <Typography fontSize={'large'}>General</Typography>
-              <InputLabel id="demo-simple-select-label">Song Queue Status</InputLabel>
-              <div className="justify-center items-center align-center">
-                <Select
-                  labelId="demo-simple-select-label"
-                  label="Song Queue Status"
-                  onChange={handleSong1Change}
-                  sx={{ width: '140px' }}
-                >
-                  <MenuItem
-                    value={true as any}
-                    onClick={handleMenuItemClick}
-                  >
-                    Enabled
-                  </MenuItem>
-                  <MenuItem
-                    value={false as any}
-                    onClick={handleMenuItemClick}
-                  >
-                    Disabled
-                  </MenuItem>
-                </Select>
-              </div>
-              <Box padding={8}>
-
-              </Box>
-              <Typography fontSize={'large'}>Limits</Typography>
-              <InputLabel id="demo-simple-select-label">Song Limit</InputLabel>
-              <Slider
-                aria-label="Song Limit"
-                defaultValue={20}
-                valueLabelDisplay="auto"
-                step={5}
-                marks
-                min={20}
-                max={50}
-              />
-              <InputLabel id="demo-simple-select-label">User Limit</InputLabel>
-              <Slider
-                aria-label="User Limit"
-                defaultValue={30}
-                valueLabelDisplay="auto"
-                step={2}
-                marks
-                min={2}
-                max={10}
-              />
-            </DialogContent>
-          </div>
+        <DialogContent>
+          <Box padding={4}>
+            <Typography fontSize={'large'} paddingBottom={1}>General</Typography>
+            <InputLabel id="demo-simple-select-label">Song Queue Status</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              value={songQueueStatus ? 'Enabled' : 'Disabled'}
+              defaultValue=""
+              onChange={handleSettingMenuItemClick}
+              sx={{ width: '380px' }}
+            >
+              {songQueueOptions.map((option) => (
+                <MenuItem value={option} key={option} sx={{ width: '380px' }}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+            <Box padding={2} />
+            <Typography fontSize={'large'} paddingBottom={1}>Limits</Typography>
+            <InputLabel id="demo-simple-select-label">Song Limit</InputLabel>
+            <Slider
+              sx={{ color: '#61AD65' }}
+              onChange={(_, value) => setSongLimit(value as number) }
+              aria-label="Song Limit"
+              value={songLimit}
+              step={5}
+              marks
+              min={20}
+              max={50}
+              valueLabelDisplay="auto"
+            />
+            <InputLabel id="demo-simple-select-label">User Limit</InputLabel>
+            <Slider
+              sx={{ color: '#61AD65' }}
+              onChange={(_, value) => setUserLimit(value as number) }
+              aria-label="User Limit"
+              value={userLimit}
+              step={2}
+              marks
+              min={2}
+              max={10}
+              valueLabelDisplay="auto"
+            />
+          </Box>
+        </DialogContent>
         <DialogActions>
           <Button color="error" onClick={handleSettingsMenuClose}>
             Cancel
@@ -427,7 +442,7 @@ export const FormDialog: React.FC<Props> = (props) => {
             color="success"
             onClick={() => { console.log('Settings button confirmed'); }}
           >
-            Confirm
+            Save
           </Button>
         </DialogActions>
       </Dialog>

@@ -6,5 +6,5 @@
 
             
 body {
-    @apply dark:bg-[#121E40] bg-[#121E40] text-gray-100 antialiased font-roboto;
+    @apply xxl:scrollbar-hide xxxl:scrollbar-hide dark:bg-[#121E40] bg-[#121E40] text-gray-100 antialiased font-roboto;
 }
