@@ -46,3 +46,27 @@ export const formatDuration = (duration: number) => {
       }
     }).then((res) => (console.log(res.data))).catch((err) => console.log(err));
   }
+
+
+
+// updates the settings menu
+export const onSettingsUpdate = (channel: string, status: boolean, song_limit: number, user_limit: number) => {
+  axios.post('http://localhost:3030/song-queue-settings', null, {
+    params: {
+      channel: channel + '_settings',
+      status: status,
+      song_limit: song_limit,
+      user_limit: user_limit,
+    }
+  }).then((res) => console.log(res.data)).catch((err) => console.log(err));
+}
+
+
+export const fetchSongQueueSettings = async (channel : string) => {
+  const { data } = await axios.get('http://localhost:3030/song-queue-settings', {
+    params: {
+      channel: channel
+    }
+  })
+  return data;
+}
