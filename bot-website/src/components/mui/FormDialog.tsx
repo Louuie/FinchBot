@@ -16,8 +16,6 @@ import {
   SelectChangeEvent,
   Slider,
   Snackbar,
-  Stack,
-  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -27,15 +25,18 @@ import { Transition } from "./Transitions";
 import { AuthenticationStatusInterface } from "../../interfaces/Auth";
 import { SongArray, SongEntry, Songs } from "../../interfaces/Songs";
 import { promoteSong } from "../../api/api";
-import { MoveUp, Settings } from "@mui/icons-material";
+import { MoveUp } from "@mui/icons-material";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { Streamer } from "../../interfaces/Streamer";
+import { Settings } from "../../interfaces/Settings";
 
-type Props = AuthenticationStatusInterface & SongArray & Streamer;
+type Props = AuthenticationStatusInterface & SongArray & Streamer & Settings;
 
 export const FormDialog: React.FC<Props> = (props) => {
   const { authenticated } = props as AuthenticationStatusInterface;
   const { songs } = props as SongArray;
   const { Streamer } = props as Streamer;
+  const { status, song_limit, user_limit } = props as Settings;
 
   const songQueueOptions = ['Enabled', 'Disabled'];
 
@@ -98,6 +99,15 @@ export const FormDialog: React.FC<Props> = (props) => {
   const [songQueueStatus, setSongQueueStatus] = React.useState<Boolean>();
   const [songLimit, setSongLimit] = React.useState(20);
   const [userLimit, setUserLimit] = React.useState(2);
+  const [updatedSongQueueStatus, setUpdatedSongQueueStatus] = React.useState<Boolean>();
+  const [updatedSongLimit, setUpdatedSongLimit] = React.useState<Number>();
+  const [updatedUserLimit, setUpdatedUserLimit] = React.useState<Number>();
+
+  React.useEffect(() => {
+    if(status === undefined) setSongQueueStatus(false); else setSongQueueStatus(status);
+    setSongLimit(song_limit as number);
+    setUserLimit(user_limit as number);
+  }, [status, song_limit, user_limit])
 
   const handleSong1Change = (event: SelectChangeEvent) => {
     setSong1ID(event.target.value as string);
@@ -112,18 +122,8 @@ export const FormDialog: React.FC<Props> = (props) => {
   };
 
   const handleSettingMenuItemClick = (event: SelectChangeEvent) => {
-    if (event.target.value === 'Enabled') setSongQueueStatus(true); else setSongQueueStatus(false);
+    if (event.target.value === 'Enabled') setUpdatedSongQueueStatus(true); else setUpdatedSongQueueStatus(false);
   };
-
-
-  const handleSongLimitChange = (event: Event, newValue: number | number[]) => {
-    setSongLimit(newValue as number);
-  };
-
-  const handleUserLimitChange = (event: Event, newValue: number | number[]) => {
-    setUserLimit(newValue as number);
-  };
-
 
 
   const handleSnackBarClose = (
@@ -224,7 +224,7 @@ export const FormDialog: React.FC<Props> = (props) => {
               className="bg-[#127707] text-gray-200 mr-2 mt-4"
               onClick={handleSettingsMenuClick}
             >
-              <Settings fontSize="small" />
+              <SettingsIcon fontSize="small" />
               <div className="ml-1">Settings</div>
             </Button>
           </Container>
