@@ -1,7 +1,7 @@
 import { IconButton, Menu, MenuItem, Avatar } from '@mui/material';
 import axios from 'axios';
 import * as React from 'react';
-import { Auth } from '../../interfaces/Auth';
+import { AuthenticationStatusInterface } from '../../interfaces/Auth';
 import Spinner from '../spinner/Spinner';
 
 
@@ -15,7 +15,7 @@ export const MUIMenu: React.FC = () => {
     const onLogout = async () => {
         axios.defaults.withCredentials = true;
         axios.post('http://localhost:3030/auth/twitch/revoke').then((res) => {
-            const logoutData: Auth = res.data;
+            const logoutData: AuthenticationStatusInterface = res.data;
             if (!logoutData.error) setAnchorEl(null); setIsLoading(true); console.log(res.data)
             setTimeout(() => setIsLoading(false), 400);
         }).catch((err) => { console.log(err) })

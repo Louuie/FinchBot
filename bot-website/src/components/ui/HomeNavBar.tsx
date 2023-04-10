@@ -17,10 +17,10 @@ const Socials = {
 
 export const HomeNavBar: React.FC = () => {
     return (
-        <nav className="bg-[#091126] px-2 sm:px-4 py-2.5 rounded-[25px] lg:w-[835px] h-[75px] w-full mx-auto mt-4 flex flex-1">
+        <nav className="bg-[#091126] px-2 sm:px-4 py-2.5 rounded-[25px] xxxl:w-[835px] h-[75px] w-full mx-auto mt-4 flex flex-1">
         <div className="container flex flex-row justify-between items-center mx-auto">
           <div className="flex flex-1 items-center">               
-              <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">LouieBot</span>
+              <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">FinchBot</span>
           </div>
             <div className='hidden w-full md:block md:w-auto items-center ml-[28rem]'>
               <div className='flex flex-1 -ml-20'>
