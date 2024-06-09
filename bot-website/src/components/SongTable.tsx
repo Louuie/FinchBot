@@ -1,110 +1,354 @@
-import axios from "axios";
-import React from "react";
-import { Arrow90degUp, Trash } from "react-bootstrap-icons";
-import { Songs } from "../interfaces/Songs";
+import * as React from "react";
+import { useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableFooter from "@mui/material/TableFooter";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import IconButton from "@mui/material/IconButton";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import LastPageIcon from "@mui/icons-material/LastPage";
+import { SongArray, Songs } from "../interfaces/Songs";
+import { TableHead, useMediaQuery } from "@mui/material";
+import { Delete, Upgrade } from "@mui/icons-material";
+import { deleteSong, formatDuration, promoteSong } from "../api/api";
+import { AuthenticationStatusInterface } from "../interfaces/Auth";
+import { Streamer } from "../interfaces/Streamer";
 
-export const SongTable: React.FC = () => {
-    const [songs, setSongs] = React.useState([]);
-    const [readjustedSongs, setReadjustedSongs] = React.useState([]);
-    
-    React.useEffect(() => {
-        const fetchSongs = setInterval(() => {
-          axios.get('http://localhost:3030/songs', {
-            params: {
-              channel: 'louiee_tv'
-            }
-          }).then((res) => { setSongs(res.data.songs);  }).catch((err) => console.log(err))
-        }, 5000);
-        songs.sort((a: Songs, b: Songs) => a.Id - b.Id);
-        if (songs != readjustedSongs) {
-          setSongs(songs);
-        } 
-        return () => clearInterval(fetchSongs);
-      }, [songs, readjustedSongs]);
-    
-    
-      const deleteSong = async (id: number, title: string) => {
-        axios.get('http://localhost:3030/song-request-delete', {
-            params: {
-              channel: 'louiee_tv',
-              id: id,
-            }
-          }).then((res) => console.log(res.data)).catch((err) => console.log(err));
-      }
-
-      // TODO: Create a Resort method that allows the user to move the song/video up or down in the queue.
-      const ResortSongUp = (array:any, from: number): void => {
-        // Check if the index is 0, if it isn't then continue but if it is then just ignore the request.
-        if (from !== 0) {
-          // This will be our previous items.
-          // This is where we want the Song/Video to go.
-          let temp = array[from - 1]
-          // Here we set the value of where we wanna go to the correct value that is being moved.
-          array[from - 1] = array[from];
-          // Here we set the value of where we came from to the correct value that is being moved.
-          array[from] = temp;
-          setReadjustedSongs(array);
-          console.log(from, array);
-        } else console.log('Ignoring resort request!');
-      };
-
-
-    return (
-        <div className='flex flex-col'>
-        <div className=''>
-          <div className='py-2 inline-block min-w-full sm:px-6 lg:px-24'>
-            <div className=''>
-              <table className='min-w-full bg-[#181A1B] overflow-auto'>
-                <thead>
-                  <tr>
-                    <th scope="col" className="text-sm font-medium text-gray-200 px-6 py-4 text-left">
-                      #
-                    </th>
-                    <th scope="col" className="text-sm font-medium text-gray-200 px-24 py-4 text-left">
-                      Title
-                    </th>
-                    <th scope="col" className="text-sm font-medium text-gray-200 px-8 py-4 text-left">
-                      Artist
-                    </th>
-                    <th scope="col" className="text-sm font-medium text-gray-200 px-6 py-4 text-left">
-                      Requested By
-                    </th>
-                    <th scope="col" className="text-sm font-medium text-gray-200 px-6 py-4 text-left">
-                      Duration
-                    </th>
-                    <th scope="col" className="text-sm font-medium text-gray-200 px-7 py-4 text-left">
-                      VideoID
-                    </th>
-                    <th scope="col" className="text-sm font-medium text-gray-200 px-6 py-4 text-left">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className='bg-[#1B1E1F]'>
-                  {songs.sort((a:never, b:never) => a - b).map((initialSong: Songs) =>
-                    <tr className='bg-[#1B1E1F] border-b' key={initialSong.Id}>
-                      <td className='px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200'>{initialSong.Id}</td>
-                      <td className='text-sm text-gray-200 font-light py-4 whitespace-nowrap'>{initialSong.Title}</td>
-                      <td className='text-sm text-gray-200 font-light -px-4 py-4 whitespace-nowrap'>{initialSong.Artist}</td>
-                      <td className='text-sm text-gray-200 font-light px-10 py-4 whitespace-nowrap'>{initialSong.Userid}</td>
-                      <td className='text-sm text-gray-200 font-light px-7 py-4 whitespace-nowrap'>{initialSong.Duration}</td>
-                      <td className='text-sm text-gray-200 font-light px-4 py-4 whitespace-nowrap'>{initialSong.Videoid}</td>
-                      <td className='text-sm text-gray-200 font-light px-7 py-4 whitespace-nowrap flex flex-1'>
-                        <div className='h-4 bg-gray-800'>
-                          <Arrow90degUp className='hover:cursor-pointer transform -scale-x-100' onClick={() => { ResortSongUp(songs, initialSong.Id - 1) }}/>
-                        </div>
-                        <div className='h-4 py-[11px] bg-red-800 hover:cursor-pointer' onClick={() => { deleteSong(initialSong.Id, initialSong.Title); setSongs(songs.filter((song: Songs) => song.Id !== initialSong.Id)); }}>
-                          <Trash color='white'/>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                  <tr className='bg-gray-100 border-b'></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+interface TablePaginationActionsProps {
+  count: number;
+  page: number;
+  rowsPerPage: number;
+  onPageChange: (
+    event: React.MouseEvent<HTMLButtonElement>,
+    newPage: number
+  ) => void;
 }
+
+function TablePaginationActions(props: TablePaginationActionsProps) {
+  const theme = useTheme();
+  const isLargeDisplay = useMediaQuery(theme.breakpoints.down('lg'));
+  const { count, page, rowsPerPage, onPageChange } = props;
+
+  const handleFirstPageButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    onPageChange(event, 0);
+  };
+
+  const handleBackButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    onPageChange(event, page - 1);
+  };
+
+  const handleNextButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    onPageChange(event, page + 1);
+  };
+
+  const handleLastPageButtonClick = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+  };
+
+  return (
+    <Box className="flex flex-1 ml-3">
+      <IconButton
+        onClick={handleFirstPageButtonClick}
+        disabled={page === 0}
+        aria-label="first page"
+      >
+        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
+      </IconButton>
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleNextButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="next page"
+      >
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
+      </IconButton>
+      <IconButton
+        onClick={handleLastPageButtonClick}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        aria-label="last page"
+      >
+        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
+      </IconButton>
+    </Box>
+  );
+}
+
+type Props = SongArray & AuthenticationStatusInterface & Streamer;
+
+export const SongTable: React.FC<Props> = (props) => {
+  
+  const { authenticated } = props as AuthenticationStatusInterface;
+  const { songs } = props as SongArray;
+  const { Streamer } = props as Streamer;
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(4);
+  const [rowsPerPageLG, setRowsPerPageLG] = React.useState(5);
+
+
+  // Avoid a layout jump when reaching the last page with empty rows.
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - songs.length) : 0;
+
+  const handleChangePage = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+
+  // Large Displays 
+    // Avoid a layout jump when reaching the last page with empty rows.
+    const emptyLargeRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - songs.length) : 0;
+
+  const handleChangeLargePage = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
+    setPage(newPage);
+  };
+
+  const handleChangeLargeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setRowsPerPageLG(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  return (
+    <TableContainer
+      component={Paper}
+      className="md:mx-[2rem] xxxl:mx-[2rem] mx-[1rem] mt-8"
+    >
+      <Table
+        className="md:min-w-[450px] min-w-[350px] xxxl:hidden"
+        aria-label="custom pagination table"
+        size={'small'}
+        
+      >
+        <TableHead>
+          <TableRow>
+            <TableCell>Title</TableCell>
+            <TableCell align="right">Artist</TableCell>
+            <TableCell align="right">Requested by</TableCell>
+            <TableCell align="right">Duration</TableCell>
+            {authenticated ?
+              <div>
+                <TableCell className="md:block hidden" align="right">
+                  Actions
+                </TableCell>
+              </div> : <div className="hidden"></div>}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {(rowsPerPage > 0
+            ? songs.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : songs
+          ).map((song: Songs) => (
+            <TableRow key={song.Title}>
+              <TableCell component="th" scope="row">
+                {song.Title}
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+                {song.Artist}
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+                {song.Userid}
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+                {formatDuration(song.DurationInSeconds)}
+              </TableCell>
+              {authenticated ?
+                  <TableCell style={{ width: 160 }} align="right">
+                    <div className="flex flex-1 justify-end items-end">
+                      <div
+                        className="hover:cursor-pointer"
+                        onClick={() => deleteSong(Streamer, song.Id, song.Title)}
+                      >
+                        <Delete color="error" />
+                      </div>
+                      <div
+                        className="hover:cursor-pointer"
+                        onClick={() => {
+                          promoteSong(
+                            Streamer,
+                            song.Title,
+                            song.Id,
+                            song.Id - 1
+                          );
+                          console.log('promoteid', song.Id)
+                        }
+                        }
+                      >
+                        <Upgrade />
+                      </div>
+                    </div>
+                  </TableCell> : <div className="hidden"></div>}
+            </TableRow>
+          ))}
+          {emptyRows > 0 && (
+            <TableRow style={{ height: 53 * emptyRows }}>
+              <TableCell colSpan={6} />
+            </TableRow>
+          )}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TablePagination
+              rowsPerPageOptions={[]}
+              colSpan={6}
+              count={songs.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              SelectProps={{
+                inputProps: {
+                  "aria-label": "rows per page",
+                },
+                native: true,
+              }}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+            />
+          </TableRow>
+        </TableFooter>
+      </Table>
+
+
+
+
+
+
+      <Table
+        className="hidden xxxl:inline-table xxxl:min-w-[350px]"
+        aria-label="custom pagination table"
+      >
+        <TableHead>
+          <TableRow>
+            <TableCell>Title</TableCell>
+            <TableCell align="right">Artist</TableCell>
+            <TableCell align="right">Requested by</TableCell>
+            <TableCell align="right">Duration</TableCell>
+            {authenticated ?
+              <div>
+                <TableCell className="md:block hidden" align="right">
+                  Actions
+                </TableCell>
+              </div> : <div className="hidden"></div>}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {(rowsPerPageLG > 0
+            ? songs.slice(page * rowsPerPageLG, page * rowsPerPageLG + rowsPerPageLG)
+            : songs
+          ).map((song: Songs) => (
+            <TableRow key={song.Title}>
+              <TableCell component="th" scope="row">
+                {song.Title}
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+                {song.Artist}
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+                {song.Userid}
+              </TableCell>
+              <TableCell style={{ width: 160 }} align="right">
+                {formatDuration(song.DurationInSeconds)}
+              </TableCell>
+              {authenticated ?
+                  <TableCell style={{ width: 160 }} align="right">
+                    <div className="flex flex-1 justify-end items-end">
+                      <div
+                        className="hover:cursor-pointer"
+                        onClick={() => deleteSong(Streamer, song.Id, song.Title)}
+                      >
+                        <Delete color="error" />
+                      </div>
+                      <div
+                        className="hover:cursor-pointer"
+                        onClick={() => {
+                          promoteSong(
+                            Streamer,
+                            song.Title,
+                            song.Id,
+                            song.Id - 1
+                          );
+                          console.log('promoteid', song.Id)
+                        }
+                        }
+                      >
+                        <Upgrade />
+                      </div>
+                    </div>
+                  </TableCell> : <div className="hidden"></div>}
+            </TableRow>
+          ))}
+          {emptyLargeRows > 0 && (
+            <TableRow style={{ height: 53 * emptyLargeRows }}>
+              <TableCell colSpan={6} />
+            </TableRow>
+          )}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TablePagination
+              rowsPerPageOptions={[]}
+              colSpan={6}
+              count={songs.length}
+              rowsPerPage={rowsPerPageLG}
+              page={page}
+              SelectProps={{
+                inputProps: {
+                  "aria-label": "rows per page",
+                },
+                native: true,
+              }}
+              onPageChange={handleChangeLargePage}
+              onRowsPerPageChange={handleChangeLargeRowsPerPage}
+              ActionsComponent={TablePaginationActions}
+            />
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </TableContainer>
+
+    
+  );
+};
