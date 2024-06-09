@@ -5,9 +5,9 @@ name: Go
 
 on:
   push:
-    branches: [ "merging-backend-repo" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "merging-backend-repo" ]
+    branches: [ "master ]
 
 jobs:
 
