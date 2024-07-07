@@ -1,95 +1,41 @@
 package main
 
 import (
-	"bufio"
 	"crypto/tls"
 	"fmt"
 	"net"
-	"strings"
-	"time"
+	"twitch-bot/config"
+	"twitch-bot/messages"
 )
 
 func main() {
-	conn, err := IRCConnection()
+	conn, err := connectToIRC(config.Server, config.Username, config.OAuth)
 	if err != nil {
 		fmt.Println("Error connecting to IRC:", err)
 		return
 	}
-	defer IRCDisconnect(conn)
+	defer conn.Close()
 
-	// Start a goroutine to handle incoming messages
-	go readIRCMessages(conn)
+	// Join the specified channel
+	joinChannel(conn, config.Channel)
 
-	// Prevent the main function from exiting immediately
-	select {}
+	// Start reading messages
+	messages.ReadMessages(conn)
 }
 
-func IRCConnection() (net.Conn, error) {
-	// Use tls.Dial to establish an SSL connection if using port 6697
-	c, err := tls.Dial("tcp", "irc.chat.twitch.tv:6697", nil)
+func connectToIRC(server, username, oauth string) (net.Conn, error) {
+	conn, err := tls.Dial("tcp", server, nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to connect to IRC server: %w", err)
 	}
-	writer := bufio.NewWriter(c)
-	sendIRCMessage(writer, "CAP REQ :twitch.tv/tags twitch.tv/commands")
-	sendIRCMessage(writer, "PASS oauth:y8t41t1ykcesny5t5zlhxmhxl2rh3c")
-	sendIRCMessage(writer, "NICK Louiee_tv")
 
-	// Sending a message
-	sendIRCMessage(writer, "PRIVMSG #Louiee_tv :Hello World!")
-	// Joining an actual channel
-	sendIRCMessage(writer, "JOIN #Louiee_tv")
+	// Send authentication messages
+	fmt.Fprintf(conn, "PASS %s\r\n", oauth)
+	fmt.Fprintf(conn, "NICK %s\r\n", username)
 
-	return c, nil
+	return conn, nil
 }
 
-func IRCDisconnect(IRCConn net.Conn) {
-	IRCConn.Close()
-	fmt.Println("Disconnected from IRC")
-}
-
-func sendIRCMessage(writer *bufio.Writer, command string) {
-	fmt.Fprintf(writer, "%s\r\n", command)
-	writer.Flush()
-	// Small delay to avoid flooding the server
-	time.Sleep(100 * time.Millisecond)
-}
-
-func readIRCMessages(conn net.Conn) {
-	reader := bufio.NewReader(conn)
-	for {
-		line, err := reader.ReadString('\n')
-		if err != nil {
-			fmt.Println("Error reading from IRC:", err)
-			return
-		}
-
-		line = strings.TrimSpace(line)
-		if len(line) > 0 {
-			fmt.Println("Received:", line)
-			handleIRCMessage(line, conn)
-		}
-	}
-}
-
-func handleIRCMessage(message string, conn net.Conn) {
-	// Handle different types of messages here
-	if strings.HasPrefix(message, ":tmi.twitch.tv 001") {
-		// Handle welcome message indicating successful authentication
-		fmt.Println("Successfully authenticated:", message)
-	} else if strings.HasPrefix(message, ":tmi.twitch.tv 002") ||
-		strings.HasPrefix(message, ":tmi.twitch.tv 003") ||
-		strings.HasPrefix(message, ":tmi.twitch.tv 004") ||
-		strings.HasPrefix(message, ":tmi.twitch.tv 375") ||
-		strings.HasPrefix(message, ":tmi.twitch.tv 372") ||
-		strings.HasPrefix(message, ":tmi.twitch.tv 376") ||
-		strings.HasPrefix(message, "@badge-info=") {
-		// Handle additional welcome messages
-		fmt.Println("Welcome message:", message)
-	} else if strings.HasPrefix(message, "Hello World") {
-		fmt.Println("My Command I sent: ", message)
-	} else {
-		// Handle other IRC messages
-		fmt.Println("IRC Message:", message)
-	}
+func joinChannel(conn net.Conn, channel string) {
+	fmt.Fprintf(conn, "JOIN %s\r\n", channel)
 }
