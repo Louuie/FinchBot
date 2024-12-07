@@ -29,7 +29,7 @@ type ClientSong struct {
 
 // Initializes the connection with the song database and if everything went okay then it will return the db. if not it will return an error.
 func InitializeSongDBConnection() (*sql.DB, error) {
-	db, err := sql.Open("postgres", os.Getenv("SONGS_DB_CONN"))
+	db, err := sql.Open("postgres", os.Getenv("POSTGRES_CONN"))
 	if err, ok := err.(*pq.Error); ok {
 		return nil, errors.New(err.Code.Name())
 	}
