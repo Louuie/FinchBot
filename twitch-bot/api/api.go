@@ -44,3 +44,28 @@ func AddSong(query string) (*models.AddSongResponse, error) {
 	}
 
 }
+
+func PromoteSong(title string, position1 string, position2 string) (*models.PromoteSongResponse, error) {
+	// Create the client
+	client := http.Client{}
+	// get the request
+	req, err := http.NewRequest("POST", "http://localhost:3030/promote-song", nil)
+	if err != nil {
+		return nil, err
+	}
+	// get the response from the request
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var promoteSongResponse models.PromoteSongResponse
+	json.Unmarshal(body, &promoteSongResponse)
+	if promoteSongResponse.Message == "Check console for message!" {
+		return &promoteSongResponse, nil
+	}
+	return nil, errors.New("failed to promote the song")
+}

@@ -6,6 +6,10 @@ type AddSongResponse struct {
 	Data    []Data `json:"data,omitempty"`
 }
 
+type PromoteSongResponse struct {
+	Message string `json:"message,omitempty"`
+}
+
 type Data struct {
 	Name              string  `json:"name,omitempty"`
 	Artist            string  `json:"artist,omitempty"`

@@ -31,12 +31,22 @@ func HandleMessage(conn net.Conn, line string) {
 			}
 
 			if strings.HasPrefix(message, "!addsong") {
-				addSongContent := strings.Replace(message, "!addsong ", "", 1)
+				addSongContent := strings.Replace(message, "!addsong", "", 1)
 				addSongResponse, err := api.AddSong(addSongContent)
 				if err != nil {
 					SendMessage(conn, err.Error())
 				}
 				SendMessage(conn, "Successfully added "+addSongResponse.Data[0].Name+" by"+addSongResponse.Data[0].Artist+" to the song queue in position #"+fmt.Sprintf("%v", addSongResponse.Data[0].Position))
+			}
+
+			if strings.HasPrefix(message, "!promote") {
+				promoteSongContent := strings.Replace(message, "!promote", "", 1)
+				promoteSongContentwords := strings.Fields(promoteSongContent)
+				promoteSongResponse, err := api.PromoteSong(promoteSongContentwords[0], promoteSongContentwords[1], promoteSongContentwords[2])
+				if err != nil {
+					SendMessage(conn, "Error "+err.Error()+"")
+				}
+				SendMessage(conn, promoteSongResponse.Message)
 			}
 		}
 	}
