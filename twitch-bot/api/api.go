@@ -53,6 +53,12 @@ func PromoteSong(title string, position1 string, position2 string) (*models.Prom
 	if err != nil {
 		return nil, err
 	}
+	q := req.URL.Query()
+	q.Add("channel", "Louiee_tv")
+	q.Add("title", title)
+	q.Add("position1", position1)
+	q.Add("position2", position2)
+	req.URL.RawQuery = q.Encode()
 	// get the response from the request
 	resp, err := client.Do(req)
 	if err != nil {
@@ -64,7 +70,7 @@ func PromoteSong(title string, position1 string, position2 string) (*models.Prom
 	}
 	var promoteSongResponse models.PromoteSongResponse
 	json.Unmarshal(body, &promoteSongResponse)
-	if promoteSongResponse.Message == "Check console for message!" {
+	if resp.StatusCode == 200 {
 		return &promoteSongResponse, nil
 	}
 	return nil, errors.New("failed to promote the song")
