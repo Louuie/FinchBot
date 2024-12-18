@@ -3,6 +3,7 @@ package messages
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"net"
 	"strings"
 	"twitch-bot/api"
@@ -43,8 +44,9 @@ func HandleMessage(conn net.Conn, line string) {
 				promoteSongContent := strings.Replace(message, "!promote", "", 1)
 				promoteSongContentwords := strings.Fields(promoteSongContent)
 				promoteSongResponse, err := api.PromoteSong(promoteSongContentwords[0], promoteSongContentwords[1], promoteSongContentwords[2])
-				if err != nil {
+				if err != nil && promoteSongResponse == nil {
 					SendMessage(conn, "Error "+err.Error()+"")
+					log.Fatalln(err)
 				}
 				SendMessage(conn, promoteSongResponse.Message)
 			}
