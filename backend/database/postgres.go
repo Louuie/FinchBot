@@ -98,10 +98,10 @@ func InsertSong(db *sql.DB, song ClientSong, tableName string) error {
 func UpdateSongQueueSettings(db *sql.DB, tableName string, status bool, song_limit float64, user_limit float64) error {
 
 	_, err := db.Exec(`
-		INSERT INTO `+tableName+`_settings (channel, status, song_limit, user_limit) 
-		VALUES ($1, $2, $3, $4) 
-		ON CONFLICT (channel) 
-		DO UPDATE SET 
+		INSERT INTO `+tableName+`_settings (channel, status, song_limit, user_limit)
+		VALUES ($1, $2, $3, $4)
+		ON CONFLICT (channel)
+		DO UPDATE SET
 			status = EXCLUDED.status,
 			song_limit = EXCLUDED.song_limit,
 			user_limit = EXCLUDED.user_limit`,
@@ -232,7 +232,11 @@ func GetMultipleEntries(tableName string, user string, db *sql.DB) (bool, error)
 }
 
 // Function that promotes the song in the queue. For more information about what "Promoting the song" does, please refer to issue bac-14 in linear.
-func PromoteSong(tableName string, from int, to int, title string, db *sql.DB) error {
+func PromoteSong(tableName string, from int, title string, db *sql.DB) error {
+	// TODO: bac-21-make-promote-call-more-effecient
+	// 1.) Defintely don't need the title
+	// 2.) Also don't need the 'to' variable because this is always going to be the firs position to so 1 ✅
+	// 3.) Can stay the same, most likely don't need to update
 
 	// Querying through to check if the VideoID that is passed is actually in the index/position value the user passed to prevent errors.
 	titleQuery, err := db.Query("SELECT title FROM "+tableName+" WHERE id = $1", from)
@@ -251,19 +255,14 @@ func PromoteSong(tableName string, from int, to int, title string, db *sql.DB) e
 	}
 
 	// Song/Video we are replacing for the "promoted"/updated Song/Video
-	res2, err := db.Exec("UPDATE "+tableName+" SET id = $1 WHERE id = $2;", from, to)
-	if err, ok := err.(*pq.Error); ok {
-		log.Fatalln(err)
 
-		return nil
-	}
-	_, err = res2.RowsAffected()
+	res2, err := db.Exec("UPDATE "+tableName+" SET id = $1 WHERE id = $2;", from, 1)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	// Song/Video we are "promoting"/updating
-	res, err := db.Exec("UPDATE "+tableName+" SET id = $1 WHERE id = $2 AND title = $3;", to, from, title)
+	// Song/Video we are "promoting"/updating (the reason we need the title is because the IDs would conflict with eachother)
+	res, err := db.Exec("UPDATE "+tableName+" SET id = $1 WHERE id = $2 AND title = $3;", 1, from, title)
 	if err, ok := err.(*pq.Error); ok {
 		log.Fatalln(err)
 		return err
@@ -271,7 +270,11 @@ func PromoteSong(tableName string, from int, to int, title string, db *sql.DB) e
 	_, err = res.RowsAffected()
 	if err != nil {
 		log.Fatalln(err)
-		return err
+	}
+
+	_, err = res2.RowsAffected()
+	if err != nil {
+		log.Fatalln(err)
 	}
 	return nil
 }
