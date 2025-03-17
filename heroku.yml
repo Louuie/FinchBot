@@ -2,6 +2,7 @@ build:
   buildpacks:
     - heroku/go
   config:
-      GO_INSTALL_PACKAGE_SPEC: backend
-  run:
-    web: cd backend && go run .
+    GO_INSTALL_PACKAGE_SPEC: ./backend
+
+run:
+  web: bin/backend
