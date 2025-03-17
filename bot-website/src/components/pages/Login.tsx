@@ -35,7 +35,7 @@ export const Login: React.FC = () => {
         const authUri = `https://id.twitch.tv/oauth2/authorize` +
         `?response_type=code` +
         `&client_id=wtaln1ogegdpmq0cw7x1mxw1nmwpsx` +
-        `&redirect_uri=http://localhost:3000/auth/callback` +
+        `&redirect_uri=https://finchbot.netlify.app/auth/callback` +
         `&scope=openid user_read channel:manage:broadcast&`
         const code = await getCode(authUri);
         setLoading(true);
