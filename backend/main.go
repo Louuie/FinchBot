@@ -3,9 +3,11 @@ package main
 import (
 	"backend/twitch-bot/server/middleware"
 	"log"
+	"os"
 )
 
 func main() {
 	app := middleware.Server()
-	log.Fatal(app.Listen(":3030"))
+	port := os.Getenv("PORT")
+	log.Fatal(app.Listen("0.0.0.0:" + port))
 }
