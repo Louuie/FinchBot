@@ -42,5 +42,4 @@ func AddSong(query string) (*models.AddSongResponse, error) {
 	} else {
 		return nil, errors.New("there was an error adding the song")
 	}
-
 }
