@@ -38,7 +38,7 @@ func GetAccessToken(code string) (*models.TwitchAuthResponse, error) {
 	q.Add("client_secret", os.Getenv("TWITCH_CLIENT_SECRET"))
 	q.Add("code", code)
 	q.Add("grant_type", "authorization_code")
-	q.Add("redirect_uri", "http://localhost:3000")
+	q.Add("redirect_uri", "https://finchbot.netlify.app")
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := client.Do(req)
