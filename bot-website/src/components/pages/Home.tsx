@@ -10,7 +10,7 @@ export const Home: React.FC = () => {
   const [authData, setAuthData] = React.useState<AuthenticationStatusInterface>();
   React.useEffect(() => {
     axios.defaults.withCredentials = true;
-    axios.post('http://localhost:3030/auth/twitch/validate').then((res) => {
+    axios.post('https://finchbot-backend-2ef58bf717e6.herokuapp.com/auth/twitch/validate').then((res) => {
       const auth : AuthenticationStatusInterface = res.data
       if (!auth.error) setAuthData(auth);
     })

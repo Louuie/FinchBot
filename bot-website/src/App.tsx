@@ -23,7 +23,7 @@ export const App: React.FC = () => {
   // useEffect that fetches the users authentication status
   React.useEffect(() => {
     axios
-      .post("http://localhost:3030/auth/twitch/validate", null, {
+      .post("https://finchbot-backend-2ef58bf717e6.herokuapp.com/auth/twitch/validate", null, {
         withCredentials: true,
       })
       .then((res) => {
@@ -36,7 +36,7 @@ export const App: React.FC = () => {
           if (exclusiveUser === authData.display_name?.toLocaleLowerCase()) {
             console.log("YOOOOOOO!!!!!!!!");
             axios
-              .post("http://localhost:3030/song-queue-settings", null, {
+              .post("https://finchbot-backend-2ef58bf717e6.herokuapp.com/song-queue-settings", null, {
                 params: {
                   channel: authData.display_name.toLowerCase(),
                   song_queue_status: false,

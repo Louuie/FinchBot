@@ -29,7 +29,7 @@ export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
   React.useEffect(() => {
     if (authenticated) {
       axios
-        .get("http://localhost:3030/twitch/user", { withCredentials: true })
+        .get("https://finchbot-backend-2ef58bf717e6.herokuapp.com/twitch/user", { withCredentials: true })
         .then((res) => {
           const userData: TwitchUserInfoInterface = res.data[0];
           setUserData(userData);

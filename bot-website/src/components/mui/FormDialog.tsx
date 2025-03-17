@@ -144,7 +144,7 @@ export const FormDialog: React.FC<Props> = (props) => {
 
   const deleteAllSongs = async (channel: string) => {
     axios
-      .post("http://localhost:3030/delete-all-songs", null, {
+      .post("https://finchbot-backend-2ef58bf717e6.herokuapp.com/delete-all-songs", null, {
         params: {
           channel: channel,
         },
@@ -159,7 +159,7 @@ export const FormDialog: React.FC<Props> = (props) => {
 
   const onSubmit = () => {
     axios
-      .get("http://localhost:3030/song-request", {
+      .get("https://finchbot-backend-2ef58bf717e6.herokuapp.com/song-request", {
         params: {
           channel: Streamer,
           user: "testuser_" + (Math.random() + 1).toString(36).substring(7),

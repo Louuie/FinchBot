@@ -56,6 +56,7 @@ func TwitchAuthCheck(c *fiber.Ctx) error {
 	sess, err := store.Get(c)
 	_ = handlers.CatchSessionError(sess, err)
 	if err != nil {
+		fmt.Print(err.Error())
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
 			"error1": err.Error(),
 		})
@@ -63,15 +64,17 @@ func TwitchAuthCheck(c *fiber.Ctx) error {
 	token := fmt.Sprintf("%v", sess.Get("access_token"))
 	err = api.ValidateAccessToken(token)
 	if err != nil {
+		fmt.Print(err.Error())
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
-			"error": err,
+			"error": err.Error(),
 		})
 	}
 
 	userInfo, err := api.GetUserInfo(token)
 	if err != nil {
+		fmt.Print(err.Error())
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
-			"error": err,
+			"error": err.Error(),
 		})
 	}
 	return c.Status(fiber.StatusAccepted).JSON(&fiber.Map{

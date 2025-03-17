@@ -19,9 +19,10 @@ export const Login: React.FC = () => {
 
     useEffect(() => {
         setLoading(true);
-        axios.post('http://localhost:3030/auth/twitch/validate').then((res) => {
+        axios.post('https://finchbot-backend-2ef58bf717e6.herokuapp.com/auth/twitch/validate').then((res) => {
             const login: Auth = res.data;
             console.log(login);
+            console.log(res.data);
             if (!login.error) setIsLoggedIn(true);
         }).catch((err) => { /* console.log(err); */ })
         setTimeout(() => setLoading(false), 250);
@@ -39,7 +40,7 @@ export const Login: React.FC = () => {
         const code = await getCode(authUri);
         setLoading(true);
         console.log(code);
-        axios.post('http://localhost:3030/auth/twitch', null, {
+        axios.post('https://finchbot-backend-2ef58bf717e6.herokuapp.com/auth/twitch', null, {
             params: {
                 code: code,
             }
@@ -47,7 +48,7 @@ export const Login: React.FC = () => {
             const loginData: Auth = res.data;
             console.log(res.data, loginData);
             setIsLoggedIn(true);
-            axios.get('http://localhost:3030/twitch/user').then((res) => {
+            axios.get('https://finchbot-backend-2ef58bf717e6.herokuapp.com/twitch/user').then((res) => {
                 const userData : Auth = res.data
                 if (!userData.error) setDisplayName(res.data[0].display_name); console.log(displayName);
             }).catch((err) => { console.log(err); })
@@ -57,7 +58,7 @@ export const Login: React.FC = () => {
 
     const onLogout = async () => {
         setLoading(true)
-        axios.post('http://localhost:3030/auth/twitch/revoke').then((res) => {
+        axios.post('https://finchbot-backend-2ef58bf717e6.herokuapp.com/auth/twitch/revoke').then((res) => {
             const logoutData: Auth = res.data;
             if (!logoutData.error) setIsLoggedIn(false); setLoading(false); console.log(res.data)
         }).catch((err) => { console.log(err) })

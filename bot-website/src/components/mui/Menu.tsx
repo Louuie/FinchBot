@@ -14,7 +14,7 @@ export const MUIMenu: React.FC = () => {
     };
     const onLogout = async () => {
         axios.defaults.withCredentials = true;
-        axios.post('http://localhost:3030/auth/twitch/revoke').then((res) => {
+        axios.post('https://finchbot-backend-2ef58bf717e6.herokuapp.com/auth/twitch/revoke').then((res) => {
             const logoutData: AuthenticationStatusInterface = res.data;
             if (!logoutData.error) setAnchorEl(null); setIsLoading(true); console.log(res.data)
             setTimeout(() => setIsLoading(false), 400);
