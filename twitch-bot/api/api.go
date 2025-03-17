@@ -12,7 +12,7 @@ import (
 
 func AddSong(query string) (*models.AddSongResponse, error) {
 	client := http.Client{}
-	req, err := http.NewRequest("GET", "http://localhost:3030/song-request", nil)
+	req, err := http.NewRequest("GET", "https://finchbot.netlify.app/song-request", nil)
 	if err != nil {
 		return nil, err
 	}
