@@ -26,6 +26,7 @@ func Server() *fiber.App {
 	store = session.New(session.Config{
 		CookieHTTPOnly: true,
 		CookieSecure:   true,
+		CookieSameSite: "None",
 		Expiration:     time.Hour * 5,
 	})
 
