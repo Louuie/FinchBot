@@ -16,15 +16,16 @@ import (
 // Fetches the Twitch User Access Token.
 // Then returns the TwitchAuthResponse.
 // The struct of the TwitchAuthResponse can be found below for deconstruction purposes.
-// 	type TwitchAuthResponse struct {
-//     AccessToken  string
-//     ExpiresIn    float64
-//     RefreshToken string
-//     Scope        []string
-//     TokenType    string
-//     Status       float64
-//     Message      string
-// }
+//
+//		type TwitchAuthResponse struct {
+//	    AccessToken  string
+//	    ExpiresIn    float64
+//	    RefreshToken string
+//	    Scope        []string
+//	    TokenType    string
+//	    Status       float64
+//	    Message      string
+//	}
 func GetAccessToken(code string) (*models.TwitchAuthResponse, error) {
 	url := "https://id.twitch.tv/oauth2/token"
 	client := http.Client{}
@@ -112,19 +113,20 @@ func RevokeAccessToken(token string) error {
 // Gets the Users Information.
 // Then returns the TwitchUserInfoResponse
 // The Struct of the TwitchUserInfoResponse can be found below for deconstruction purposes.
-// 	type TwitchUserInfoResponse struct {
-// 		Data []struct {
-// 			ID              string
-// 			Login           string
-// 			DisplayName     string
-// 			Type            string
-// 			BroadcasterType string
-// 			Description     string
-// 			ProfileImageURL string
-// 			OfflineImageURL string
-// 			ViewCount       int
-// 			Email           string
-// 			CreatedAt       time.Time
+//
+//	type TwitchUserInfoResponse struct {
+//		Data []struct {
+//			ID              string
+//			Login           string
+//			DisplayName     string
+//			Type            string
+//			BroadcasterType string
+//			Description     string
+//			ProfileImageURL string
+//			OfflineImageURL string
+//			ViewCount       int
+//			Email           string
+//			CreatedAt       time.Time
 //	 	}
 //	}
 func GetUserInfo(token string) (*models.TwitchUserInfoResponse, error) {
