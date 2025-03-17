@@ -1,0 +1,6 @@
+build:
+  config:
+    GO_INSTALL_PACKAGE_SPEC: ./backend/...
+  run:
+    web: ./backend/main
+
