@@ -34,7 +34,7 @@ export const Login: React.FC = () => {
     const onLogin = async () => {
         const authUri = `https://id.twitch.tv/oauth2/authorize` +
         `?response_type=code` +
-        `&client_id=wtaln1ogegdpmq0cw7x1mxw1nmwpsx` +
+        `&client_id=m6ydi41sdy1oqh52n8s1lnn2905q7q` +
         `&redirect_uri=https://finchbot.netlify.app/auth/callback` +
         `&scope=openid user_read channel:manage:broadcast&`
         const code = await getCode(authUri);
