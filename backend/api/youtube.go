@@ -22,7 +22,7 @@ type Duration struct {
 }
 
 // ParseISO8601Duration parses ISO 8601 durations like "PT3M20S", "PT46S", "PT1H2M30S"
-func ParseISO8601Duration(duration string) (string, string) {
+func ParseISO8601Duration(duration string) (string, float64) {
 	re := regexp.MustCompile(`PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?`)
 	matches := re.FindStringSubmatch(duration)
 
@@ -49,7 +49,7 @@ func ParseISO8601Duration(duration string) (string, string) {
 	totalSeconds := hours*3600 + minutes*60 + seconds
 	durationStr := fmt.Sprintf("%02dh:%02dm:%02ds", hours, minutes, seconds)
 
-	return durationStr, strconv.Itoa(totalSeconds)
+	return durationStr, float64(totalSeconds)
 }
 
 func GetSongFromSearch(query string) *models.YouTubeSearch {
