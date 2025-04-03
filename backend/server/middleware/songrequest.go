@@ -310,10 +310,8 @@ func DeleteAllSongs(c *fiber.Ctx) error {
 // Middleware function that moves the Song/Video up in the queue.
 func PromoteSong(c *fiber.Ctx) error {
 	type Query struct {
-		Channel   string `query:"channel"`
-		Title     string `query:"title"`
-		Position1 int    `query:"position1"`
-		Position2 int    `query:"position2"`
+		Channel  string `query:"channel"`
+		Position int    `query:"position"`
 	}
 	q := new(Query)
 	if err := c.QueryParser(q); err != nil {
@@ -321,22 +319,12 @@ func PromoteSong(c *fiber.Ctx) error {
 			"error": err,
 		})
 	}
-	if q.Position1 == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
-			"error": "missing song id",
-		})
-	}
-	if q.Position2 == 0 {
+	if q.Position == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 			"error": "missing song id",
 		})
 	}
 	if q.Channel == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
-			"error": "missing channel to delete the song from",
-		})
-	}
-	if q.Title == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 			"error": "missing channel to delete the song from",
 		})
@@ -347,14 +335,14 @@ func PromoteSong(c *fiber.Ctx) error {
 			"error": dbConnErr.Error(),
 		})
 	}
-	err := database.PromoteSong(q.Channel, q.Position1, q.Position2, q.Title, db)
+	title, err := database.PromoteSong(q.Channel, q.Position, db)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 			"error": err.Error(),
 		})
 	}
 	return c.Status(fiber.StatusOK).JSON(&fiber.Map{
-		"message": "Check console for message!",
+		"message": title + " has been promoted!",
 	})
 
 }
