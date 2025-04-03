@@ -93,6 +93,16 @@ func SongRequest(c *fiber.Ctx) error {
 			"error": clientData.Message,
 		})
 	}
+	if songDuration.DurationInSeconds < 60 {
+		clientData := models.ClientData{
+			Status:  "fail",
+			Message: "The video/song is less than a minute",
+			Data:    nil,
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(map[string]interface{}{
+			"error": clientData.Message,
+		})
+	}
 	// Makes the initial DB connection and attempts to create the table
 	db, dbConnErr := database.InitializeSongDBConnection()
 	if dbConnErr != nil {

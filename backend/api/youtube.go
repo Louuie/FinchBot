@@ -3,14 +3,12 @@ package api
 import (
 	"backend/twitch-bot/models"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"regexp"
-	"strconv"
 	"strings"
+	"time"
 )
 
 // TODO: Add better commenting for better overall code reading and understandability
@@ -21,35 +19,15 @@ type Duration struct {
 	IsLiveStream      bool
 }
 
-// ParseISO8601Duration parses ISO 8601 durations like "PT3M20S", "PT46S", "PT1H2M30S"
-func ParseISO8601Duration(duration string) (string, float64) {
-	re := regexp.MustCompile(`PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?`)
-	matches := re.FindStringSubmatch(duration)
+func ParseTime(duration string) (string, float64) {
+	formattedTime := strings.Replace(duration, "\x00", "", 1)
+	formattedTime2 := strings.Replace(formattedTime, "\x00\x00", "", 1)
 
-	// SAFETY CHECK
-	if matches == nil || len(matches) < 4 {
-		// Return fallback values, or panic with useful error
-		return "Invalid duration", 0.0
+	songDuration, err := time.ParseDuration(formattedTime2)
+	if err != nil {
+		log.Fatalln(err)
 	}
-
-	hours := 0
-	minutes := 0
-	seconds := 0
-
-	if matches[1] != "" {
-		hours, _ = strconv.Atoi(matches[1])
-	}
-	if matches[2] != "" {
-		minutes, _ = strconv.Atoi(matches[2])
-	}
-	if matches[3] != "" {
-		seconds, _ = strconv.Atoi(matches[3])
-	}
-
-	totalSeconds := hours*3600 + minutes*60 + seconds
-	durationStr := fmt.Sprintf("%02dh:%02dm:%02ds", hours, minutes, seconds)
-
-	return durationStr, float64(totalSeconds)
+	return songDuration.String(), songDuration.Seconds()
 }
 
 func GetSongFromSearch(query string) *models.YouTubeSearch {
@@ -126,7 +104,7 @@ func GetVideoDuration(videoId string) *Duration {
 		songIdDuration = strings.Replace(songIdDuration, "M", "m", 1)
 		songIdDuration = strings.Replace(songIdDuration, "S", "s", 1)
 		songIdDuration = strings.Replace(songIdDuration, "\x00", "", 1)
-		songDuration, songDurationInSeconds := ParseISO8601Duration(songIdDuration)
+		songDuration, songDurationInSeconds := ParseTime(songIdDuration)
 		duration := Duration{
 			Duration:          songDuration,
 			DurationInSeconds: songDurationInSeconds,
