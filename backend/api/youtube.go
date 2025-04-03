@@ -29,7 +29,7 @@ func ParseISO8601Duration(duration string) (string, float64) {
 	// SAFETY CHECK
 	if matches == nil || len(matches) < 4 {
 		// Return fallback values, or panic with useful error
-		return "Invalid duration", "0"
+		return "Invalid duration", 0.0
 	}
 
 	hours := 0
