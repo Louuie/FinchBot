@@ -42,4 +42,37 @@ func AddSong(query string) (*models.AddSongResponse, error) {
 	} else {
 		return nil, errors.New("there was an error adding the song")
 	}
+<<<<<<< HEAD
+=======
+
+}
+
+func PromoteSong(position string) (*models.PromoteSongResponse, error) {
+	// Create the client
+	client := http.Client{}
+	// get the request
+	req, err := http.NewRequest("POST", "http://localhost:3030/promote-song", nil)
+	if err != nil {
+		return nil, err
+	}
+	q := req.URL.Query()
+	q.Add("channel", "Louiee_tv")
+	q.Add("position", position)
+	req.URL.RawQuery = q.Encode()
+	// get the response from the request
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var promoteSongResponse models.PromoteSongResponse
+	json.Unmarshal(body, &promoteSongResponse)
+	if resp.StatusCode == 200 {
+		return &promoteSongResponse, nil
+	}
+	return nil, errors.New("failed to promote the song")
+>>>>>>> 5f1755e (fixed TimeParse function to properly handle ISO 8601 format)
 }
