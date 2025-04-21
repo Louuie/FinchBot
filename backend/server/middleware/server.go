@@ -19,7 +19,7 @@ func Server() *fiber.App {
 
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
-		AllowOrigins:     "*",
+		AllowOrigins:     "https://finchbot.xyz",
 		AllowHeaders:     "Access-Control-Allow-Origin, Content-Type, Origin, Accept",
 	}), logger.New())
 
