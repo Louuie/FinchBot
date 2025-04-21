@@ -207,10 +207,10 @@ export const SongTable: React.FC<Props> = (props) => {
                       <div
                         className="hover:cursor-pointer"
                         onClick={() => {
-                          promoteSong(
-                            Streamer,
-                            song.Id,
-                          );
+                          // promoteSong(
+                          //   Streamer,
+                          //   song.Id,
+                          // );
                           console.log('promoteid', song.Id)
                         }
                         }
@@ -302,10 +302,10 @@ export const SongTable: React.FC<Props> = (props) => {
                       <div
                         className="hover:cursor-pointer"
                         onClick={() => {
-                          promoteSong(
-                            Streamer,
-                            song.Id,
-                          );
+                          // promoteSong(
+                          //   Streamer,
+                          //   song.Id,
+                          // );
                           console.log('promoteid', song.Id)
                         }
                         }
