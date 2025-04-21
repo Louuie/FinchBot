@@ -3,7 +3,6 @@ package messages
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"net"
 	"strings"
 	"twitch-bot/api"
@@ -40,16 +39,16 @@ func HandleMessage(conn net.Conn, line string) {
 				SendMessage(conn, "Successfully added "+addSongResponse.Data[0].Name+" by "+addSongResponse.Data[0].Artist+" to the song queue in position #"+fmt.Sprintf("%v", addSongResponse.Data[0].Position))
 			}
 
-			if strings.HasPrefix(message, "!promote") {
-				promoteSongContent := strings.Replace(message, "!promote", "", 1)
-				promoteSongContentwords := strings.Fields(promoteSongContent)
-				promoteSongResponse, err := api.PromoteSong(promoteSongContentwords[0])
-				if err != nil && promoteSongResponse == nil {
-					SendMessage(conn, "Error "+err.Error()+"")
-					log.Fatalln(err)
-				}
-				SendMessage(conn, promoteSongResponse.Message)
-			}
+			// if strings.HasPrefix(message, "!promote") {
+			// 	promoteSongContent := strings.Replace(message, "!promote", "", 1)
+			// 	promoteSongContentwords := strings.Fields(promoteSongContent)
+			// 	promoteSongResponse, err := api.PromoteSong(promoteSongContentwords[0])
+			// 	if err != nil && promoteSongResponse == nil {
+			// 		SendMessage(conn, "Error "+err.Error()+"")
+			// 		log.Fatalln(err)
+			// 	}
+			// 	SendMessage(conn, promoteSongResponse.Message)
+			// }
 
 			// TODO: Add command for handling the streamers channel
 		}

@@ -312,15 +312,17 @@ export const FormDialog: React.FC<Props> = (props) => {
           </Button>
           <Button
             color="success"
-            onClick={() => {
-              promoteSong(
-                Streamer,
-                Number(songID)
-              );
-              setOpen2(false);
-              setSongID("");
-              setSuccessPromoteSongSnackBarStatus(true);
-            }}
+            onClick={
+              () => {
+              // promoteSong(
+              //   Streamer,
+              //   Number(songID)
+              // );
+              // setOpen2(false);
+              // setSongID("");
+              // setSuccessPromoteSongSnackBarStatus(true);
+            }
+          }
           >
             Promote
           </Button>
