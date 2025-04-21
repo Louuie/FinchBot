@@ -9,17 +9,12 @@ export const deleteSong = async (streamer: string, id: number | undefined, title
       }).then((res) => console.log(res.data)).catch((err) => console.log(err));
   }
 
-<<<<<<< HEAD
   export const promoteSong = async (streamer: string, title: string | undefined, pos1: number | undefined, pos2: number | undefined) => {
     console.log(pos1, pos2)
     axios.post('https://finchbot-backend-2ef58bf717e6.herokuapp.com/promote-song', null, {
-=======
-  export const promoteSong = async (streamer: string, pos: number | undefined) => {
-    axios.post('http://localhost:3030/promote-song', null, {
->>>>>>> 5f1755e (fixed TimeParse function to properly handle ISO 8601 format)
       params: {
         channel: streamer,
-        position: pos,
+        position: pos1,
       }
     }).then((res) => console.log(res.data)).catch((err) => console.log(err));
   }
