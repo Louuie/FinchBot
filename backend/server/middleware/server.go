@@ -29,6 +29,7 @@ func Server() *fiber.App {
 		CookieSecure:   true,
 		CookieSameSite: "None",
 		CookieDomain:   "finchbot.xyz",
+		CookiePath:     "/",
 		Expiration:     time.Hour * 5,
 	})
 

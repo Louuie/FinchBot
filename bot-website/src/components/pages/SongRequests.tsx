@@ -25,7 +25,7 @@ export const SongRequests: React.FC<AuthenticationStatusInterface> = ({authentic
   // useEffect for the SongPlayer so that way we don't have to fetch this data in that individual component rather we can pass it down
   React.useEffect(() => {
     const fetchSong = setInterval(() => {
-      axios.get('https://finchbot-backend-2ef58bf717e6.herokuapp.com/songs', {
+      axios.get('https://api.finchbot.xyz/songs', {
         params: {
           channel: params.streamer,
         }
@@ -37,7 +37,7 @@ export const SongRequests: React.FC<AuthenticationStatusInterface> = ({authentic
   // useEffect for the FormDialog that fetches the Song Queue Settings
   React.useEffect(() => {
     const fetchSongQueueSettings = setInterval(() => {
-      axios.get('https://finchbot-backend-2ef58bf717e6.herokuapp.com/song-queue-settings', {
+      axios.get('https://api.finchbot.xyz/song-queue-settings', {
         params: {
           channel: params.streamer+"_settings",
         }
