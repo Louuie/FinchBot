@@ -95,10 +95,10 @@ export const Login: React.FC = () => {
         {/* if the user isn't logged in then display the login page. */}
         {!isLoggedIn ? 
                     <div className="mb-20">
-                    <div className='text-center font-bold text-4xl'>LouieBot</div>
+                    <div className='text-center font-bold text-4xl'>FinchBot</div>
                     <div className="mt-4 w-80 h-40 rounded-md bg-gray-900 text-center">
                         <div className="flex ml-8">
-                            <div className="mt-4 text-md whitespace-pre-line">Welcome to LouieBot!      Login to get Started!</div>
+                            <div className="mt-4 text-md whitespace-pre-line">Welcome to FinchBot!      Login to get Started!</div>
                         </div>
                         <Button variant="contained" sx={{backgroundColor: '#772CE8', fontWeight: 'bold', mt: 1.5, ':hover': { backgroundColor: '#620be4' }} } onClick={onLogin}>Log in with Twitch</Button>
                     </div>
