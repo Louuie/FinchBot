@@ -314,13 +314,13 @@ export const FormDialog: React.FC<Props> = (props) => {
             color="success"
             onClick={
               () => {
-              // promoteSong(
-              //   Streamer,
-              //   Number(songID)
-              // );
-              // setOpen2(false);
-              // setSongID("");
-              // setSuccessPromoteSongSnackBarStatus(true);
+              promoteSong(
+                Streamer,
+                Number(songID)
+              );
+              setOpen2(false);
+              setSongID("");
+              setSuccessPromoteSongSnackBarStatus(true);
             }
           }
           >

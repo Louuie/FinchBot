@@ -9,8 +9,8 @@ export const deleteSong = async (streamer: string, id: number | undefined, title
       }).then((res) => console.log(res.data)).catch((err) => console.log(err));
   }
 
-  export const promoteSong = async (streamer: string, title: string | undefined, pos1: number | undefined, pos2: number | undefined) => {
-    console.log(pos1, pos2)
+  export const promoteSong = async (streamer: string, pos1: number) => {
+    console.log(pos1)
     axios.post('https://api.finchbot.xyz/promote-song', null, {
       params: {
         channel: streamer,
