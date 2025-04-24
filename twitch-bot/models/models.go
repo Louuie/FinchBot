@@ -5,7 +5,10 @@ type AddSongResponse struct {
 	Message string `json:"message,omitempty"`
 	Data    []Data `json:"data,omitempty"`
 }
-
+type PromoteSongResponse struct {
+	Message string `json:"message,omitempty"`
+	Error   string `json:"error,omitempty"`
+}
 type Data struct {
 	Name              string  `json:"name,omitempty"`
 	Artist            string  `json:"artist,omitempty"`
