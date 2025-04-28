@@ -257,25 +257,17 @@ func PromoteSong(tableName string, from int, db *sql.DB) (string, error) {
 	// Song/Video we are replacing for the "promoted"/updated Song/Video
 
 	res2, err := db.Exec("UPDATE "+tableName+" SET id = $1 WHERE id = $2;", from, 1)
-	res2, err := db.Exec("UPDATE "+tableName+" SET id = $1 WHERE id = $2;", from, 1)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	// Song/Video we are "promoting"/updating (the reason we need the title is because the IDs would conflict with eachother)
 	res, err := db.Exec("UPDATE "+tableName+" SET id = $1 WHERE id = $2 AND title = $3;", 1, from, songTitle)
-	// Song/Video we are "promoting"/updating (the reason we need the title is because the IDs would conflict with eachother)
-	res, err := db.Exec("UPDATE "+tableName+" SET id = $1 WHERE id = $2 AND title = $3;", 1, from, title)
 	if err, ok := err.(*pq.Error); ok {
 		log.Fatalln(err)
 		return "", err
 	}
 	_, err = res.RowsAffected()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	_, err = res2.RowsAffected()
 	if err != nil {
 		log.Fatalln(err)
 	}
