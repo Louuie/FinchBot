@@ -1,56 +1,45 @@
 {
   "name": "bot-website",
-  "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@emotion/react": "^11.9.3",
-    "@emotion/styled": "^11.9.3",
-    "@mui/icons-material": "^5.11.0",
-    "@mui/material": "^5.8.6",
-    "@mui/x-data-grid": "^5.17.25",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^13.0.0",
-    "@testing-library/user-event": "^13.2.1",
-    "@types/axios": "^0.14.0",
-    "@types/jest": "^27.0.1",
-    "@types/node": "^16.7.13",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
-    "autoprefixer": "^10.4.7",
-    "axios": "^0.27.2",
-    "postcss": "^8.4.14",
-    "react": "^18.2.0",
-    "react-bootstrap-icons": "^1.8.4",
-    "react-dom": "^18.2.0",
-    "react-player": "^2.12.0",
-    "react-router-dom": "^6.3.0",
-    "react-scripts": "5.0.1",
-    "tailwind-scrollbar-hide": "^1.1.7",
-    "tailwindcss": "^3.1.4",
-    "typescript": "^4.4.2",
-    "web-vitals": "^2.1.0"
-  },
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app"
-    ]
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.0.2",
+    "@mui/material": "^7.0.2",
+    "@mui/system": "^7.0.2",
+    "@types/react-router-dom": "^5.3.3",
+    "axios": "^1.9.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-player": "^2.16.0",
+    "react-router-dom": "^7.5.2",
+    "tailwind-scrollbar-hide": "^2.0.0",
+    "tw-animate-css": "^1.2.8"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@types/path-browserify": "^1.0.3",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react-swc": "^3.8.0",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.22.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^16.0.0",
+    "path-browserify": "^1.0.1",
+    "postcss": "^8.5.3",
+    "tailwindcss": "3.4.17",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.26.1",
+    "vite": "^6.3.1"
   }
 }

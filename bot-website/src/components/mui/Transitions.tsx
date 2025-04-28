@@ -1,5 +1,5 @@
-import Slide from '@mui/material/Slide/Slide';
-import { TransitionProps } from '@mui/material/transitions/transition';
+import Slide from '@mui/material/Slide';
+import { TransitionProps } from '@mui/material/transitions';
 import * as React from 'react';
 
 export const Transition = React.forwardRef(function Transition(
