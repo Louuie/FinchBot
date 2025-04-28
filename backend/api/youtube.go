@@ -14,9 +14,9 @@ import (
 // TODO: Add better commenting for better overall code reading and understandability
 
 type Duration struct {
-	Duration     string
+	Duration          string
 	DurationInSeconds float64
-	IsLiveStream bool
+	IsLiveStream      bool
 }
 
 func ParseTime(duration string) (string, float64) {
@@ -29,7 +29,6 @@ func ParseTime(duration string) (string, float64) {
 	}
 	return songDuration.String(), songDuration.Seconds()
 }
-
 
 func GetSongFromSearch(query string) *models.YouTubeSearch {
 	songSearchChan := make(chan *models.YouTubeSearch)
@@ -107,9 +106,9 @@ func GetVideoDuration(videoId string) *Duration {
 		songIdDuration = strings.Replace(songIdDuration, "\x00", "", 1)
 		songDuration, songDurationInSeconds := ParseTime(songIdDuration)
 		duration := Duration{
-			Duration:     songDuration,
+			Duration:          songDuration,
 			DurationInSeconds: songDurationInSeconds,
-			IsLiveStream: false,
+			IsLiveStream:      false,
 		}
 		videoDurationChan <- &duration
 		close(videoDurationChan)

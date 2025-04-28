@@ -105,10 +105,10 @@ Docker is required for this project to setup a local Postgres database. We use t
 
 ### Starting the Server
 
-Once you have completed all the steps above, you can finally start the Fiber server. To do so Cd into the LouieBot-backend directory if you haven't already.
+Once you have completed all the steps above, you can finally start the Fiber server. To do so Cd into the FinchBot-backend directory if you haven't already.
 
 ``` zsh
-cd LouieBot-backend/
+cd FinchBot-backend/
 ```
 
 Then you can simply start the server by running the following command into the terminal.

@@ -16,15 +16,16 @@ import (
 // Fetches the Twitch User Access Token.
 // Then returns the TwitchAuthResponse.
 // The struct of the TwitchAuthResponse can be found below for deconstruction purposes.
-// 	type TwitchAuthResponse struct {
-//     AccessToken  string
-//     ExpiresIn    float64
-//     RefreshToken string
-//     Scope        []string
-//     TokenType    string
-//     Status       float64
-//     Message      string
-// }
+//
+//		type TwitchAuthResponse struct {
+//	    AccessToken  string
+//	    ExpiresIn    float64
+//	    RefreshToken string
+//	    Scope        []string
+//	    TokenType    string
+//	    Status       float64
+//	    Message      string
+//	}
 func GetAccessToken(code string) (*models.TwitchAuthResponse, error) {
 	url := "https://id.twitch.tv/oauth2/token"
 	client := http.Client{}
@@ -37,8 +38,9 @@ func GetAccessToken(code string) (*models.TwitchAuthResponse, error) {
 	q.Add("client_secret", os.Getenv("TWITCH_CLIENT_SECRET"))
 	q.Add("code", code)
 	q.Add("grant_type", "authorization_code")
-	q.Add("redirect_uri", "http://localhost:3000")
+	q.Add("redirect_uri", "https://finchbot.xyz")
 	req.URL.RawQuery = q.Encode()
+	fmt.Println(req.URL.Query())
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -112,19 +114,20 @@ func RevokeAccessToken(token string) error {
 // Gets the Users Information.
 // Then returns the TwitchUserInfoResponse
 // The Struct of the TwitchUserInfoResponse can be found below for deconstruction purposes.
-// 	type TwitchUserInfoResponse struct {
-// 		Data []struct {
-// 			ID              string
-// 			Login           string
-// 			DisplayName     string
-// 			Type            string
-// 			BroadcasterType string
-// 			Description     string
-// 			ProfileImageURL string
-// 			OfflineImageURL string
-// 			ViewCount       int
-// 			Email           string
-// 			CreatedAt       time.Time
+//
+//	type TwitchUserInfoResponse struct {
+//		Data []struct {
+//			ID              string
+//			Login           string
+//			DisplayName     string
+//			Type            string
+//			BroadcasterType string
+//			Description     string
+//			ProfileImageURL string
+//			OfflineImageURL string
+//			ViewCount       int
+//			Email           string
+//			CreatedAt       time.Time
 //	 	}
 //	}
 func GetUserInfo(token string) (*models.TwitchUserInfoResponse, error) {

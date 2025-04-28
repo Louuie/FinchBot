@@ -93,6 +93,16 @@ func SongRequest(c *fiber.Ctx) error {
 			"error": clientData.Message,
 		})
 	}
+	if songDuration.DurationInSeconds < 60 {
+		clientData := models.ClientData{
+			Status:  "fail",
+			Message: "The video/song is less than a minute",
+			Data:    nil,
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(map[string]interface{}{
+			"error": clientData.Message,
+		})
+	}
 	// Makes the initial DB connection and attempts to create the table
 	db, dbConnErr := database.InitializeSongDBConnection()
 	if dbConnErr != nil {
@@ -312,7 +322,6 @@ func PromoteSong(c *fiber.Ctx) error {
 	type Query struct {
 		Channel  string `query:"channel"`
 		Position int    `query:"position"`
-		Title    string `query:"title"`
 	}
 	q := new(Query)
 	if err := c.QueryParser(q); err != nil {
@@ -330,25 +339,20 @@ func PromoteSong(c *fiber.Ctx) error {
 			"error": "missing channel to delete the song from",
 		})
 	}
-	if q.Title == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
-			"error": "missing channel to delete the song from",
-		})
-	}
 	db, dbConnErr := database.InitializeSongDBConnection()
 	if dbConnErr != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 			"error": dbConnErr.Error(),
 		})
 	}
-	err := database.PromoteSong(q.Channel, q.Position, q.Title, db)
+	title, err := database.PromoteSong(q.Channel, q.Position, db)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(&fiber.Map{
 			"error": err.Error(),
 		})
 	}
 	return c.Status(fiber.StatusOK).JSON(&fiber.Map{
-		"message": "Check console for message!",
+		"message": title + " has been promoted!",
 	})
 
 }

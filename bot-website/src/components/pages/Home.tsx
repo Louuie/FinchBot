@@ -1,39 +1,70 @@
-
-import axios from 'axios';
-import * as React from 'react'
-import { AuthenticationStatusInterface } from '../../interfaces/Auth';
-import { HomeNavBar } from '../ui/HomeNavBar';
-import gif from '../../3.0.gif';
-import { Button } from '@mui/material';
+import * as React from "react";
+import { ResponsiveAppBar } from "../mui/ResponsiveAppBar";
+import { Alert, AlertTitle, Collapse, IconButton, Card, Button, Box, Grid, TextField, Divider, Typography } from "@mui/material";
+import { Close } from "@mui/icons-material";
 
 export const Home: React.FC = () => {
-  const [authData, setAuthData] = React.useState<AuthenticationStatusInterface>();
-  React.useEffect(() => {
-    axios.defaults.withCredentials = true;
-    axios.post('http://localhost:3030/auth/twitch/validate').then((res) => {
-      const auth : AuthenticationStatusInterface = res.data
-      if (!auth.error) setAuthData(auth);
-    })
-  }, []);
-
-  return (
-    <div>
-      <HomeNavBar/>
-      <div className='flex justify-center items-center w-full h-full'>
-        <span className='md:mr-[425px] md:whitespace-pre-line md:w-[420px] md:h-[300px] md:ml-4 md:mt-[1rem] md:text-[42px] font-semibold xxxl:text-[58px] text-[38px] w-full h-full leading-[96px] xxxl:-mt-1 mt-34'>Open Source, Free, Simple and easy to use Song Request Twitch Bot.</span>
-      </div>
-      <div className='flex justify-center items-center flex-wrap w-full'>
-        <img src={gif} alt='NODDERS' className='hidden md:block  md:w-[375px] md:h-[265px] md:ml-[25rem] md:-mt-[22rem] w-[186px] h-[178px] xxxl:ml-[40rem] xxxl:-mt-60 xxxl:w-[275px] xxxl:h-[225px] -mt-[65rem]'/>
-      </div>
-      <div className='flex flex-1 w-full md:justify-center md:items-center justify-start items-start md:mt-56 mt-12 mr-[36rem] md:-mx-[18rem]'>
-          <Button variant="contained" className='bg-[#121E40] text-gray-200 mr-8 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333] mx-2'>Learn More</Button>
-          { !authData?.authenticated ? <Button href='/login' variant="contained" className='bg-[#121E40] text-gray-200 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]'>Login</Button> : <Button className='bg-[#121E40] text-gray-200 bg-opacity-50 font-bold rounded-2xl border border-solid whitespace-nowrap border-[#343333]' href={`/dashboard/${authData.display_name}`}>Dashboard</Button> }
-      </div>
-      <div className='flex justify-center items-center'>
-        <div className='mt-36 bg-[#171E32] w-[856px] h-[331px] rounded-3xl'>
-          <a className='font-semibold text-3xl'>FinchBot is finally here.</a>
+    const [open, setOpen] = React.useState(true);
+    return (
+        <div>
+            <ResponsiveAppBar authenticated={false} />
+            <Box mx={20} my={4}>
+            <Collapse in={open}>
+                <Alert
+                    severity="error"
+                    action={
+                        <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={() => {
+                                setOpen(false);
+                            }}
+                        >
+                            <Close fontSize="inherit" />
+                        </IconButton>
+                    }
+                >
+                    <AlertTitle>FinchBot is not joined to your channel!</AlertTitle>
+                    Join FinchBot to your channel to allow it to handle song-requests, respond to commands, moderate your chat and engage with your community.
+                </Alert>
+            </Collapse>
+            <Grid container spacing={3}>
+                <Grid size={2}>
+                    <Card sx={{ my: 4, px: 4, py: 2, width: '100%' }} >
+                        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 18, my:2 }}>
+                            Bot Actions
+                        </Typography>
+                        <Divider/>
+                        <Button variant="contained" sx={{width: '100%'}}>Join Channel</Button>
+                    </Card>
+                </Grid>
+                <Grid size={3}>
+                    <Card sx={{ my: 4, px: 4, py: 2, width: '100%' }}>
+                        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 18 }}>
+                            Stream Controls
+                        </Typography>
+                        <Divider/>
+                        <Box className="my-2">
+                        <TextField label="Stream Title" variant="outlined" focused sx={{my:2}}/>
+                        <TextField label="Stream Game" variant="outlined" focused/>
+                        </Box>
+                        <Divider/>
+                        <Button disabled>Reset</Button>
+                        <Button disabled>Update</Button>
+                    </Card>
+                </Grid>
+                <Grid size={7}>
+                    <Card sx={{ my: 4, px: 4, py: 2, width: '100%' }}>
+                        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 18 }}>
+                            Audit Log
+                        </Typography>
+                        <Divider/>
+                        <Button variant="contained">Join Channel</Button>
+                    </Card>
+                </Grid>
+            </Grid>
+            </Box>
         </div>
-      </div>
-    </div>
-  )
+    )
 }

@@ -91,9 +91,8 @@ export const FormDialog: React.FC<Props> = (props) => {
     setErrorDeleteAllSongsSnackBarStatus,
   ] = React.useState(false);
 
-  const [song1ID, setSong1ID] = React.useState("");
-  const [song1Title, setSong1Title] = React.useState("");
-  const [song2ID, setSong2ID] = React.useState("");
+  const [songID, setSongID] = React.useState("");
+  const [songTitle, setSongTitle] = React.useState("");
 
   // state variable for song queue status
   const [songQueueStatus, setSongQueueStatus] = React.useState<Boolean>();
@@ -110,15 +109,11 @@ export const FormDialog: React.FC<Props> = (props) => {
   }, [status, song_limit, user_limit])
 
   const handleSong1Change = (event: SelectChangeEvent) => {
-    setSong1ID(event.target.value as string);
-  };
-
-  const handleSong2Change = (event: SelectChangeEvent) => {
-    setSong2ID(event.target.value as string);
+    setSongID(event.target.value as string);
   };
 
   const handleMenuItemClick = (event: any) => {
-    setSong1Title(event.nativeEvent.target.outerText);
+    setSongTitle(event.nativeEvent.target.outerText);
   };
 
   const handleSettingMenuItemClick = (event: SelectChangeEvent) => {
@@ -144,7 +139,7 @@ export const FormDialog: React.FC<Props> = (props) => {
 
   const deleteAllSongs = async (channel: string) => {
     axios
-      .post("http://localhost:3030/delete-all-songs", null, {
+      .post("https://api.finchbot.xyz/delete-all-songs", null, {
         params: {
           channel: channel,
         },
@@ -159,7 +154,7 @@ export const FormDialog: React.FC<Props> = (props) => {
 
   const onSubmit = () => {
     axios
-      .get("http://localhost:3030/song-request", {
+      .get("https://api.finchbot.xyz/song-request", {
         params: {
           channel: Streamer,
           user: "testuser_" + (Math.random() + 1).toString(36).substring(7),
@@ -283,12 +278,12 @@ export const FormDialog: React.FC<Props> = (props) => {
         {songs.length !== 0 ? (
           <DialogContent>
             <Box padding={4}>
-              <InputLabel id="demo-simple-select-label">Song #1</InputLabel>
+              <InputLabel id="demo-simple-select-label">Song</InputLabel>
               <Box paddingBottom={2}>
                 <Select
                   labelId="demo-simple-select-label"
                   defaultValue=""
-                  value={song1ID}
+                  value={songID}
                   label="Song #1"
                   onChange={handleSong1Change}
                   sx={{ width: '380px' }}
@@ -304,21 +299,6 @@ export const FormDialog: React.FC<Props> = (props) => {
                   ))}
                 </Select>
               </Box>
-              <InputLabel id="demo-simple-select-label">Song #2</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                value={song2ID}
-                label="Song #2"
-                defaultValue=""
-                onChange={handleSong2Change}
-                sx={{ width: '380px' }}
-              >
-                {songs.map((song: Songs) => (
-                  <MenuItem value={song.Id} key={song.Id} sx={{ width: '380px' }}>
-                    {song.Title}
-                  </MenuItem>
-                ))}
-              </Select>
             </Box>
           </DialogContent>
         ) : (
@@ -332,18 +312,17 @@ export const FormDialog: React.FC<Props> = (props) => {
           </Button>
           <Button
             color="success"
-            onClick={() => {
+            onClick={
+              () => {
               promoteSong(
                 Streamer,
-                song1Title,
-                Number(song1ID),
-                Number(song2ID)
+                Number(songID)
               );
               setOpen2(false);
-              setSong1ID("");
-              setSong2ID("");
+              setSongID("");
               setSuccessPromoteSongSnackBarStatus(true);
-            }}
+            }
+          }
           >
             Promote
           </Button>
@@ -490,7 +469,7 @@ export const FormDialog: React.FC<Props> = (props) => {
           severity="success"
           sx={{ width: "100%" }}
         >
-          {`"${song1Title}" has been promoted in the queue!`}
+          {`"${songTitle}" has been promoted in the queue!`}
         </Alert>
       </Snackbar>
 

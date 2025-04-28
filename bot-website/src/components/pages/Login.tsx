@@ -19,9 +19,10 @@ export const Login: React.FC = () => {
 
     useEffect(() => {
         setLoading(true);
-        axios.post('http://localhost:3030/auth/twitch/validate').then((res) => {
+        axios.post('https://api.finchbot.xyz/auth/twitch/validate').then((res) => {
             const login: Auth = res.data;
             console.log(login);
+            console.log(res.data);
             if (!login.error) setIsLoggedIn(true);
         }).catch((err) => { /* console.log(err); */ })
         setTimeout(() => setLoading(false), 250);
@@ -33,13 +34,13 @@ export const Login: React.FC = () => {
     const onLogin = async () => {
         const authUri = `https://id.twitch.tv/oauth2/authorize` +
         `?response_type=code` +
-        `&client_id=wtaln1ogegdpmq0cw7x1mxw1nmwpsx` +
-        `&redirect_uri=http://localhost:3000/auth/callback` +
+        `&client_id=m6ydi41sdy1oqh52n8s1lnn2905q7q` +
+        `&redirect_uri=https://finchbot.xyz/auth/callback` +
         `&scope=openid user_read channel:manage:broadcast&`
         const code = await getCode(authUri);
         setLoading(true);
         console.log(code);
-        axios.post('http://localhost:3030/auth/twitch', null, {
+        axios.post('https://api.finchbot.xyz/auth/twitch', null, {
             params: {
                 code: code,
             }
@@ -47,7 +48,7 @@ export const Login: React.FC = () => {
             const loginData: Auth = res.data;
             console.log(res.data, loginData);
             setIsLoggedIn(true);
-            axios.get('http://localhost:3030/twitch/user').then((res) => {
+            axios.get('https://api.finchbot.xyz/twitch/user').then((res) => {
                 const userData : Auth = res.data
                 if (!userData.error) setDisplayName(res.data[0].display_name); console.log(displayName);
             }).catch((err) => { console.log(err); })
@@ -57,7 +58,7 @@ export const Login: React.FC = () => {
 
     const onLogout = async () => {
         setLoading(true)
-        axios.post('http://localhost:3030/auth/twitch/revoke').then((res) => {
+        axios.post('https://api.finchbot.xyz/auth/twitch/revoke').then((res) => {
             const logoutData: Auth = res.data;
             if (!logoutData.error) setIsLoggedIn(false); setLoading(false); console.log(res.data)
         }).catch((err) => { console.log(err) })
@@ -94,10 +95,10 @@ export const Login: React.FC = () => {
         {/* if the user isn't logged in then display the login page. */}
         {!isLoggedIn ? 
                     <div className="mb-20">
-                    <div className='text-center font-bold text-4xl'>LouieBot</div>
+                    <div className='text-center font-bold text-4xl'>FinchBot</div>
                     <div className="mt-4 w-80 h-40 rounded-md bg-gray-900 text-center">
                         <div className="flex ml-8">
-                            <div className="mt-4 text-md whitespace-pre-line">Welcome to LouieBot!      Login to get Started!</div>
+                            <div className="mt-4 text-md whitespace-pre-line">Welcome to FinchBot!      Login to get Started!</div>
                         </div>
                         <Button variant="contained" sx={{backgroundColor: '#772CE8', fontWeight: 'bold', mt: 1.5, ':hover': { backgroundColor: '#620be4' }} } onClick={onLogin}>Log in with Twitch</Button>
                     </div>
