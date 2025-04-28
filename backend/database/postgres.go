@@ -237,11 +237,6 @@ func PromoteSong(tableName string, from int, db *sql.DB) (string, error) {
 	// 1.) Defintely don't need the title
 	// 2.) Also don't need the 'to' variable because this is always going to be the firs position to so 1 ✅
 	// 3.) Can stay the same, most likely don't need to update
-func PromoteSong(tableName string, from int, title string, db *sql.DB) error {
-	// TODO: bac-21-make-promote-call-more-effecient
-	// 1.) Defintely don't need the title
-	// 2.) Also don't need the 'to' variable because this is always going to be the firs position to so 1 ✅
-	// 3.) Can stay the same, most likely don't need to update
 
 	// Querying through to check if the VideoID that is passed is actually in the index/position value the user passed to prevent errors.
 	titleQuery, err := db.Query("SELECT title FROM "+tableName+" WHERE id = $1", from)
