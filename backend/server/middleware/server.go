@@ -19,12 +19,17 @@ func Server() *fiber.App {
 
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
-		AllowOrigins:     "*",
-		AllowHeaders:     "Access-Control-Allow-Origin, Content-Type, Origin, Accept",
+		AllowOrigins:     "https://finchbot.xyz",
+		AllowHeaders:     "Access-Control-Allow-Origin, Content-Type, Origin, Accept, Authorization",
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
 	}), logger.New())
 
 	store = session.New(session.Config{
 		CookieHTTPOnly: true,
+		CookieSecure:   true,
+		CookieSameSite: "None",
+		CookieDomain:   "finchbot.xyz",
+		CookiePath:     "/",
 		Expiration:     time.Hour * 5,
 	})
 

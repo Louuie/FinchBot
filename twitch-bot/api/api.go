@@ -12,7 +12,7 @@ import (
 
 func AddSong(query string) (*models.AddSongResponse, error) {
 	client := http.Client{}
-	req, err := http.NewRequest("GET", "http://localhost:3030/song-request", nil)
+	req, err := http.NewRequest("GET", "https://finchbot.netlify.app/song-request", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func AddSong(query string) (*models.AddSongResponse, error) {
 
 }
 
-func PromoteSong(title string, position1 string, position2 string) (*models.PromoteSongResponse, error) {
+func PromoteSong(position string) (*models.PromoteSongResponse, error) {
 	// Create the client
 	client := http.Client{}
 	// get the request
@@ -55,9 +55,7 @@ func PromoteSong(title string, position1 string, position2 string) (*models.Prom
 	}
 	q := req.URL.Query()
 	q.Add("channel", "Louiee_tv")
-	q.Add("title", title)
-	q.Add("position1", position1)
-	q.Add("position2", position2)
+	q.Add("position", position)
 	req.URL.RawQuery = q.Encode()
 	// get the response from the request
 	resp, err := client.Do(req)

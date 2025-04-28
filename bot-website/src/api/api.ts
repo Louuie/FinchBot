@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const deleteSong = async (streamer: string, id: number | undefined, title: string | undefined) => {
-    axios.get('http://localhost:3030/song-request-delete', {
+    axios.get('https://api.finchbot.xyz/song-request-delete', {
         params: {
           channel: streamer,
           id: id,
@@ -9,14 +9,12 @@ export const deleteSong = async (streamer: string, id: number | undefined, title
       }).then((res) => console.log(res.data)).catch((err) => console.log(err));
   }
 
-  export const promoteSong = async (streamer: string, title: string | undefined, pos1: number | undefined, pos2: number | undefined) => {
-    console.log(pos1, pos2)
-    axios.post('http://localhost:3030/promote-song', null, {
+  export const promoteSong = async (streamer: string, pos1: number) => {
+    console.log(pos1)
+    axios.post('https://api.finchbot.xyz/promote-song', null, {
       params: {
         channel: streamer,
-        title: title,
-        position1: pos1,
-        position2: pos2,
+        position: pos1,
       }
     }).then((res) => console.log(res.data)).catch((err) => console.log(err));
   }
@@ -24,7 +22,7 @@ export const deleteSong = async (streamer: string, id: number | undefined, title
 
 
   export const logout = async () => {
-    axios.post('http://localhost:3030/auth/twitch/revoke', null, {withCredentials: true}).then((res) => console.log(res.data)).catch((err) => console.log(err))
+    axios.post('https://api.finchbot.xyz/auth/twitch/revoke', null, {withCredentials: true}).then((res) => console.log(res.data)).catch((err) => console.log(err))
   }
 
 
@@ -39,7 +37,7 @@ export const formatDuration = (duration: number) => {
 
   // onEnd function that deletes the song/video that was playing that has "just ended".
   export const onSongEnd = (streamer: string, songID: number | undefined): void => {
-    axios.get('http://localhost:3030/song-request-delete', {
+    axios.get('https://api.finchbot.xyz/song-request-delete', {
       params: {
         channel: 'Louiee_tv',
         id: songID,
@@ -51,7 +49,7 @@ export const formatDuration = (duration: number) => {
 
 // updates the settings menu
 export const onSettingsUpdate = (channel: string, status: boolean, song_limit: number, user_limit: number) => {
-  axios.post('http://localhost:3030/song-queue-settings', null, {
+  axios.post('https://api.finchbot.xyz/song-queue-settings', null, {
     params: {
       channel: channel + '_settings',
       status: status,
@@ -63,7 +61,7 @@ export const onSettingsUpdate = (channel: string, status: boolean, song_limit: n
 
 
 export const fetchSongQueueSettings = async (channel : string) => {
-  const { data } = await axios.get('http://localhost:3030/song-queue-settings', {
+  const { data } = await axios.get('https://api.finchbot.xyz/song-queue-settings', {
     params: {
       channel: channel
     }

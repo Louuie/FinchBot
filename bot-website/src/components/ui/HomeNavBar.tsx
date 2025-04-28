@@ -11,7 +11,7 @@ const Socials = {
   },
   Github: {
     icon: Github,
-    link: 'https://github.com/Louuie/LouieBot'
+    link: 'https://github.com/Louuie/FinchBot'
   },
 }
 
