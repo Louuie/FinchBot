@@ -3,7 +3,7 @@ import * as React from 'react';
 import { AuthenticationStatusInterface } from '../../interfaces/Auth';
 import { HomeNavBar } from '../ui/HomeNavBar';
 import { Button } from '@mui/material';
-import finchBotLogo from '..FinchBot_logo.png';
+import finchBotLogo from '../../assets/FinchBot_logo.png';
 
 export const Home: React.FC = () => {
   const [authData, setAuthData] = React.useState<AuthenticationStatusInterface>();
