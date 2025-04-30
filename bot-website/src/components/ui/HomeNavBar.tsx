@@ -1,35 +1,49 @@
 import * as React from 'react';
 import { Twitch, Discord, Github } from 'react-bootstrap-icons';
+import { Link } from 'react-router-dom';
+
 const Socials = {
   Twitch: {
     icon: Twitch,
-    link: 'https://twitch.tv/DaCommunityBot'
+    link: 'https://twitch.tv/DaCommunityBot',
+    label: 'Twitch'
   },
   Discord: {
     icon: Discord,
-    link: 'https://discord.gg'
+    link: 'https://discord.gg',
+    label: 'Discord'
   },
   Github: {
     icon: Github,
-    link: 'https://github.com/Louuie/FinchBot'
+    link: 'https://github.com/Louuie/FinchBot',
+    label: 'GitHub'
   },
 }
 
 export const HomeNavBar: React.FC = () => {
     return (
-        <nav className="bg-[#091126] px-2 sm:px-4 py-2.5 rounded-[25px] xxxl:w-[835px] h-[75px] w-full mx-auto mt-4 flex flex-1">
-        <div className="container flex flex-row justify-between items-center mx-auto">
-          <div className="flex flex-1 items-center">               
-              <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">FinchBot</span>
-          </div>
-            <div className='hidden w-full md:block md:w-auto items-center ml-[28rem]'>
-              <div className='flex flex-1 -ml-20'>
-                <Socials.Twitch.icon size={22} className='hover:cursor-pointer' onClick={(() => window.open(Socials.Twitch.link))}/>
-                <Socials.Discord.icon size={22} className='ml-4 hover:cursor-pointer' onClick={(() => window.open(Socials.Discord.link))}/>
-                <Socials.Github.icon size={22} className='ml-4 hover:cursor-pointer' onClick={(() => window.open(Socials.Github.link))}/>
-              </div> 
+        <nav className="backdrop-blur-sm bg-[#0F1A30]/80 px-4 sm:px-6 py-4 rounded-2xl w-full max-w-7xl mx-auto mt-6 flex items-center border border-blue-900/40 shadow-lg">
+          <div className="container flex justify-between items-center mx-auto">
+            <div className="flex items-center">
+              <Link to="/" className="flex items-center no-underline">
+                <span className="self-center text-2xl font-bold text-gray-100 ml-2">FinchBot</span>
+              </Link>
+            </div>            
+            <div className="flex items-center space-x-4">
+              {Object.entries(Socials).map(([key, social]) => (
+                <a 
+                  key={key}
+                  href={social.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  className="text-blue-300 hover:text-white transition-all duration-200 hover:scale-110"
+                >
+                  <social.icon size={22} />
+                </a>
+              ))}
             </div>
-        </div>
-      </nav>
+          </div>
+        </nav>
     );
 }
