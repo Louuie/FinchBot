@@ -3,8 +3,9 @@ import * as React from 'react'
 import { NavLink, useLocation, useParams } from 'react-router-dom'
 import { ResponsiveAppBar } from '../mui/ResponsiveAppBar'
 import { Dashboard as DashboardIcon, FormatListBulleted, QueueMusic } from '@mui/icons-material'
+import { AuthenticationStatusInterface } from '../../interfaces/Auth'
 
-export const Commands: React.FC = () => {
+export const Commands: React.FC<AuthenticationStatusInterface> = ({authenticated}) => {
     const drawerWidth = 240
     const params = useParams()
     const drawerItems = [
@@ -15,7 +16,7 @@ export const Commands: React.FC = () => {
     const location = useLocation()
     return (
         <div>
-            <ResponsiveAppBar authenticated={false} />
+            <ResponsiveAppBar authenticated={authenticated} />
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
                 <Drawer

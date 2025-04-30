@@ -4,9 +4,10 @@ import { Alert, AlertTitle, Collapse, IconButton, Card, Button, Box, Grid, TextF
 import { Close, FormatListBulleted, QueueMusic } from "@mui/icons-material";
 import { Dashboard as DashboardIcon } from "@mui/icons-material";
 import { NavLink, useLocation, useParams } from "react-router-dom";
+import { AuthenticationStatusInterface } from "../../interfaces/Auth";
 const drawerWidth = 240;
 
-export const Dashboard: React.FC = () => {
+export const Dashboard: React.FC<AuthenticationStatusInterface> = ({authenticated}) => {
     const params = useParams()
     const drawerItems = [
         { text: 'Dashboard', icon: <DashboardIcon />, path: `/c/${params.streamer}/dashboard` },
@@ -17,7 +18,7 @@ export const Dashboard: React.FC = () => {
     const [open, setOpen] = React.useState(true);
     return (
         <div>
-            <ResponsiveAppBar authenticated={false} />
+            <ResponsiveAppBar authenticated={authenticated} />
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
                 <Drawer
