@@ -34,7 +34,6 @@ export const App: React.FC = () => {
         exclusiveUsers.map((exclusiveUser: string) => {
           console.log(exclusiveUser, authData.display_name);
           if (exclusiveUser === authData.display_name?.toLocaleLowerCase()) {
-            console.log("YOOOOOOO!!!!!!!!");
             axios
               .post("https://api.finchbot.xyz/song-queue-settings", null, {
                 params: {
@@ -58,12 +57,12 @@ export const App: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<Callback />} />
-        <Route path="/c/:streamer/dashboard" element={<Dashboard/>} />
+        <Route path="/c/:streamer/dashboard" element={<Dashboard authenticated={isAuthed}/>} />
         <Route
           path="/c/:streamer/song-requests"
           element={<SongRequests authenticated={isAuthed} />}
         />
-        <Route path="/c/:streamer/commands" element={<Commands/>}/>
+        <Route path="/c/:streamer/commands" element={<Commands authenticated={isAuthed}/>}/>
       </Routes>
     </ThemeProvider>
   );

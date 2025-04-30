@@ -8,7 +8,7 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
+import FinchBot_logo from '../../assets/FinchBot_logo_large.png'
 import {
   AuthenticationStatusInterface,
   TwitchUserInfoInterface,
@@ -63,7 +63,12 @@ export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
   return (
     <AppBar position="fixed" elevation={0} className="bg-[#212121]" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar disableGutters className="w-full ">
-        <AdbIcon className="md:flex mr-1 ml-1" />
+        <img
+          src={FinchBot_logo}
+          alt="FinchBot Logo"
+          className="h-12 w-12 ml-2 mr-2"
+        />
+
         <Typography
           variant="h6"
           noWrap
