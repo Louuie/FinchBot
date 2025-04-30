@@ -48,7 +48,7 @@ export const Home: React.FC = () => {
           </div>
           <div className='md:w-1/2'>
           <img 
-                  src="https://i.imgur.com/ezhKz4f.png" 
+                  src="/src/assets/FinchBot_logo.png" 
                   alt="FinchBot Logo" 
                   className="max-w-[70%] max-h-[70%] object-contain mb-4"
                 />
