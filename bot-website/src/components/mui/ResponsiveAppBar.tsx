@@ -68,7 +68,7 @@ export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
         noWrap
         component="a"
         href="/"
-        className="mr-2 ml-2 hidden md:visible md:flex font-bold tracking-[0.3rem]"
+        className="mr-2 ml-2 hidden md:visible md:flex font-bold tracking-[0.3rem] text-gray-100 no-underline"
       >
         FINCHBOT
       </Typography>
