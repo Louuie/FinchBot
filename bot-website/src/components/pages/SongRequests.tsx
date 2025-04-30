@@ -49,11 +49,11 @@ export const SongRequests: React.FC<AuthenticationStatusInterface> = ({authentic
 
 
   return (
-    <div className='w-full min-h-screen md:min-h-screen xl:min-h-screen xxxl:min-h-screen bg-[#292929]'>
+    <div className='w-full min-h-screen md:min-h-screen xl:min-h-screen xxxl:min-h-screen '>
         <ResponsiveAppBar authenticated={authenticated}/> 
-        <div className='flex flex-col w-full h-full'>
+        <div className='!flex !flex-col !w-full !h-full'>
           <FormDialog Streamer={params.streamer as string} songs={songs} authenticated={authenticated} status={songQueueSettings?.status} song_limit={songQueueSettings?.song_limit} user_limit={songQueueSettings?.user_limit}/>
-          <div className='flex justify-center align-middle items-center'>
+          <div className='!flex justify-center align-middle items-center'>
             <SongPlayer Streamer={params.streamer as string} songs={songs} Id={song?.Id} Videoid={song?.Videoid} Title={song?.Title} Artist={song?.Artist} DurationInSeconds={song?.DurationInSeconds} Userid={song?.Userid}  />
           </div>
           <div className='flex flex-1 items-start align-top lg:items-center lg:align-middle xl:items-center xl:align-middle xxl:items-center xxl:align-middle xxxl:items-center xxxl:align-middle text-gray-300 lg:mb-[12rem] lg:-my-6 xxl:my-1 xxxl:my-2 xxl:mb-[12rem] xxxl:mb-[24rem]'>

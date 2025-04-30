@@ -15,7 +15,6 @@ const darkTheme = createTheme({
 });
 
 const exclusiveUsers = ["louiee_tv"];
-
 export const App: React.FC = () => {
   // state variable for auth
   const [isAuthed, setIsAuthed] = React.useState(false);
