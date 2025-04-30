@@ -3,6 +3,7 @@ import * as React from 'react';
 import { AuthenticationStatusInterface } from '../../interfaces/Auth';
 import { HomeNavBar } from '../ui/HomeNavBar';
 import { Button } from '@mui/material';
+import finchBotLogo from '..FinchBot_logo.png';
 
 export const Home: React.FC = () => {
   const [authData, setAuthData] = React.useState<AuthenticationStatusInterface>();
@@ -48,7 +49,7 @@ export const Home: React.FC = () => {
           </div>
           <div className='md:w-1/2'>
           <img 
-                  src="/src/assets/FinchBot_logo.png" 
+                  src={finchBotLogo} 
                   alt="FinchBot Logo" 
                   className="max-w-[70%] max-h-[70%] object-contain mb-4"
                 />
