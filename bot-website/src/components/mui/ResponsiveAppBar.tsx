@@ -8,15 +8,15 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
+import FinchBot_logo from '../../assets/FinchBot_logo_large.png'
 import {
   AuthenticationStatusInterface,
   TwitchUserInfoInterface,
 } from "../../interfaces/Auth";
 import axios from "axios";
 import { logout } from "../../api/api";
+import { AppBar } from "@mui/material";
 
-const pages = ["Dashboard", "Documentation", "About"];
 const settings = ["Sign out"];
 
 export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
@@ -61,73 +61,60 @@ export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
   };
 
   return (
-    <Toolbar disableGutters className="w-full bg-[#212121]">
-      <AdbIcon className="md:flex mr-1 ml-1" />
-      <Typography
-        variant="h6"
-        noWrap
-        component="a"
-        href="/"
-        className="mr-2 ml-2 hidden md:visible md:flex font-bold tracking-[0.3rem]"
-      >
-        FINCHBOT
-      </Typography>
+    <AppBar position="fixed" elevation={0} className="bg-[#212121]" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <Toolbar disableGutters className="w-full ">
+        <img
+          src={FinchBot_logo}
+          alt="FinchBot Logo"
+          className="h-12 w-12 ml-2 mr-2"
+        />
 
-      <Box className="flex flex-1 md:flex">
-        <Button
-          onClick={handleCloseNavMenu}
-          className="my-2 text-gray-200 hidden md:block lg:block xl:block xxl:block xxxl:block"
+        <Typography
+          variant="h6"
+          noWrap
+          component="a"
+          href="/"
+          className="mr-2 ml-2 hidden md:visible md:flex font-bold tracking-[0.3rem] text-gray-100 no-underline"
         >
-          {pages[0]}
-        </Button>
-        <Button
-          onClick={handleCloseNavMenu}
-          className="my-2 text-gray-200 block xsm:hidden"
-        >
-          {pages[1]}
-        </Button>
-        <Button
-          onClick={handleCloseNavMenu}
-          className="my-2 text-gray-200 block"
-        >
-          {pages[2]}
-        </Button>
-      </Box>
+          FINCHBOT
+        </Typography>
 
-      <Box className="flex mr-1">
-        {authenticated ?
-          <div>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} className="p-2">
-                <Avatar alt={userData?.display_name} src={userData?.profile_image_url} />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              <MenuItem href="/" onClick={() => { setAnchorElUser(null); }}>
-                <a href="/" onClick={() => logout()}>
-                  <Typography textAlign="center" >Sign out</Typography>
-                </a>
-              </MenuItem>
-            </Menu>
-          </div>
-          :
-          <Button variant="contained" className="mr-2 bg-[#127707] text-gray-100" href="/login">Login</Button>}
-      </Box>
-    </Toolbar>
+
+        <Box className="flex ml-auto mr-1 items-end">
+          {authenticated ?
+            <div>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} className="p-2">
+                  <Avatar alt={userData?.display_name} src={userData?.profile_image_url} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem href="/" onClick={() => { setAnchorElUser(null); }}>
+                  <a href="/" onClick={() => logout()}>
+                    <Typography textAlign="center" >Sign out</Typography>
+                  </a>
+                </MenuItem>
+              </Menu>
+            </div>
+            :
+            <Button variant="contained" className="mr-2 bg-[#127707] text-gray-100" href="/login">Login</Button>}
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 };

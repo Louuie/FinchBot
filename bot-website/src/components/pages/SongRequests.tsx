@@ -1,65 +1,151 @@
 import * as React from 'react';
+import { useParams, useLocation, NavLink } from 'react-router-dom';
+import axios from 'axios';
+
+import { ResponsiveAppBar } from '../mui/ResponsiveAppBar';
+import { FormDialog } from '../mui/FormDialog';
 import { SongTable } from '../SongTable';
 import { SongPlayer } from '../SongPlayer';
-import { FormDialog } from '../mui/FormDialog';
-import { ResponsiveAppBar } from '../mui/ResponsiveAppBar';
+
+import { Songs } from '../../interfaces/Songs';
 import { AuthenticationStatusInterface } from '../../interfaces/Auth';
-import axios from 'axios';
-import { SongArray, Songs } from '../../interfaces/Songs';
-import { useParams } from 'react-router-dom';
 import { Settings } from '../../interfaces/Settings';
 
+import {
+  Box, CssBaseline, Divider, Drawer, List, ListItem, ListItemButton,
+  ListItemIcon, ListItemText, Toolbar
+} from '@mui/material';
 
-export const SongRequests: React.FC<AuthenticationStatusInterface> = ({authenticated}) => {
+import {
+  Dashboard as DashboardIcon,
+  FormatListBulleted,
+  QueueMusic
+} from '@mui/icons-material';
 
+const drawerWidth = 240;
+
+export const SongRequests: React.FC<AuthenticationStatusInterface> = ({ authenticated }) => {
   const params = useParams();
-  // State variables
-  // Variable used for SongPlayer for the firstSong in the queue
-  const [song, setSong] = React.useState<Songs>({Title: '', Artist: '', DurationInSeconds: 0, Videoid: '', Userid: '', Id: 0});
+  const location = useLocation();
+
+  const [song, setSong] = React.useState<Songs>({
+    Title: '', Artist: '', DurationInSeconds: 0, Videoid: '', Userid: '', Id: 0,
+  });
   const [songs, setSongs] = React.useState<Songs[]>([]);
+  const [songQueueSettings, setSongQueueSettings] = React.useState<Settings>({
+    channel: params.streamer, status: false, song_limit: 20, user_limit: 2,
+  });
 
-  // State variables for the Song Queue Settings
-  const [ songQueueSettings, setSongQueueSettings ] = React.useState<Settings>({channel: params.streamer, status: false, song_limit: 20, user_limit: 2});
-  
-
-  // useEffect for the SongPlayer so that way we don't have to fetch this data in that individual component rather we can pass it down
+  // Fetch songs
   React.useEffect(() => {
     const fetchSong = setInterval(() => {
       axios.get('https://api.finchbot.xyz/songs', {
-        params: {
-          channel: params.streamer,
-        }
-      }).then((res) => { const songDD = res.data.songs; setSongs(songDD); if(songs.length > 0) setSong(songDD[0]);}).catch((err) => console.log(err));
+        params: { channel: params.streamer }
+      }).then(res => {
+        const songData = res.data.songs;
+        setSongs(songData);
+        if (songData.length > 0) setSong(songData[0]);
+      }).catch(err => console.log(err));
     }, 3000);
-    return () => clearInterval(fetchSong)
-  }, [song, songs]);
 
-  // useEffect for the FormDialog that fetches the Song Queue Settings
+    return () => clearInterval(fetchSong);
+  }, [params.streamer]);
+
+  // Fetch settings
   React.useEffect(() => {
-    const fetchSongQueueSettings = setInterval(() => {
+    const fetchSettings = setInterval(() => {
       axios.get('https://api.finchbot.xyz/song-queue-settings', {
-        params: {
-          channel: params.streamer+"_settings",
-        }
-      }).then((res) => setSongQueueSettings(res.data.settings[0])).catch((err) => console.log(err));
-    }, 3000)
-      return () => clearInterval(fetchSongQueueSettings)
-  }, [song, songs, songQueueSettings, params.streamer])
+        params: { channel: params.streamer + '_settings' }
+      }).then(res => setSongQueueSettings(res.data.settings[0]))
+        .catch(err => console.log(err));
+    }, 3000);
 
+    return () => clearInterval(fetchSettings);
+  }, [params.streamer]);
 
+  const drawerItems = [
+    { text: 'Dashboard', icon: <DashboardIcon />, path: `/c/${params.streamer}/dashboard` },
+    { text: 'Commands', icon: <FormatListBulleted />, path: `/c/${params.streamer}/commands` },
+    { text: 'Song Requests', icon: <QueueMusic />, path: `/c/${params.streamer}/song-requests` },
+  ];
 
   return (
-    <div className='w-full min-h-screen md:min-h-screen xl:min-h-screen xxxl:min-h-screen bg-[#292929]'>
-        <ResponsiveAppBar authenticated={authenticated}/> 
-        <div className='flex flex-col w-full h-full'>
-          <FormDialog Streamer={params.streamer as string} songs={songs} authenticated={authenticated} status={songQueueSettings?.status} song_limit={songQueueSettings?.song_limit} user_limit={songQueueSettings?.user_limit}/>
-          <div className='flex justify-center align-middle items-center'>
-            <SongPlayer Streamer={params.streamer as string} songs={songs} Id={song?.Id} Videoid={song?.Videoid} Title={song?.Title} Artist={song?.Artist} DurationInSeconds={song?.DurationInSeconds} Userid={song?.Userid}  />
-          </div>
-          <div className='flex flex-1 items-start align-top lg:items-center lg:align-middle xl:items-center xl:align-middle xxl:items-center xxl:align-middle xxxl:items-center xxxl:align-middle text-gray-300 lg:mb-[12rem] lg:-my-6 xxl:my-1 xxxl:my-2 xxl:mb-[12rem] xxxl:mb-[24rem]'>
-            <SongTable Streamer={params.streamer as string} songs={songs} authenticated={authenticated}/>
-          </div>
-        </div>
-   </div>
-  )
-}
+    <div className="w-full min-h-screen">
+      <ResponsiveAppBar authenticated={authenticated} />
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <Drawer
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: drawerWidth,
+              boxSizing: 'border-box',
+              backgroundColor: '#1e1e1e',
+              color: '#fff',
+              borderRight: '1px solid #333',
+            },
+          }}
+          variant="permanent"
+          anchor="left"
+        >
+          <Toolbar />
+          <Divider sx={{ borderColor: '#333' }} />
+          <List>
+            {drawerItems.map(({ text, icon, path }) => (
+              <NavLink
+                key={text}
+                to={path}
+                style={{ textDecoration: 'none' }}
+              >
+                <ListItem disablePadding>
+                  <ListItemButton
+                    selected={location.pathname === path}
+                    sx={{
+                      '&.Mui-selected': { backgroundColor: '#333' },
+                      '&.Mui-selected:hover': { backgroundColor: '#444' },
+                      '&:hover': { backgroundColor: '#2a2a2a' },
+                      py: 1.5, px: 2,
+                    }}
+                  >
+                    <ListItemIcon sx={{ color: '#aaa' }}>{icon}</ListItemIcon>
+                    <ListItemText
+                      primary={text}
+                      sx={{ span: { fontWeight: 500, fontSize: 15, color: '#fff' } }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              </NavLink>
+            ))}
+          </List>
+        </Drawer>
+
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <Toolbar />
+          <FormDialog
+            Streamer={params.streamer as string}
+            songs={songs}
+            authenticated={authenticated}
+            status={songQueueSettings.status}
+            song_limit={songQueueSettings.song_limit}
+            user_limit={songQueueSettings.user_limit}
+          />
+          <Box className="flex justify-center items-center">
+            <SongPlayer
+              Streamer={params.streamer as string}
+              songs={songs}
+              {...song}
+            />
+          </Box>
+          <Box className="flex flex-col items-start text-gray-300 mt-4">
+            <SongTable
+              Streamer={params.streamer as string}
+              songs={songs}
+              authenticated={authenticated}
+            />
+          </Box>
+        </Box>
+      </Box>
+    </div>
+  );
+};

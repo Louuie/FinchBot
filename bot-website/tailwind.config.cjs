@@ -1,5 +1,9 @@
 module.exports = {
-  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  important: true,
+  content: [
+    './index.html',              
+    './src/**/*.{js,ts,jsx,tsx}'
+  ],
   theme: {
     screens: {
       xsm: { min: "280px" },
@@ -16,5 +20,8 @@ module.exports = {
     },
     extend: {},
   },
-  plugins: [require("tailwind-scrollbar-hide")],
+  plugins: [require('tailwind-scrollbar-hide')],
+  corePlugins: {
+      preflight: false,
+  },
 };
