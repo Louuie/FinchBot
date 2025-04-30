@@ -155,7 +155,7 @@ export const SongTable: React.FC<Props> = (props) => {
   return (
     <TableContainer
       component={Paper}
-      className="md:mx-[2rem] xxxl:mx-[2rem] mx-[1rem] mt-8"
+      className="mt-8"
     >
       <Table
         className="md:min-w-[450px] min-w-[350px] xxxl:hidden"

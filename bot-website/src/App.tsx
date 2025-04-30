@@ -7,7 +7,8 @@ import { SongRequests } from "./components/pages/SongRequests";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import axios from "axios";
 import { AuthenticationStatusInterface } from "./interfaces/Auth";
-
+import { Dashboard } from "./components/pages/Dashboard";
+import { Commands } from "./components/pages/Commands";
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
@@ -57,10 +58,12 @@ export const App: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<Callback />} />
+        <Route path="/c/:streamer/dashboard" element={<Dashboard/>} />
         <Route
-          path="/dashboard/:streamer"
+          path="/c/:streamer/song-requests"
           element={<SongRequests authenticated={isAuthed} />}
         />
+        <Route path="/c/:streamer/commands" element={<Commands/>}/>
       </Routes>
     </ThemeProvider>
   );
