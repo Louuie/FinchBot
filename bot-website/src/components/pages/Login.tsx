@@ -1,15 +1,16 @@
 import * as React from 'react';
-import { Button } from '@mui/material';
-import axios from "axios";
+import { Button, CircularProgress } from '@mui/material';
+import { Navigate } from 'react-router-dom';
+import axios from 'axios';
+// import your logo if you want to display it
+import finchBotLogo from '../../assets/FinchBot_logo.png';
 import { useEffect, useState } from "react";
 import Spinner from "../spinner/Spinner";
-import { Navigate, NavLink } from 'react-router-dom';
 import { Home } from './Home';
 
 interface Auth {
     error?: string,
 }
-
 
 export const Login: React.FC = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -27,9 +28,6 @@ export const Login: React.FC = () => {
         }).catch((err) => { /* console.log(err); */ })
         setTimeout(() => setLoading(false), 250);
     }, [])
-
-
-
 
     const onLogin = async () => {
         const authUri = `https://id.twitch.tv/oauth2/authorize` +
@@ -88,26 +86,50 @@ export const Login: React.FC = () => {
 
     return (
         <>
-        {/* if the state (loading) is true then display the Spinner component. */}
-        {loading ? <Spinner/>
-        :
-        <div className="flex h-screen items-center justify-center">
-        {/* if the user isn't logged in then display the login page. */}
-        {!isLoggedIn ? 
-                    <div className="mb-20">
-                    <div className='text-center font-bold text-4xl'>FinchBot</div>
-                    <div className="mt-4 w-80 h-40 rounded-md bg-gray-900 text-center">
-                        <div className="flex ml-8">
-                            <div className="mt-4 text-md whitespace-pre-line">Welcome to FinchBot!      Login to get Started!</div>
-                        </div>
-                        <Button variant="contained" sx={{backgroundColor: '#772CE8', fontWeight: 'bold', mt: 1.5, ':hover': { backgroundColor: '#620be4' }} } onClick={onLogin}>Log in with Twitch</Button>
+        {loading ? (
+            <div className="flex h-screen items-center justify-center bg-gradient-to-b from-[#0A1228] to-[#172442]">
+                <CircularProgress color="secondary" />
+            </div>
+        ) : (
+            <div className="flex h-screen items-center justify-center bg-gradient-to-b from-[#0A1228] to-[#172442]">
+                {!isLoggedIn ? (
+                    <div className="bg-[#0F1A30]/90 border border-blue-900/40 shadow-2xl rounded-2xl px-8 py-10 flex flex-col items-center w-full max-w-sm">
+                        <img
+                            src={finchBotLogo}
+                            alt="FinchBot Logo"
+                            className="w-20 h-20 object-contain mb-4"
+                        />
+                        <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-300 mb-2">
+                            Welcome to FinchBot
+                        </h1>
+                        <p className="text-blue-100 mb-6 text-center">
+                            Log in with Twitch to get started and take your stream to the next level!
+                        </p>
+                        <Button
+                            variant="contained"
+                            className='text-gray-100'
+                            fullWidth
+                            sx={{
+                                background: '#772CE8',
+                                fontWeight: 'bold',
+                                borderRadius: '9999px',
+                                py: 1.5,
+                                fontSize: '1rem',
+                                boxShadow: '0 4px 24px 0 rgba(80, 70, 229, 0.15)',
+                                ':hover': {
+                                    background: 'linear-gradient(90deg, #620be4 0%, #3730a3 100%)',
+                                },
+                            }}
+                            onClick={onLogin}
+                        >
+                            Log in with Twitch
+                        </Button>
                     </div>
-                </div>
-        //   if the user IS logged in then navigate them to the index page.      
-        : <Navigate to={'/'}/>
-        }
-    </div> 
-        }
-        </> 
-    )
-}
+                ) : (
+                    <Navigate to="/" />
+                )}
+            </div>
+        )}
+        </>
+    );
+};

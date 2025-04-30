@@ -40,7 +40,7 @@ export const Home: React.FC = () => {
                 </Button> : 
                 <Button 
                   className='bg-[#121E40] text-white bg-opacity-60 font-bold rounded-full border border-blue-400 px-8 py-3 hover:bg-opacity-80 transition-all duration-300' 
-                  href={`/dashboard/${authData.display_name}`}
+                  href={`/c/${authData.display_name}/dashboard`}
                 >
                   Dashboard
                 </Button> 
