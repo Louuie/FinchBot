@@ -16,11 +16,11 @@ func AddSong(query string, channel string) (*models.AddSongResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Printf("channel: %s", channel)
 	// Set the query
 	q := req.URL.Query()
 	q.Add("q", query)
-	q.Add("channel", channel)
+	q.Add("channel", channel[1:])
 	q.Add("user", fmt.Sprintf("%v", rand.Int()))
 	req.URL.RawQuery = q.Encode()
 
@@ -28,9 +28,6 @@ func AddSong(query string, channel string) (*models.AddSongResponse, error) {
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("HTTP error: %s\nBody: %s", resp.Status, string(body))
 	}
 
 	body, err := io.ReadAll(resp.Body)

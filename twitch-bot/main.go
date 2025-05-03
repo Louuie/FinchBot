@@ -40,6 +40,7 @@ func main() {
 			fmt.Println(err)
 		}
 		defer ircConn.Close()
+		go irc.ReadMessages(ircConn)
 		for msg := range messages {
 			// Handles WS Messages (used for join/leave twitch-bot functionality)
 			if strings.Contains(msg, "FINCHBOT_WS") {
@@ -50,7 +51,6 @@ func main() {
 					fmt.Printf("Channel reccieved: %s\n", msg)
 					fmt.Println("Attempting to join the new channel...")
 					twitch.JoinChannel(ircConn, msg)
-					irc.ReadMessages(ircConn)
 				}
 			}
 		}

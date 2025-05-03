@@ -20,10 +20,8 @@ type Duration struct {
 }
 
 func ParseTime(duration string) (string, float64) {
-	formattedTime := strings.Replace(duration, "\x00", "", 1)
-	formattedTime2 := strings.Replace(formattedTime, "\x00\x00", "", 1)
-
-	songDuration, err := time.ParseDuration(formattedTime2)
+	cleanedDuration := strings.ReplaceAll(duration, "\x00", "")
+	songDuration, err := time.ParseDuration(cleanedDuration)
 	if err != nil {
 		log.Fatalln(err)
 	}
