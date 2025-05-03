@@ -4,6 +4,7 @@ import (
 	"backend/twitch-bot/api"
 	"backend/twitch-bot/database"
 	"backend/twitch-bot/models"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -111,6 +112,7 @@ func SongRequest(c *fiber.Ctx) error {
 	}
 	err := database.CreateSongTable(query.Channel, db)
 	if err != nil {
+		fmt.Printf("ERROR: %s", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
 		})

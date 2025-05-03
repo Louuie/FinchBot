@@ -29,6 +29,10 @@ func AddSong(query string, channel string) (*models.AddSongResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("HTTP error: %s\nBody: %s", resp.Status, string(body))
+	}
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
@@ -40,7 +44,7 @@ func AddSong(query string, channel string) (*models.AddSongResponse, error) {
 	if addSongResponse.Status == "success" {
 		return &addSongResponse, nil
 	} else {
-		return nil, errors.New("there was an error adding the song")
+		return nil, fmt.Errorf("error adding song: %s", addSongResponse.Message)
 	}
 
 }
