@@ -3,7 +3,7 @@ package api
 import (
 	"backend/twitch-bot/models"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -49,7 +49,7 @@ func GetSongFromSearch(query string) *models.YouTubeSearch {
 			log.Fatalln(err)
 		}
 
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -82,7 +82,7 @@ func GetVideoDuration(videoId string) *Duration {
 			log.Fatalln(err)
 		}
 
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Fatalln(err)
 		}
