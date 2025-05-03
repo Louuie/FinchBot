@@ -22,7 +22,7 @@ export const SongPlayer: React.FC<Props> = (props) => {
   const { songs } = props as SongArray;
   const { Streamer } = props as Streamer;
   // State variable used for songs?
-  const [showSpinner, setShowSpinner] = React.useState(true);
+    const [showSpinner, setShowSpinner] = React.useState(true);
   const [showPlayer, setShowPlayer] = React.useState(true);
 
   // State variables for song player

@@ -4,7 +4,6 @@ import (
 	"backend/twitch-bot/api"
 	"backend/twitch-bot/database"
 	"backend/twitch-bot/models"
-	"log"
 	"strconv"
 	"strings"
 
@@ -112,7 +111,9 @@ func SongRequest(c *fiber.Ctx) error {
 	}
 	err := database.CreateSongTable(query.Channel, db)
 	if err != nil {
-		log.Fatalln(err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
 	}
 
 	// Attempts to check if the user has already entered two songs/videos into the queue

@@ -20,7 +20,11 @@ func ReadMessages(conn net.Conn) {
 
 func HandleMessage(conn net.Conn, line string) {
 	if strings.Contains(line, "PRIVMSG") {
-		twitch.HandleMessage(conn, line)
+		parts := strings.Split(line, " ")
+		if len(parts) > 2 {
+			channel := parts[2] // correctly extract channel from IRC message
+			twitch.HandleMessage(conn, line, channel)
+		}
 	}
 }
 

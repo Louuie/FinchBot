@@ -10,9 +10,9 @@ import (
 	"twitch-bot/models"
 )
 
-func AddSong(query string) (*models.AddSongResponse, error) {
+func AddSong(query string, channel string) (*models.AddSongResponse, error) {
 	client := http.Client{}
-	req, err := http.NewRequest("GET", "https://finchbot.netlify.app/song-request", nil)
+	req, err := http.NewRequest("GET", "https://api.finchbot.xyz/song-request", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +20,7 @@ func AddSong(query string) (*models.AddSongResponse, error) {
 	// Set the query
 	q := req.URL.Query()
 	q.Add("q", query)
-	q.Add("channel", "Louiee_tv")
+	q.Add("channel", channel)
 	q.Add("user", fmt.Sprintf("%v", rand.Int()))
 	req.URL.RawQuery = q.Encode()
 
