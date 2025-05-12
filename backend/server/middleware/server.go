@@ -71,5 +71,11 @@ func Server() *fiber.App {
 	// Route that sets the Song Queue setting.
 	app.Post("/song-queue-settings", SetSongQueueSettings)
 
+	// Route that joins the twitch-bot into the users twitch channel
+	app.Post("join-channel", JoinChannel)
+
+	// Route that parts the twitch-bot from the users twitch channel
+	app.Post("part-channel", PartChannel)
+
 	return app
 }

@@ -68,3 +68,29 @@ export const fetchSongQueueSettings = async (channel : string) => {
   })
   return data;
 }
+
+export const joinChannel = async (channel?: string): Promise<boolean> => {
+  try {
+    const res = await axios.post('http://localhost:41281/join-channel', null, {
+      params: { channel }
+    });
+    console.log(Boolean(res.data), res.data);
+    return Boolean(res.data)
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+export const partChannel = async (channel?: string): Promise<boolean> => {
+  try {
+    const res = await axios.post('http://localhost:41281/part-channel', null, {
+      params: { channel }
+    });
+    console.log(Boolean(res.data));
+    return Boolean(res.data)
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};

@@ -95,6 +95,27 @@ func InsertSong(db *sql.DB, song ClientSong, tableName string) error {
 	return nil
 }
 
+func InsertTwitchChannel(channel string, db *sql.DB) error {
+	// First create the table, before inserting the twitch-channel
+	_, err := db.Exec("CREATE TABLE IF NOT EXISTS twitchbot (id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY, channel VARCHAR(255) NOT NULL)")
+	if err != nil {
+		return err
+	}
+	// Now try inserting the channel into the new table
+	_, insert_err := db.Exec("INSERT INTO twitch-bot VALUES ($1)", channel)
+	if insert_err != nil {
+		return nil
+	}
+	if err, ok := err.(*pq.Error); ok {
+		// 23505: unique_violation
+		// 42P01: undefined_table
+		if err.Code.Name() == "unique_violation" {
+			return errors.New("the bot is already joined into that channel")
+		}
+	}
+	return nil
+}
+
 func UpdateSongQueueSettings(db *sql.DB, tableName string, status bool, song_limit float64, user_limit float64) error {
 
 	_, err := db.Exec(`
@@ -183,6 +204,33 @@ func GetSongQueueSettings(tableName string, db *sql.DB) (*[]models.SongQueueSett
 	defer res.Close()
 	// db.Close()
 	return &settings, db, nil
+}
+
+func GetTwitchChannels(db *sql.DB) (*[]models.BotData, error) {
+	res, err := db.Query("SELECT * FROM twitchbot")
+	if err, ok := err.(*pq.Error); ok {
+		if err != nil {
+			return nil, errors.New(err.Error())
+		}
+		if err.Code == "42P01" {
+			bot_client_data := make([]models.BotData, 0)
+			return &bot_client_data, errors.New(err.Code.Name())
+		}
+	}
+	twitch_bot_client_data := make([]models.BotData, 0)
+	for res.Next() {
+		botClientData := models.BotData{}
+		var id int64
+		var channel string
+		err := res.Scan(&id, &channel)
+		if err != nil {
+			return nil, err
+		}
+		twitch_bot_client_data = append(twitch_bot_client_data, botClientData)
+	}
+	defer res.Close()
+	// db.Close()
+	return &twitch_bot_client_data, nil
 }
 
 func DeleteSong(tableName string, Id int, db *sql.DB) error {

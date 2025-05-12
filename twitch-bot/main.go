@@ -18,17 +18,6 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-// func main() {
-// 	conn, err := irc.ConnectToIRC(config.Server, config.Username, config.OAuth)
-// 	if err != nil {
-// 		fmt.Println("Error connecting to IRC:", err)
-// 		return
-// 	}
-// 	defer conn.Close()
-
-//		twitch.JoinChannel(conn, config.Channel)
-//		irc.ReadMessages(conn)
-//	}
 func main() {
 	// Channel for passing messages from WS handler to IRC bot
 	messages := make(chan string)
@@ -44,12 +33,19 @@ func main() {
 		for msg := range messages {
 			// Handles WS Messages (used for join/leave twitch-bot functionality)
 			if strings.Contains(msg, "FINCHBOT_WS") {
+				if strings.Contains(msg, "part") {
+					// parse the channel from the leave msg
+					msg := msg[17:]
+					fmt.Println(msg)
+					fmt.Printf("Attempting to leave the channel %s...", msg)
+					twitch.PartChannel(ircConn, msg)
+				}
 				msg := msg[12:]
 				fmt.Println(msg)
 				// check for # otherwise its not gonna work
 				if strings.Contains(msg, "#") {
 					fmt.Printf("Channel reccieved: %s\n", msg)
-					fmt.Println("Attempting to join the new channel...")
+					fmt.Printf("Attempting to join the new channel %s...", msg)
 					twitch.JoinChannel(ircConn, msg)
 				}
 			}
