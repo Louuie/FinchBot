@@ -29,7 +29,7 @@ export const SongRequests: React.FC<AuthenticationStatusInterface> = ({ authenti
   const location = useLocation();
 
   const [song, setSong] = React.useState<Songs>({
-    Title: '', Artist: '', DurationInSeconds: 0, Videoid: '', Userid: '', Id: 0,
+    Title: '', Artist: '', DurationInSeconds: 0, Videoid: '', Userid: '', Id: 0, Position: 0,
   });
   const [songs, setSongs] = React.useState<Songs[]>([]);
   const [songQueueSettings, setSongQueueSettings] = React.useState<Settings>({
@@ -38,30 +38,75 @@ export const SongRequests: React.FC<AuthenticationStatusInterface> = ({ authenti
 
   // Fetch songs
   React.useEffect(() => {
-    const fetchSong = setInterval(() => {
-      axios.get('https://api.finchbot.xyz/songs', {
-        params: { channel: params.streamer }
-      }).then(res => {
-        const songData = res.data.songs;
-        setSongs(songData);
-        if (songData.length > 0) setSong(songData[0]);
-      }).catch(err => console.log(err));
-    }, 3000);
-
-    return () => clearInterval(fetchSong);
+    let isMounted = true;
+  
+    const fetchSongs = async () => {
+      try {
+        const res = await axios.get('https://api.finchbot.xyz/songs', {
+          params: { channel: params.streamer }
+        });
+        if (isMounted) {
+          const songData = res.data.songs;
+          setSongs(songData);
+          if (songData.length > 0) {
+            setSong(songData[0]);
+          } else {
+            setSong({  // clear current song when queue is empty
+              Title: '',
+              Artist: '',
+              DurationInSeconds: 0,
+              Videoid: '',
+              Userid: '',
+              Id: 0,
+              Position: 0
+            });
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      }
+  
+      if (isMounted) {
+        setTimeout(fetchSongs, 3000); // Schedule next fetch
+      }
+    };
+  
+    fetchSongs(); // Initial call
+  
+    return () => {
+      isMounted = false;
+    };
   }, [params.streamer]);
+  
 
   // Fetch settings
-  React.useEffect(() => {
-    const fetchSettings = setInterval(() => {
-      axios.get('https://api.finchbot.xyz/song-queue-settings', {
-        params: { channel: params.streamer + '_settings' }
-      }).then(res => setSongQueueSettings(res.data.settings[0]))
-        .catch(err => console.log(err));
-    }, 3000);
-
-    return () => clearInterval(fetchSettings);
-  }, [params.streamer]);
+  // React.useEffect(() => {
+  //   let isMounted = true;
+  
+  //   const fetchSettings = async () => {
+  //     try {
+  //       const res = await axios.get('https://api.finchbot.xyz/song-queue-settings', {
+  //         params: { channel: params.streamer + '_settings' }
+  //       });
+  //       if (isMounted) {
+  //         setSongQueueSettings(res.data.settings[0]);
+  //       }
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  
+  //     if (isMounted) {
+  //       setTimeout(fetchSettings, 3000);
+  //     }
+  //   };
+  
+  //   fetchSettings();
+  
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, [params.streamer]);
+  
 
   const drawerItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: `/c/${params.streamer}/dashboard` },

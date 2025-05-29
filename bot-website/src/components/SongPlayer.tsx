@@ -75,7 +75,7 @@ export const SongPlayer: React.FC<Props> = (props) => {
           </Box>
           :
           <div>
-            {showPlayer ?
+            {showPlayer && Videoid ?
               <div className="lg:-mt-6 md:my-6">
                 <div className="md:hidden xl:block xxl:block xxxl:block">
                   <Stack direction={'row'} spacing={1}>

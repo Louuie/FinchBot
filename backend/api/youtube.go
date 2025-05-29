@@ -89,6 +89,13 @@ func GetVideoDuration(videoId string) *Duration {
 
 		var songID models.VideoDuration
 		json.Unmarshal(body, &songID)
+
+		if len(songID.Items) == 0 {
+			log.Println("No video details returned from YouTube API. Check video ID:", videoId)
+			videoDurationChan <- nil
+			close(videoDurationChan)
+			return
+		}
 		if songID.Items[0].ContentDetails.Duration == "P0D" {
 			duration := Duration{
 				Duration:     "LIVE",

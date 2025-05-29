@@ -50,7 +50,7 @@ func PromoteSong(position string) (*models.PromoteSongResponse, error) {
 	// Create the client
 	client := http.Client{}
 	// get the request
-	req, err := http.NewRequest("POST", "http://localhost:3030/promote-song", nil)
+	req, err := http.NewRequest("POST", "https://api.finchbot.xyz/promote-song", nil)
 	if err != nil {
 		return nil, err
 	}

@@ -71,7 +71,7 @@ export const fetchSongQueueSettings = async (channel : string) => {
 
 export const joinChannel = async (channel?: string): Promise<boolean> => {
   try {
-    const res = await axios.post('http://localhost:41281/join-channel', null, {
+    const res = await axios.post('https://api.finchbot.xyz/join-channel', null, {
       params: { channel }
     });
     console.log(Boolean(res.data), res.data);
@@ -84,7 +84,7 @@ export const joinChannel = async (channel?: string): Promise<boolean> => {
 
 export const partChannel = async (channel?: string): Promise<boolean> => {
   try {
-    const res = await axios.post('http://localhost:41281/part-channel', null, {
+    const res = await axios.post('https://api.finchbot.xyz/part-channel', null, {
       params: { channel }
     });
     console.log(Boolean(res.data));

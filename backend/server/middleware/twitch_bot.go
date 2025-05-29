@@ -28,9 +28,7 @@ func JoinChannel(c *fiber.Ctx) error {
 			Message: "missing channel",
 			Data:    nil,
 		}
-		return c.Status(fiber.StatusBadRequest).JSON(map[string]interface{}{
-			"error": clientData.Message,
-		})
+		return c.Status(fiber.StatusBadRequest).JSON(clientData)
 	}
 	// Connect to the WebSocket server
 	ws, _, err := websocket.DefaultDialer.Dial("ws://localhost:8080/ws", nil)
@@ -130,5 +128,7 @@ func GetAllJoinedTwitchChannels(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-	return c.Status()
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"channels": channels,
+	})
 }
