@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -47,7 +46,7 @@ func GetAccessToken(code string) (*models.TwitchAuthResponse, error) {
 		return nil, err
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +69,7 @@ func ValidateAccessToken(token string) error {
 	if err != nil {
 		return err
 	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -99,7 +98,7 @@ func RevokeAccessToken(token string) error {
 	if err != nil {
 		return err
 	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
@@ -143,7 +142,7 @@ func GetUserInfo(token string) (*models.TwitchUserInfoResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -273,7 +272,7 @@ func SearchTwitchCategories(query string, token string) (*models.SearchCategorie
 	if err != nil {
 		return nil, err
 	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

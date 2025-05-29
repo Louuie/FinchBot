@@ -22,7 +22,7 @@ export const SongPlayer: React.FC<Props> = (props) => {
   const { songs } = props as SongArray;
   const { Streamer } = props as Streamer;
   // State variable used for songs?
-  const [showSpinner, setShowSpinner] = React.useState(true);
+    const [showSpinner, setShowSpinner] = React.useState(true);
   const [showPlayer, setShowPlayer] = React.useState(true);
 
   // State variables for song player
@@ -75,7 +75,7 @@ export const SongPlayer: React.FC<Props> = (props) => {
           </Box>
           :
           <div>
-            {showPlayer ?
+            {showPlayer && Videoid ?
               <div className="lg:-mt-6 md:my-6">
                 <div className="md:hidden xl:block xxl:block xxxl:block">
                   <Stack direction={'row'} spacing={1}>

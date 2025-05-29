@@ -4,7 +4,7 @@ import (
 	"backend/twitch-bot/api"
 	"backend/twitch-bot/database"
 	"backend/twitch-bot/models"
-	"log"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -73,6 +73,16 @@ func SongRequest(c *fiber.Ctx) error {
 	}
 	// Gets the duration of the video using the videoID, we have to make separate API calls here because the search api doesn't return the video duration
 	songDuration := api.GetVideoDuration(songData.Items[0].ID.VideoID)
+	if songDuration == nil {
+		clientData := models.ClientData{
+			Status:  "fail",
+			Message: "Could not retrieve video duration. Check the video ID or API key.",
+			Data:    nil,
+		}
+		return c.Status(fiber.StatusBadRequest).JSON(map[string]interface{}{
+			"error": clientData.Message,
+		})
+	}
 	if songDuration.IsLiveStream {
 		clientData := models.ClientData{
 			Status:  "fail",
@@ -110,9 +120,12 @@ func SongRequest(c *fiber.Ctx) error {
 			"error": dbConnErr.Error(),
 		})
 	}
-	err := database.CreateSongTable(query.Channel, db)
+	err := database.CreateSongTable(db)
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Printf("ERROR: %s", err.Error())
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
 	}
 
 	// Attempts to check if the user has already entered two songs/videos into the queue
@@ -134,14 +147,6 @@ func SongRequest(c *fiber.Ctx) error {
 	}
 
 	// TODO: Figure out a way instead of "getting the latestSongPos" instead change this to fetch all the songs, then check the length, and if the length is greater than 20 than give this error, instead of checking for latestSongPos.
-
-	// Attempts to get the latestSongPosition
-	latestSongPos, err := database.GetLatestSongPosition(db, query.Channel)
-	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(map[string]interface{}{
-			"error": err.Error(),
-		})
-	}
 
 	songs, _, err := database.GetAllSongRequests(query.Channel, db)
 	if err != nil {
@@ -168,16 +173,6 @@ func SongRequest(c *fiber.Ctx) error {
 		FormattedDuration: songDuration.Duration,
 		DurationInSeconds: songDuration.DurationInSeconds,
 		VideoID:           songData.Items[0].ID.VideoID,
-		Position:          latestSongPos + 1,
-	}
-
-	// if the table is being created for the first time, the GetLatestSongPosition function can't query through because it thinks that the table was never created so it throws a pq error of undefined_table
-	// so we catch this error and if we do get the "undefined_table" error then create the table "again"(even though it was never created) then insert it
-	if err != nil {
-		err := database.CreateSongTable(query.Channel, db)
-		if err != nil {
-			c.Next()
-		}
 	}
 
 	dataError := database.InsertSong(db, song, query.Channel)
@@ -196,14 +191,14 @@ func SongRequest(c *fiber.Ctx) error {
 		Status:  "success",
 		Message: "inserted into db",
 		Data: []models.Data{
-			{Name: song.Title, Artist: song.Artist, FormattedDuration: song.FormattedDuration, DurationInSeconds: song.DurationInSeconds, Position: latestSongPos + 1},
+			{Id: song.Id, Name: song.Title, Artist: song.Artist, FormattedDuration: song.FormattedDuration, DurationInSeconds: song.DurationInSeconds},
 		},
 	}
 	//insertSong(song)
 	return c.Status(fiber.StatusOK).JSON(clientData)
 }
 
-// Middleware function that returns all the songs in that current table.
+// Middleware function that returns all the songs in that current channel.
 func FetchAllSongs(c *fiber.Ctx) error {
 	type Query struct {
 		Channel string `query:"channel"`

@@ -213,15 +213,15 @@ export const FormDialog: React.FC<Props> = (props) => {
               <DeleteForeverIcon fontSize="small" />
               Clear Queue
             </Button>
-
-            <Button
+            {/* Disable this for the time being, because we need to fix the song queue settings db from injections */}
+            {/* <Button
               variant="contained"
               className="bg-[#127707] text-gray-200 mr-2 mt-4"
               onClick={handleSettingsMenuClick}
             >
               <SettingsIcon fontSize="small" />
               <div className="ml-1">Settings</div>
-            </Button>
+            </Button> */}
           </Container>
         </div>
       ) : (

@@ -3,7 +3,7 @@ package api
 import (
 	"backend/twitch-bot/models"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -20,10 +20,8 @@ type Duration struct {
 }
 
 func ParseTime(duration string) (string, float64) {
-	formattedTime := strings.Replace(duration, "\x00", "", 1)
-	formattedTime2 := strings.Replace(formattedTime, "\x00\x00", "", 1)
-
-	songDuration, err := time.ParseDuration(formattedTime2)
+	cleanedDuration := strings.ReplaceAll(duration, "\x00", "")
+	songDuration, err := time.ParseDuration(cleanedDuration)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -51,7 +49,7 @@ func GetSongFromSearch(query string) *models.YouTubeSearch {
 			log.Fatalln(err)
 		}
 
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -84,13 +82,20 @@ func GetVideoDuration(videoId string) *Duration {
 			log.Fatalln(err)
 		}
 
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Fatalln(err)
 		}
 
 		var songID models.VideoDuration
 		json.Unmarshal(body, &songID)
+
+		if len(songID.Items) == 0 {
+			log.Println("No video details returned from YouTube API. Check video ID:", videoId)
+			videoDurationChan <- nil
+			close(videoDurationChan)
+			return
+		}
 		if songID.Items[0].ContentDetails.Duration == "P0D" {
 			duration := Duration{
 				Duration:     "LIVE",

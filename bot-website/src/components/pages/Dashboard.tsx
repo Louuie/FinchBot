@@ -5,9 +5,12 @@ import { Close, FormatListBulleted, QueueMusic } from "@mui/icons-material";
 import { Dashboard as DashboardIcon } from "@mui/icons-material";
 import { NavLink, useLocation, useParams } from "react-router-dom";
 import { AuthenticationStatusInterface } from "../../interfaces/Auth";
+import { joinChannel, partChannel } from "../../api/api";
 const drawerWidth = 240;
 
 export const Dashboard: React.FC<AuthenticationStatusInterface> = ({authenticated}) => {
+    let [isJoined, setIsJoined] = React.useState<boolean>(false)
+    let [isParted, setIsParted] = React.useState<boolean>(false)
     const params = useParams()
     const drawerItems = [
         { text: 'Dashboard', icon: <DashboardIcon />, path: `/c/${params.streamer}/dashboard` },
@@ -16,6 +19,16 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({authenticate
     ];
     const location = useLocation()
     const [open, setOpen] = React.useState(true);
+    const joinTwitchChannel = async () => {
+        const result = await joinChannel(params.streamer)
+        setIsJoined(result)
+        console.log(`isJoined: ${isJoined}`)
+    }
+    const partTwitchChannel = async () => {
+        const result = await partChannel(params.streamer)
+        if(Boolean(result)) setIsJoined(false)
+        console.log(isJoined)
+    }
     return (
         <div>
             <ResponsiveAppBar authenticated={authenticated} />
@@ -79,7 +92,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({authenticate
                     <Toolbar />
                     <div>
                         <Box mx={20} my={4}>
-                            <Collapse in={open}>
+                            <Collapse in={!isJoined}>
                                 <Alert
                                     severity="error"
                                     action={
@@ -106,7 +119,12 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({authenticate
                                             Bot Actions
                                         </Typography>
                                         <Divider />
-                                        <Button variant="contained" sx={{ width: '100%' }}>Join Channel</Button>
+                                        {
+                                        isJoined ? 
+                                            <Button onClick={() => {partTwitchChannel()}} variant="contained" sx={{ width: '100%' }}>Leave Channel</Button>
+                                           :
+                                           <Button onClick={() => {joinTwitchChannel()}} variant="contained" sx={{ width: '100%' }}>Join Channel</Button>
+                                        }
                                     </Card>
                                 </Grid>
                                 <Grid size={3}>

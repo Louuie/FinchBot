@@ -10,17 +10,17 @@ import (
 	"twitch-bot/models"
 )
 
-func AddSong(query string) (*models.AddSongResponse, error) {
+func AddSong(query string, channel string) (*models.AddSongResponse, error) {
 	client := http.Client{}
-	req, err := http.NewRequest("GET", "https://finchbot.netlify.app/song-request", nil)
+	req, err := http.NewRequest("GET", "https://api.finchbot.xyz/song-request", nil)
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Printf("channel: %s", channel)
 	// Set the query
 	q := req.URL.Query()
 	q.Add("q", query)
-	q.Add("channel", "Louiee_tv")
+	q.Add("channel", channel[1:])
 	q.Add("user", fmt.Sprintf("%v", rand.Int()))
 	req.URL.RawQuery = q.Encode()
 
@@ -29,6 +29,7 @@ func AddSong(query string) (*models.AddSongResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
@@ -40,7 +41,7 @@ func AddSong(query string) (*models.AddSongResponse, error) {
 	if addSongResponse.Status == "success" {
 		return &addSongResponse, nil
 	} else {
-		return nil, errors.New("there was an error adding the song")
+		return nil, fmt.Errorf("error adding song: %s", addSongResponse.Message)
 	}
 
 }
@@ -49,7 +50,7 @@ func PromoteSong(position string) (*models.PromoteSongResponse, error) {
 	// Create the client
 	client := http.Client{}
 	// get the request
-	req, err := http.NewRequest("POST", "http://localhost:3030/promote-song", nil)
+	req, err := http.NewRequest("POST", "https://api.finchbot.xyz/promote-song", nil)
 	if err != nil {
 		return nil, err
 	}

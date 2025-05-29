@@ -122,7 +122,7 @@ The terminal will then output the information of the server, meaning things are 
 ```zsh
  ┌───────────────────────────────────────────────────┐
  │                   Fiber v2.34.0                   │
- │               http://127.0.0.1:3030               │
+ │               http://localhost:3030               │
  │       (bound on host 0.0.0.0 and port 3030)       │
  │                                                   │
  │ Handlers ............ 14  Processes ........... 1 │
