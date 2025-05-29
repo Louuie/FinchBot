@@ -10,6 +10,10 @@ func JoinChannel(conn net.Conn, channel string) {
 	fmt.Fprintf(conn, "JOIN %s\r\n", channel)
 }
 
+func PartChannel(conn net.Conn, channel string) {
+	fmt.Fprintf(conn, "PART %s\r\n", channel)
+}
+
 func HandleMessage(conn net.Conn, line string, channel string) {
 	// If the IRC message is a chat message.
 	parts := strings.Split(line, " ")
