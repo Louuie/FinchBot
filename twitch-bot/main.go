@@ -72,15 +72,21 @@ func main() {
 			messageText := string(msg)
 			log.Printf("Received WS message: %s", messageText)
 
-			// Send a response back to confirm receipt
+			// Optional: send initial receipt
 			err = ws.WriteMessage(websocket.TextMessage, []byte("Received: "+messageText))
 			if err != nil {
 				log.Println("Write error:", err)
 				break
 			}
 
-			// Send to IRC handler
+			// Forward to IRC bot
 			messages <- messageText
+
+			// Optional: confirmation for frontend/bot
+			if err := ws.WriteMessage(websocket.TextMessage, []byte("Joined channel: "+messageText)); err != nil {
+				log.Println("Write error:", err)
+				break
+			}
 		}
 	})
 
