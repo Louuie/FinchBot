@@ -68,8 +68,19 @@ func main() {
 				log.Println("Read error:", err)
 				break
 			}
-			// Pass received WS message to IRC bot
-			messages <- string(msg)
+
+			messageText := string(msg)
+			log.Printf("Received WS message: %s", messageText)
+
+			// Send a response back to confirm receipt
+			err = ws.WriteMessage(websocket.TextMessage, []byte("Received: "+messageText))
+			if err != nil {
+				log.Println("Write error:", err)
+				break
+			}
+
+			// Send to IRC handler
+			messages <- messageText
 		}
 	})
 
