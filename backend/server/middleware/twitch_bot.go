@@ -48,6 +48,17 @@ func JoinChannel(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
+
+	// Read confirmation from the bot server
+	_, msg, err := ws.ReadMessage()
+	if err != nil {
+		log.Println("Read error:", err)
+		return c.Status(500).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	log.Printf("WS response: %s", string(msg))
+
 	// Insert the channel into the table/db
 	db, err := database.InitializeSongDBConnection()
 	if err != nil {
