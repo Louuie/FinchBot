@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"twitch-bot/config"
 	"twitch-bot/irc"
@@ -73,6 +74,7 @@ func main() {
 	})
 
 	// Listen on port
-	log.Println("WebSocket server started on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	port := os.Getenv("PORT")
+	log.Println("WebSocket server started on :" + port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
