@@ -31,7 +31,7 @@ func JoinChannel(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(clientData)
 	}
 	// Connect to the WebSocket server
-	ws, _, err := websocket.DefaultDialer.Dial("ws://localhost:8080/ws", nil)
+	ws, _, err := websocket.DefaultDialer.Dial("wss://bot.finchbot.xyz/ws", nil)
 	if err != nil {
 		log.Println("WebSocket dial error:", err)
 		return c.Status(500).JSON(fiber.Map{
@@ -91,7 +91,7 @@ func PartChannel(c *fiber.Ctx) error {
 		})
 	}
 	// Connect to the WebSocket server
-	ws, _, err := websocket.DefaultDialer.Dial("ws://localhost:8080/ws", nil)
+	ws, _, err := websocket.DefaultDialer.Dial("wss://bot.finchbot.xyz/ws", nil)
 	if err != nil {
 		log.Println("WebSocket dial error:", err)
 		return c.Status(500).JSON(fiber.Map{
