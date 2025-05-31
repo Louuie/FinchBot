@@ -88,7 +88,7 @@ func CreateSongTable(db *sql.DB) error {
 func InsertSong(db *sql.DB, song ClientSong, tableName string) error {
 	var newPosition int
 	err := db.QueryRow(`
-		SELECT COALESCE(MAX(position), 0) + 1 FROM songs WHERE channel = $1
+		SELECT COALESCE(MAX(position), 0) + 1 FROM songs WHERE LOWER(channel) = LOWER($1)
 	`, song.Channel).Scan(&newPosition)
 
 	if err != nil {
@@ -234,7 +234,7 @@ func GetTwitchChannels(db *sql.DB) (*[]models.BotData, error) {
 }
 
 func DeleteSong(channel string, Id int, db *sql.DB) error {
-	res, err := db.Exec("DELETE FROM songs WHERE channel = $1 AND id = $2", channel, Id)
+	res, err := db.Exec("DELETE FROM songs WHERE LOWER(channel) = LOWER($1) AND id = $2", channel, Id)
 	if err, ok := err.(*pq.Error); ok {
 		return errors.New(err.Code.Name())
 	}
@@ -250,7 +250,7 @@ func DeleteSong(channel string, Id int, db *sql.DB) error {
 }
 
 func DeleteAllSongs(channel string, db *sql.DB) error {
-	_, err := db.Exec("DELETE FROM songs WHERE channel = $1", channel)
+	_, err := db.Exec("DELETE FROM songs WHERE LOWER(channel) = LOWER($1)", channel)
 	if err, ok := err.(*pq.Error); ok {
 		return errors.New(err.Code.Name())
 	}
@@ -263,7 +263,7 @@ func DeleteAllSongs(channel string, db *sql.DB) error {
 }
 
 func GetMultipleEntries(channel string, user string, db *sql.DB) (bool, error) {
-	res, err := db.Query("SELECT user_id FROM songs WHERE channel = $1 AND user_id = $2", channel, user)
+	res, err := db.Query("SELECT user_id FROM songs WHERE LOWER(channel) = LOWER($1) AND user_id = $2", channel, user)
 	if err, ok := err.(*pq.Error); ok {
 		log.Fatalln(err)
 		return false, errors.New(err.Code.Name())
@@ -286,7 +286,7 @@ func PromoteSong(channel string, fromPosition int, db *sql.DB) (string, error) {
 	var songTitle string
 	err := db.QueryRow(`
 		SELECT id, title FROM songs
-		WHERE channel = $1 AND position = $2
+		WHERE LOWER(channel) = LOWER($1) AND position = $2
 	`, channel, fromPosition).Scan(&songID, &songTitle)
 	if err != nil {
 		return "", errors.New("no song found in that position")
@@ -295,7 +295,7 @@ func PromoteSong(channel string, fromPosition int, db *sql.DB) (string, error) {
 	// Move everything between [1, fromPosition - 1] down by 1
 	_, err = db.Exec(`
 		UPDATE songs SET position = position + 1
-		WHERE channel = $1 AND position < $2
+		WHERE LOWER(channel) = LOWER($1) AND position < $2
 	`, channel, fromPosition)
 	if err != nil {
 		return "", err
