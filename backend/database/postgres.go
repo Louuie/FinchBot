@@ -150,7 +150,7 @@ func InsertTwitchChannel(channel string, db *sql.DB) error {
 // }
 
 func GetAllSongRequests(channel string, db *sql.DB) (*[]models.SongQuery, *sql.DB, error) {
-	res, err := db.Query("SELECT * FROM songs where channel = $1", channel)
+	res, err := db.Query("SELECT * FROM songs WHERE LOWER(channel) = $1", channel)
 	if err, ok := err.(*pq.Error); ok {
 		if err != nil {
 			return nil, nil, errors.New(err.Error())
