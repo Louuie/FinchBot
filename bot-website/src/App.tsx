@@ -21,14 +21,8 @@ export const App: React.FC = () => {
   // state variable for auth
   const [isAuthed, setIsAuthed] = React.useState(false);
   const [channelInfo, setChannelInfo] = React.useState<Channel>({
-    broadcaster_id: '',
-    broadcaster_login: '',
-    broadcaster_name: '',
-    broadcaster_language: '',
-    game_id: '',
-    game_name: '',
     title: '',
-    delay: '',
+    category: '',
   });
 
   // useEffect that fetches the users authentication status
