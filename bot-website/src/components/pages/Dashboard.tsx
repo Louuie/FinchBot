@@ -138,7 +138,7 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
                                         <Divider />
                                         <Box className="my-2">
                                             <TextField label="Stream Title" value={channelInfo.title} variant="outlined" focused sx={{ my: 2 }} />
-                                            <TextField label="Stream Game" value={channelInfo.game_name} variant="outlined" focused />
+                                            <TextField label="Stream Game" value={channelInfo.category} variant="outlined" focused />
                                         </Box>
                                         <Divider />
                                         <Button disabled>Reset</Button>
