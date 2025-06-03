@@ -6,9 +6,12 @@ import { Dashboard as DashboardIcon } from "@mui/icons-material";
 import { NavLink, useLocation, useParams } from "react-router-dom";
 import { AuthenticationStatusInterface } from "../../interfaces/Auth";
 import { joinChannel, partChannel } from "../../api/api";
+import { Channel } from "../../interfaces/Channel";
 const drawerWidth = 240;
-
-export const Dashboard: React.FC<AuthenticationStatusInterface> = ({authenticated}) => {
+interface DashboardProps extends AuthenticationStatusInterface {
+    channelInfo: Channel;
+  }
+export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}) => {
     let [isJoined, setIsJoined] = React.useState<boolean>(false)
     let [isParted, setIsParted] = React.useState<boolean>(false)
     const params = useParams()
@@ -134,8 +137,8 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({authenticate
                                         </Typography>
                                         <Divider />
                                         <Box className="my-2">
-                                            <TextField label="Stream Title" variant="outlined" focused sx={{ my: 2 }} />
-                                            <TextField label="Stream Game" variant="outlined" focused />
+                                            <TextField label="Stream Title" value={channelInfo.title} variant="outlined" focused sx={{ my: 2 }} />
+                                            <TextField label="Stream Game" value={channelInfo.game_name} variant="outlined" focused />
                                         </Box>
                                         <Divider />
                                         <Button disabled>Reset</Button>

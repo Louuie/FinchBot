@@ -219,3 +219,32 @@ func ModifyBroadcastInformation(c *fiber.Ctx) error {
 		"success": "successfully set title to " + categoryModel.Title + " and set the game to " + gameData.Data[0].Name,
 	})
 }
+
+func GetBroadcastInformation(c *fiber.Ctx) error {
+	// First need to grab the session for the token
+	sess, err := store.Get(c)
+	err = handlers.CatchSessionError(sess, err)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error3": err.Error(),
+		})
+	}
+	token := fmt.Sprintf("%v", sess.Get("access_token"))
+	userInfo, err := api.GetUserInfo(token)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	// Now we can get the current channel information of the streamer/user
+	currentChannelInformation, err := api.GetChannelInformation(token, userInfo.Data[0].ID)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusAccepted).JSON(&fiber.Map{
+		"title":    currentChannelInformation.Data[0].Title,
+		"category": currentChannelInformation.Data[0].GameName,
+	})
+}

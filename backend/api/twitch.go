@@ -281,7 +281,7 @@ func SearchTwitchCategories(query string, token string) (*models.SearchCategorie
 	return &searchCategoriesResponse, nil
 }
 
-func GetCurrentCategory(token string, broadcaster_id string) (*models.CurrentCategoryResponse, error) {
+func GetChannelInformation(token string, broadcaster_id string) (*models.CurrentCategoryResponse, error) {
 	url := "https://api.twitch.tv/helix/channels"
 	client := http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
