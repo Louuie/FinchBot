@@ -39,10 +39,10 @@ export const App: React.FC = () => {
       })
       .then((res) => {
         const authData: AuthenticationStatusInterface = res.data;
-        console.log(authData);
-        setIsAuthed(Boolean(authData.authenticated));
-        if(isAuthed) {
-          axios.get('https://api.finchbot.xyz/auth/twitch/channel').then((res) => {
+        const authed = Boolean(authData.authenticated);
+        setIsAuthed(authed);
+        if(authed) {
+          axios.get('https://api.finchbot.xyz/twitch/channel').then((res) => {
             const currentChannelInformation: Channel = res.data
             setChannelInfo(currentChannelInformation)
           })
