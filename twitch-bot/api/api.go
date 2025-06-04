@@ -5,12 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"math/rand"
 	"net/http"
 	"twitch-bot/models"
 )
 
-func AddSong(query string, channel string) (*models.AddSongResponse, error) {
+func AddSong(query string, channel string, username string) (*models.AddSongResponse, error) {
 	client := http.Client{}
 	req, err := http.NewRequest("GET", "https://api.finchbot.xyz/song-request", nil)
 	if err != nil {
@@ -21,7 +20,7 @@ func AddSong(query string, channel string) (*models.AddSongResponse, error) {
 	q := req.URL.Query()
 	q.Add("q", query)
 	q.Add("channel", channel[1:])
-	q.Add("user", fmt.Sprintf("%v", rand.Int()))
+	q.Add("user", username)
 	req.URL.RawQuery = q.Encode()
 
 	// Get the response
