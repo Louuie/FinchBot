@@ -38,7 +38,7 @@ func JoinChannel(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-	defer ws.Close()
+	// defer ws.Close()
 
 	// Send the message
 	err = ws.WriteMessage(websocket.TextMessage, []byte("FINCHBOT_WS #"+query.Channel))
