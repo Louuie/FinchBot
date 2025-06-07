@@ -26,21 +26,30 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
     const joinTwitchChannel = async () => {
         const result = await joinChannel(params.streamer)
         setIsJoined(result)
-        console.log(`isJoined: ${isJoined}`)
     }
     const partTwitchChannel = async () => {
         const result = await partChannel(params.streamer)
         if(Boolean(result)) setIsJoined(false)
-        console.log(isJoined)
     }
     // useEffect that checks if the twitch-bot is in the streamers chatroom
     React.useEffect(() => {
-        axios.post("https://api.finchbot.xyz/join-channel", null, {
+        axios.get("https://api.finchbot.xyz/join-channel", {
             params: {
                 channel: params.streamer,
+            },
+        }).then((res) => {
+            if (res.data.status === "already joined") {
+                setIsJoined(true)
+            } else if (res.data.status === "joined") {
+                setIsJoined(true)
+            } else {
+                setIsJoined(false)
             }
-        }).then((res) => console.log(res))
-    }, [params.streamer])
+        }).catch((err) => {
+            console.error("Error checking bot status:", err);
+        });
+    }, [params.streamer]);
+    
     return (
         <div>
             <ResponsiveAppBar authenticated={authenticated} />
