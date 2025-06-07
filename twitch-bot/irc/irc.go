@@ -26,6 +26,12 @@ func HandleMessage(conn net.Conn, line string) {
 			twitch.HandleMessage(conn, line, channel)
 		}
 	}
+
+	// Respond to twitch PING messages to keep the connection alive
+	if strings.HasPrefix(line, "PING") {
+		conn.Write([]byte("PONG :tmi.twitch.tv\r\n"))
+		fmt.Println("Sent: PONG to tmi.twitch.tv")
+	}
 }
 
 func ConnectToIRC(server, username, oauth string) (net.Conn, error) {

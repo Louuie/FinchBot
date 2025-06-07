@@ -58,6 +58,8 @@ func JoinChannel(c *fiber.Ctx) error {
 		})
 	}
 	log.Printf("WS response: %s", string(msg))
+	// gracefully close the WS connection after reading the message.
+	_ = ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "finished"))
 
 	// Insert the channel into the table/db
 	db, err := database.InitializeSongDBConnection()
