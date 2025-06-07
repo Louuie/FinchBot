@@ -35,6 +35,7 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
     React.useEffect(() => {
         axios.get("https://api.finchbot.xyz/fetch-channels")
             .then((res) => {
+                console.log(res)
                 const channels = res.data.channels;
                 if (channels && channels[params.streamer!.toLowerCase()]) {
                     setIsJoined(true);
