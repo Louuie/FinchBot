@@ -33,7 +33,7 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
     }
     // useEffect that checks if the twitch-bot is in the streamers chatroom
     React.useEffect(() => {
-        axios.get("https://api.finchbot.xyz/join-channel", {
+        axios.post("https://api.finchbot.xyz/join-channel", null, {
             params: {
                 channel: params.streamer,
             },
