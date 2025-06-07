@@ -145,8 +145,21 @@ func PartChannel(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-
-	return c.JSON(fiber.Map{
+	// Read confirmation from the bot server
+	_, msg, err := ws.ReadMessage()
+	if err != nil {
+		log.Println("Read error:", err)
+		return c.Status(500).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	log.Printf("WS response: %s", string(msg))
+	// gracefully close the WS connection after reading the message.
+	_ = ws.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "finished"))
+	activeChannelsMu.Lock()
+	delete(activeChannels, strings.ToLower(query.Channel))
+	activeChannelsMu.Unlock()
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status": "parted " + query.Channel,
 	})
 }
