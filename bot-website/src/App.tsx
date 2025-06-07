@@ -41,25 +41,10 @@ export const App: React.FC = () => {
             setChannelInfo(currentChannelInformation)
           })
         }
-        // exclusiveUsers.map((exclusiveUser: string) => {
-        //   console.log(exclusiveUser, authData.display_name);
-        //   if (exclusiveUser === authData.display_name?.toLocaleLowerCase()) {
-        //     axios
-        //       .post("https://api.finchbot.xyz/song-queue-settings", null, {
-        //         params: {
-        //           channel: authData.display_name.toLowerCase(),
-        //           song_queue_status: false,
-        //           song_limit: 20,
-        //           user_limit: 2,
-        //         },
-        //       })
-        //       .then((res) => console.log(res.data))
-        //       .catch((err) => console.log(err));
-        //   }
-        // });
       })
       .catch((err) => console.log(err));
   }, []);
+
   
 
   return (

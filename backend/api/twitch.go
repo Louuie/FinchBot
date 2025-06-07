@@ -25,7 +25,7 @@ import (
 //	    Status       float64
 //	    Message      string
 //	}
-func GetAccessToken(code string) (*models.TwitchAuthResponse, error) {
+func GetUserAccessToken(code string) (*models.TwitchAuthResponse, error) {
 	url := "https://id.twitch.tv/oauth2/token"
 	client := http.Client{}
 	req, err := http.NewRequest("POST", url, nil)
@@ -53,6 +53,41 @@ func GetAccessToken(code string) (*models.TwitchAuthResponse, error) {
 	var twitchAuthRes models.TwitchAuthResponse
 	json.Unmarshal(body, &twitchAuthRes)
 	return &twitchAuthRes, nil
+}
+
+// TODO: Create a GetAppAccessToken that uses the TWITCH_CLIENT_ID & TWITCH_CLIENT_SECRET to fetch the app access token
+// Before we create or GetAppAccessToken validate it first because it would be pretty useless to keep generate a new one if we don't have to
+func GetAppAccessToken(token string) (string, error) {
+	if token != "" {
+		err := ValidateAccessToken(token)
+		if err == nil {
+			return token, err
+		}
+	}
+	url := "https://id.twitch.tv/oauth2/token"
+	client := http.Client{}
+	req, err := http.NewRequest("POST", url, nil)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	q := req.URL.Query()
+	q.Add("client_id", os.Getenv("TWITCH_CLIENT_ID"))
+	q.Add("client_secret", os.Getenv("TWITCH_CLIENT_SECRET"))
+	q.Add("grant_type", "client_credentials")
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	var twitchAuthRes models.TwitchAuthResponse
+	json.Unmarshal(body, &twitchAuthRes)
+	return twitchAuthRes.AccessToken, nil
 }
 
 // Validates the users access token to make sure its a valid one, if not it returns an error.
@@ -129,6 +164,9 @@ func RevokeAccessToken(token string) error {
 //			CreatedAt       time.Time
 //	 	}
 //	}
+//
+// TODO: Update this function to not be able to handle the UserAccessToken like it already does but the AppAccessToken because there will be instance where we need the userInfo without their accessToken
+// Note that this doesn't need to be changed here as the code here is perfect, just where this function is being called
 func GetUserInfo(token string) (*models.TwitchUserInfoResponse, error) {
 	url := "https://api.twitch.tv/helix/users"
 	client := http.Client{}

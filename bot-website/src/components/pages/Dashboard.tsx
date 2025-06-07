@@ -7,6 +7,7 @@ import { NavLink, useLocation, useParams } from "react-router-dom";
 import { AuthenticationStatusInterface } from "../../interfaces/Auth";
 import { joinChannel, partChannel } from "../../api/api";
 import { Channel } from "../../interfaces/Channel";
+import axios from "axios";
 const drawerWidth = 240;
 interface DashboardProps extends AuthenticationStatusInterface {
     channelInfo: Channel;
@@ -32,6 +33,14 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
         if(Boolean(result)) setIsJoined(false)
         console.log(isJoined)
     }
+    // useEffect that checks if the twitch-bot is in the streamers chatroom
+    React.useEffect(() => {
+        axios.post("https://api.finchbot.xyz/join-channel", null, {
+            params: {
+                channel: params.streamer,
+            }
+        }).then((res) => console.log(res))
+    }, [params.streamer])
     return (
         <div>
             <ResponsiveAppBar authenticated={authenticated} />

@@ -27,7 +27,7 @@ func TwitchAuth(c *fiber.Ctx) error {
 		})
 	}
 
-	twitchData, err := api.GetAccessToken(query.Code)
+	twitchData, err := api.GetUserAccessToken(query.Code)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
 			"error": err,
@@ -229,6 +229,7 @@ func GetBroadcastInformation(c *fiber.Ctx) error {
 			"error3": err.Error(),
 		})
 	}
+	// TODO: We need to get the AppAccessToken and not the user access_token from the session, since we hit this middlewarwe for example if a moderator is on their dashboard
 	token := fmt.Sprintf("%v", sess.Get("access_token"))
 	userInfo, err := api.GetUserInfo(token)
 	if err != nil {
