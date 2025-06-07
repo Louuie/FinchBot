@@ -15,7 +15,7 @@ interface DashboardProps extends AuthenticationStatusInterface {
 export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}) => {
     let [isJoined, setIsJoined] = React.useState<boolean>(false)
     let [isParted, setIsParted] = React.useState<boolean>(false)
-    const params = useParams()
+    const params = useParams<{ streamer?: string }>();
     const drawerItems = [
         { text: 'Dashboard', icon: <DashboardIcon />, path: `/c/${params.streamer}/dashboard` },
         { text: 'Commands', icon: <FormatListBulleted />, path: `/c/${params.streamer}/commands` },
@@ -33,22 +33,20 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
     }
     // useEffect that checks if the twitch-bot is in the streamers chatroom
     React.useEffect(() => {
-        axios.get("https://api.finchbot.xyz/fetch-channels", {
-            params: {
-                channel: params.streamer,
-            },
-        }).then((res) => {
-            if (res.data.status === "already joined") {
-                setIsJoined(true)
-            } else if (res.data.status === "joined") {
-                setIsJoined(true)
-            } else {
-                setIsJoined(false)
-            }
-        }).catch((err) => {
-            console.error("Error checking bot status:", err);
-        });
+        axios.get("https://api.finchbot.xyz/fetch-channels")
+            .then((res) => {
+                const channels = res.data.channels;
+                if (channels && channels[params.streamer!.toLowerCase()]) {
+                    setIsJoined(true);
+                } else {
+                    setIsJoined(false);
+                }
+            })
+            .catch((err) => {
+                console.error("Error checking bot status:", err);
+            });
     }, [params.streamer]);
+    
     
     return (
         <div>
