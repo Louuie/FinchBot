@@ -4,6 +4,7 @@ import (
 	"backend/twitch-bot/database"
 	"backend/twitch-bot/models"
 	"log"
+	"strings"
 	"sync"
 
 	"github.com/gofiber/fiber/v2"
@@ -80,7 +81,7 @@ func JoinChannel(c *fiber.Ctx) error {
 	// Once we are done with the WS connection we can store the join channel into the activeChannel map
 	// Use mutex because we if concurrent entries then without this that would break so lock the mutex first, assign the activeChannel and then unlock
 	activeChannelsMu.Lock()
-	activeChannels[query.Channel] = true
+	activeChannels[strings.ToLower(query.Channel)] = true
 	activeChannelsMu.Unlock()
 	// Insert the channel into the table/db
 	db, err := database.InitializeSongDBConnection()
