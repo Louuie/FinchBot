@@ -151,20 +151,9 @@ func PartChannel(c *fiber.Ctx) error {
 }
 
 func GetAllJoinedTwitchChannels(c *fiber.Ctx) error {
-	// Initalize the connection with the database
-	db, dbErr := database.InitializeSongDBConnection()
-	if dbErr != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"error": dbErr.Error(),
-		})
-	}
-	channels, err := database.GetTwitchChannels(db)
-	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
+	activeChannelsMu.RLock()
+	defer activeChannelsMu.RUnlock()
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"channels": channels,
+		"channels": activeChannels,
 	})
 }
