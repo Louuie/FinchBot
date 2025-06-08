@@ -242,10 +242,15 @@ func GetBroadcastInformation(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-	userInfo, err := api.GetUserInfo(token, query.login)
+	userInfo, err := api.GetUserInfo(token, query.Login)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
 			"error": err.Error(),
+		})
+	}
+	if len(userInfo.Data) == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(&fiber.Map{
+			"error": "user not found",
 		})
 	}
 	// Now we can get the current channel information of the streamer/user
