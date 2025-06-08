@@ -222,7 +222,7 @@ func ModifyBroadcastInformation(c *fiber.Ctx) error {
 
 func GetBroadcastInformation(c *fiber.Ctx) error {
 	type Query struct {
-		login string `query:"login"`
+		Login string `query:"login"`
 	}
 
 	query := new(Query)
@@ -230,7 +230,7 @@ func GetBroadcastInformation(c *fiber.Ctx) error {
 	if err := c.QueryParser(query); err != nil {
 		log.Fatalln(err)
 	}
-	if query.login == "" {
+	if query.Login == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
 			"error": "missing login/username",
 		})
