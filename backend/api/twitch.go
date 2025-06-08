@@ -57,13 +57,13 @@ func GetUserAccessToken(code string) (*models.TwitchAuthResponse, error) {
 
 // TODO: Create a GetAppAccessToken that uses the TWITCH_CLIENT_ID & TWITCH_CLIENT_SECRET to fetch the app access token
 // Before we create or GetAppAccessToken validate it first because it would be pretty useless to keep generate a new one if we don't have to
-func GetAppAccessToken(token string) (string, error) {
-	if token != "" {
-		err := ValidateAccessToken(token)
-		if err == nil {
-			return token, err
-		}
-	}
+func GetAppAccessToken() (string, error) {
+	// if token != "" {
+	// 	err := ValidateAccessToken(token)
+	// 	if err == nil {
+	// 		return token, err
+	// 	}
+	// }
 	url := "https://id.twitch.tv/oauth2/token"
 	client := http.Client{}
 	req, err := http.NewRequest("POST", url, nil)

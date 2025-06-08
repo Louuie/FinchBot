@@ -221,16 +221,13 @@ func ModifyBroadcastInformation(c *fiber.Ctx) error {
 }
 
 func GetBroadcastInformation(c *fiber.Ctx) error {
-	// First need to grab the session for the token
-	sess, err := store.Get(c)
-	err = handlers.CatchSessionError(sess, err)
+	// TODO: We need to get the AppAccessToken and not the user access_token from the session, since we hit this middlewarwe for example if a moderator is on their dashboard
+	token, err := api.GetAppAccessToken()
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
-			"error3": err.Error(),
+			"error": err.Error(),
 		})
 	}
-	// TODO: We need to get the AppAccessToken and not the user access_token from the session, since we hit this middlewarwe for example if a moderator is on their dashboard
-	token := fmt.Sprintf("%v", sess.Get("access_token"))
 	userInfo, err := api.GetUserInfo(token)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
