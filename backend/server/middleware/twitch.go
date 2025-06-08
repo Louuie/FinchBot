@@ -248,8 +248,6 @@ func GetBroadcastInformation(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-	fmt.Println(token)
-	fmt.Println(userInfo)
 	if len(userInfo.Data) == 0 {
 		return c.Status(fiber.StatusNotFound).JSON(&fiber.Map{
 			"error": "user not found",

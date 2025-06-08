@@ -10,6 +10,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
+	"time"
+)
+
+var (
+	appAccessToken     string
+	appAccessTokenExp  time.Time
+	appAccessTokenLock sync.Mutex
 )
 
 // Fetches the Twitch User Access Token.
@@ -55,15 +63,16 @@ func GetUserAccessToken(code string) (*models.TwitchAuthResponse, error) {
 	return &twitchAuthRes, nil
 }
 
-// TODO: Create a GetAppAccessToken that uses the TWITCH_CLIENT_ID & TWITCH_CLIENT_SECRET to fetch the app access token
-// Before we create or GetAppAccessToken validate it first because it would be pretty useless to keep generate a new one if we don't have to
 func GetAppAccessToken() (string, error) {
-	// if token != "" {
-	// 	err := ValidateAccessToken(token)
-	// 	if err == nil {
-	// 		return token, err
-	// 	}
-	// }
+	appAccessTokenLock.Lock()
+	defer appAccessTokenLock.Unlock()
+
+	// Use cached token if it's still valid
+	if appAccessToken != "" && time.Now().Before(appAccessTokenExp) {
+		return appAccessToken, nil
+	}
+
+	// Request new token
 	url := "https://id.twitch.tv/oauth2/token"
 	client := http.Client{}
 	req, err := http.NewRequest("POST", url, nil)
@@ -85,9 +94,18 @@ func GetAppAccessToken() (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	var twitchAuthRes models.TwitchAuthResponse
-	json.Unmarshal(body, &twitchAuthRes)
-	return twitchAuthRes.AccessToken, nil
+	err = json.Unmarshal(body, &twitchAuthRes)
+	if err != nil {
+		return "", err
+	}
+
+	// Cache token and expiration
+	appAccessToken = twitchAuthRes.AccessToken
+	appAccessTokenExp = time.Now().Add(time.Duration(twitchAuthRes.ExpiresIn-60) * time.Second) // buffer 1 min
+
+	return appAccessToken, nil
 }
 
 // Validates the users access token to make sure its a valid one, if not it returns an error.
