@@ -60,7 +60,11 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
             .catch((err) => {
                 console.error("Error checking bot status:", err);
             });
-        axios.get('https://api.finchbot.xyz/twitch/channel', { withCredentials: true }).then((res) => {
+        axios.get('https://api.finchbot.xyz/twitch/channel', {
+            params: {
+                login: params.streamer
+            }
+        }).then((res) => {
             const currentChannelInformation: Channel = res.data
             setChannelInfo(currentChannelInformation)
         })
