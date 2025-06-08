@@ -20,10 +20,7 @@ const exclusiveUsers = ["louiee_tv"];
 export const App: React.FC = () => {
   // state variable for auth
   const [isAuthed, setIsAuthed] = React.useState(false);
-  const [channelInfo, setChannelInfo] = React.useState<Channel>({
-    title: '',
-    category: '',
-  });
+
 
   // useEffect that fetches the users authentication status
   React.useEffect(() => {
@@ -35,12 +32,6 @@ export const App: React.FC = () => {
         const authData: AuthenticationStatusInterface = res.data;
         const authed = Boolean(authData.authenticated);
         setIsAuthed(authed);
-        if(authed) {
-          axios.get('https://api.finchbot.xyz/twitch/channel', {withCredentials: true}).then((res) => {
-            const currentChannelInformation: Channel = res.data
-            setChannelInfo(currentChannelInformation)
-          })
-        }
       })
       .catch((err) => console.log(err));
   }, []);
@@ -53,7 +44,7 @@ export const App: React.FC = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<Callback />} />
-        <Route path="/c/:streamer/dashboard" element={<Dashboard authenticated={isAuthed} channelInfo={channelInfo}/>} />
+        <Route path="/c/:streamer/dashboard" element={<Dashboard authenticated={isAuthed}/>} />
         <Route
           path="/c/:streamer/song-requests"
           element={<SongRequests authenticated={isAuthed} />}

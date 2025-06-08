@@ -11,18 +11,18 @@ import axios from "axios";
 
 const drawerWidth = 240;
 
-interface DashboardProps extends AuthenticationStatusInterface {
-    channelInfo: Channel;
-}
-
-export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}) => {
+export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticated }) => {
     let [isJoined, setIsJoined] = React.useState<boolean>(false)
     let [isParted, setIsParted] = React.useState<boolean>(false)
     const [mobileOpen, setMobileOpen] = React.useState(false);
-    
+    const [channelInfo, setChannelInfo] = React.useState<Channel>({
+        title: '',
+        category: '',
+      });
+
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-    
+
     const params = useParams<{ streamer?: string }>();
     const drawerItems = [
         { text: 'Dashboard', icon: <DashboardIcon />, path: `/c/${params.streamer}/dashboard` },
@@ -40,12 +40,12 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
         const result = await joinChannel(params.streamer)
         setIsJoined(result)
     }
-    
+
     const partTwitchChannel = async () => {
         const result = await partChannel(params.streamer)
-        if(Boolean(result)) setIsJoined(false)
+        if (Boolean(result)) setIsJoined(false)
     }
-    
+
     // useEffect that checks if the twitch-bot is in the streamers chatroom
     React.useEffect(() => {
         axios.get("https://api.finchbot.xyz/fetch-channels")
@@ -60,6 +60,10 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
             .catch((err) => {
                 console.error("Error checking bot status:", err);
             });
+        axios.get('https://api.finchbot.xyz/twitch/channel', { withCredentials: true }).then((res) => {
+            const currentChannelInformation: Channel = res.data
+            setChannelInfo(currentChannelInformation)
+        })
     }, [params.streamer]);
 
     const drawer = (
@@ -100,11 +104,11 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
             </List>
         </>
     );
-    
+
     return (
         <div>
-            <ResponsiveAppBar 
-                authenticated={authenticated} 
+            <ResponsiveAppBar
+                authenticated={authenticated}
                 onDrawerToggle={handleDrawerToggle}
                 showDrawerToggle={true}
             />
@@ -157,15 +161,15 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
 
                 <Box
                     component="main"
-                    sx={{ 
-                        flexGrow: 1, 
+                    sx={{
+                        flexGrow: 1,
                         p: { xs: 2, sm: 3 }, // Responsive padding
                     }}
                 >
                     <Toolbar />
                     <div>
-                        <Box 
-                            sx={{ 
+                        <Box
+                            sx={{
                                 mx: { xs: 1, sm: 4, md: 8, lg: 20 }, // Responsive horizontal margins
                                 my: { xs: 2, sm: 4 } // Responsive vertical margins
                             }}
@@ -191,7 +195,7 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
                                     Join FinchBot to your channel to allow it to handle song-requests, respond to commands, moderate your chat and engage with your community.
                                 </Alert>
                             </Collapse>
-                            
+
                             <Grid container spacing={{ xs: 2, sm: 3 }}>
                                 {/* Bot Actions Card */}
                                 <Grid size={{ xs: 12, md: 4, lg: 2 }}>
@@ -201,27 +205,27 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
                                         </Typography>
                                         <Divider sx={{ mb: 2 }} />
                                         {
-                                        isJoined ? 
-                                            <Button 
-                                                onClick={() => {partTwitchChannel()}} 
-                                                variant="contained" 
-                                                sx={{ width: '100%' }}
-                                                color="error"
-                                            >
-                                                Leave Channel
-                                            </Button>
-                                           :
-                                           <Button 
-                                                onClick={() => {joinTwitchChannel()}} 
-                                                variant="contained" 
-                                                sx={{ width: '100%' }}
-                                            >
-                                                Join Channel
-                                            </Button>
+                                            isJoined ?
+                                                <Button
+                                                    onClick={() => { partTwitchChannel() }}
+                                                    variant="contained"
+                                                    sx={{ width: '100%' }}
+                                                    color="error"
+                                                >
+                                                    Leave Channel
+                                                </Button>
+                                                :
+                                                <Button
+                                                    onClick={() => { joinTwitchChannel() }}
+                                                    variant="contained"
+                                                    sx={{ width: '100%' }}
+                                                >
+                                                    Join Channel
+                                                </Button>
                                         }
                                     </Card>
                                 </Grid>
-                                
+
                                 {/* Stream Controls Card */}
                                 <Grid size={{ xs: 12, md: 8, lg: 3 }}>
                                     <Card sx={{ px: { xs: 2, sm: 4 }, py: 2, width: '100%' }}>
@@ -230,19 +234,19 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
                                         </Typography>
                                         <Divider sx={{ mb: 2 }} />
                                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                            <TextField 
-                                                label="Stream Title" 
-                                                value={channelInfo.title} 
-                                                variant="outlined" 
-                                                focused 
+                                            <TextField
+                                                label="Stream Title"
+                                                value={channelInfo.title}
+                                                variant="outlined"
+                                                focused
                                                 fullWidth
                                                 size={isMobile ? "small" : "medium"}
                                             />
-                                            <TextField 
-                                                label="Stream Game" 
-                                                value={channelInfo.category} 
-                                                variant="outlined" 
-                                                focused 
+                                            <TextField
+                                                label="Stream Game"
+                                                value={channelInfo.category}
+                                                variant="outlined"
+                                                focused
                                                 fullWidth
                                                 size={isMobile ? "small" : "medium"}
                                             />
@@ -254,7 +258,7 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
                                         </Box>
                                     </Card>
                                 </Grid>
-                                
+
                                 {/* Audit Log Card */}
                                 <Grid size={{ xs: 12, lg: 7 }}>
                                     <Card sx={{ px: { xs: 2, sm: 4 }, py: 2, width: '100%' }}>
