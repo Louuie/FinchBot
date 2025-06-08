@@ -191,7 +191,7 @@ func GetUserInfo(token string, login string) (*models.TwitchUserInfoResponse, er
 	if login != "" {
 		q := req.URL.Query()
 		q.Add("login", login)
-		q.Encode()
+		req.URL.RawQuery = q.Encode()
 	}
 	req.Header.Add("Authorization", "Bearer "+token)
 	req.Header.Add("Client-Id", os.Getenv("TWITCH_CLIENT_ID"))
