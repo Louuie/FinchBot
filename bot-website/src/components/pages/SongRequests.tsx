@@ -13,7 +13,7 @@ import { Settings } from '../../interfaces/Settings';
 
 import {
   Box, CssBaseline, Divider, Drawer, List, ListItem, ListItemButton,
-  ListItemIcon, ListItemText, Toolbar
+  ListItemIcon, ListItemText, Toolbar, useMediaQuery, useTheme
 } from '@mui/material';
 
 import {
@@ -27,7 +27,10 @@ const drawerWidth = 240;
 export const SongRequests: React.FC<AuthenticationStatusInterface> = ({ authenticated }) => {
   const params = useParams();
   const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
+  const [mobileOpen, setMobileOpen] = React.useState(false);
   const [song, setSong] = React.useState<Songs>({
     Title: '', Artist: '', DurationInSeconds: 0, Videoid: '', Userid: '', Id: 0, Position: 0,
   });
@@ -35,6 +38,10 @@ export const SongRequests: React.FC<AuthenticationStatusInterface> = ({ authenti
   const [songQueueSettings, setSongQueueSettings] = React.useState<Settings>({
     channel: params.streamer, status: false, song_limit: 20, user_limit: 2,
   });
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
 
   // Fetch songs
   React.useEffect(() => {
@@ -84,75 +91,143 @@ export const SongRequests: React.FC<AuthenticationStatusInterface> = ({ authenti
     { text: 'Song Requests', icon: <QueueMusic />, path: `/c/${params.streamer}/song-requests` },
   ];
 
+  const drawer = (
+    <>
+      <Toolbar />
+      <Divider sx={{ borderColor: '#333' }} />
+      <List>
+        {drawerItems.map(({ text, icon, path }) => (
+          <NavLink
+            key={text}
+            to={path}
+            style={{ textDecoration: 'none' }}
+            onClick={() => isMobile && setMobileOpen(false)}
+          >
+            <ListItem disablePadding>
+              <ListItemButton
+                selected={location.pathname.startsWith(path)}
+                sx={{
+                  '&.Mui-selected': { backgroundColor: '#333' },
+                  '&.Mui-selected:hover': { backgroundColor: '#444' },
+                  '&:hover': { backgroundColor: '#2a2a2a' },
+                  py: 1.5, px: 2,
+                }}
+              >
+                <ListItemIcon sx={{ color: '#aaa' }}>{icon}</ListItemIcon>
+                <ListItemText
+                  primary={text}
+                  sx={{ span: { fontWeight: 500, fontSize: 15, color: '#fff' } }}
+                />
+              </ListItemButton>
+            </ListItem>
+          </NavLink>
+        ))}
+      </List>
+    </>
+  );
+
   return (
     <div className="w-full min-h-screen">
-      <ResponsiveAppBar authenticated={authenticated} />
+      <ResponsiveAppBar 
+        authenticated={authenticated} 
+        onDrawerToggle={handleDrawerToggle}
+        showDrawerToggle={true}
+      />
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <Drawer
-          sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            '& .MuiDrawer-paper': {
+        
+        {/* Desktop Drawer */}
+        {!isMobile && (
+          <Drawer
+            sx={{
               width: drawerWidth,
-              boxSizing: 'border-box',
-              backgroundColor: '#1e1e1e',
-              color: '#fff',
-              borderRight: '1px solid #333',
-            },
+              flexShrink: 0,
+              '& .MuiDrawer-paper': {
+                width: drawerWidth,
+                boxSizing: 'border-box',
+                backgroundColor: '#1e1e1e',
+                color: '#fff',
+                borderRight: '1px solid #333',
+              },
+            }}
+            variant="permanent"
+            anchor="left"
+          >
+            {drawer}
+          </Drawer>
+        )}
+
+        {/* Mobile Drawer */}
+        {isMobile && (
+          <Drawer
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+            sx={{
+              '& .MuiDrawer-paper': {
+                width: drawerWidth,
+                boxSizing: 'border-box',
+                backgroundColor: '#1e1e1e',
+                color: '#fff',
+                borderRight: '1px solid #333',
+              },
+            }}
+          >
+            {drawer}
+          </Drawer>
+        )}
+
+        <Box 
+          component="main" 
+          sx={{ 
+            flexGrow: 1, 
+            p: { xs: 2, sm: 3 }, // Responsive padding
           }}
-          variant="permanent"
-          anchor="left"
         >
           <Toolbar />
-          <Divider sx={{ borderColor: '#333' }} />
-          <List>
-            {drawerItems.map(({ text, icon, path }) => (
-              <NavLink
-                key={text}
-                to={path}
-                style={{ textDecoration: 'none' }}
-              >
-                <ListItem disablePadding>
-                  <ListItemButton
-                    selected={location.pathname === path}
-                    sx={{
-                      '&.Mui-selected': { backgroundColor: '#333' },
-                      '&.Mui-selected:hover': { backgroundColor: '#444' },
-                      '&:hover': { backgroundColor: '#2a2a2a' },
-                      py: 1.5, px: 2,
-                    }}
-                  >
-                    <ListItemIcon sx={{ color: '#aaa' }}>{icon}</ListItemIcon>
-                    <ListItemText
-                      primary={text}
-                      sx={{ span: { fontWeight: 500, fontSize: 15, color: '#fff' } }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              </NavLink>
-            ))}
-          </List>
-        </Drawer>
+          
+          {/* Form Dialog with responsive spacing */}
+          <Box sx={{ mb: { xs: 2, sm: 3 } }}>
+            <FormDialog
+              Streamer={params.streamer as string}
+              songs={songs}
+              authenticated={authenticated}
+              status={songQueueSettings.status}
+              song_limit={songQueueSettings.song_limit}
+              user_limit={songQueueSettings.user_limit}
+            />
+          </Box>
 
-        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          <Toolbar />
-          <FormDialog
-            Streamer={params.streamer as string}
-            songs={songs}
-            authenticated={authenticated}
-            status={songQueueSettings.status}
-            song_limit={songQueueSettings.song_limit}
-            user_limit={songQueueSettings.user_limit}
-          />
-          <Box className="flex justify-center items-center">
+          {/* Song Player with responsive layout */}
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              alignItems: 'center',
+              mb: { xs: 3, sm: 4 },
+              px: { xs: 1, sm: 2 } // Add some horizontal padding on mobile
+            }}
+          >
             <SongPlayer
               Streamer={params.streamer as string}
               songs={songs}
               {...song}
             />
           </Box>
-          <Box className="flex flex-col items-start text-gray-300 mt-4">
+
+          {/* Song Table with responsive layout */}
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'start',
+              color: 'text.secondary',
+              px: { xs: 0, sm: 1 } // Minimal padding on mobile for table
+            }}
+          >
             <SongTable
               Streamer={params.streamer as string}
               songs={songs}
