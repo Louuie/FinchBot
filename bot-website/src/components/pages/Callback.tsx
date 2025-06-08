@@ -12,10 +12,11 @@ export const Callback: React.FC = () => {
     if (!code) return;
 
     axios.post('https://api.finchbot.xyz/auth/twitch', null, {
-      params: { code }
-    }).then(() => {
-      navigate("/"); //Go back to home/dashboard
-    }).catch((err) => {
+        params: { code },
+        withCredentials: true
+      }).then(() => {
+        navigate("/");
+      }).catch((err) => {
       console.error("OAuth error:", err);
     });
   }, []);
