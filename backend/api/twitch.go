@@ -104,15 +104,29 @@ func ValidateAccessToken(token string) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-	var twitchValidateTokenRes models.TwitchValidateTokenResponse
-	json.Unmarshal(body, &twitchValidateTokenRes)
-	if twitchValidateTokenRes.ExpiresIn == 0 {
-		return errors.New("something went wrong validating the token on the backend")
+
+	if resp.StatusCode != http.StatusOK {
+		// 🔍 Print the error Twitch gives for debugging
+		log.Printf("Token validation failed. Status: %d, Body: %s", resp.StatusCode, string(body))
+		return errors.New("invalid access token")
 	}
+
+	var twitchValidateTokenRes models.TwitchValidateTokenResponse
+	if err := json.Unmarshal(body, &twitchValidateTokenRes); err != nil {
+		return err
+	}
+
+	if twitchValidateTokenRes.ExpiresIn == 0 {
+		log.Printf("Unexpected validation response: %s", string(body))
+		return errors.New("token expired or invalid")
+	}
+
 	return nil
 }
 
