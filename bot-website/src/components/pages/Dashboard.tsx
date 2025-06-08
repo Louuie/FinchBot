@@ -103,32 +103,13 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
     
     return (
         <div>
-            <ResponsiveAppBar authenticated={authenticated} />
+            <ResponsiveAppBar 
+                authenticated={authenticated} 
+                onDrawerToggle={handleDrawerToggle}
+                showDrawerToggle={true}
+            />
             <Box sx={{ display: 'flex' }}>
                 <CssBaseline />
-                
-                {/* Mobile Menu Button */}
-                {isMobile && (
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        edge="start"
-                        onClick={handleDrawerToggle}
-                        sx={{ 
-                            position: 'fixed', 
-                            top: 80, // Adjust based on your AppBar height
-                            left: 16, 
-                            zIndex: 1200,
-                            backgroundColor: 'primary.main',
-                            color: 'white',
-                            '&:hover': {
-                                backgroundColor: 'primary.dark',
-                            }
-                        }}
-                    >
-                        <Menu />
-                    </IconButton>
-                )}
 
                 {/* Desktop Drawer */}
                 {!isMobile && (
@@ -179,7 +160,6 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
                     sx={{ 
                         flexGrow: 1, 
                         p: { xs: 2, sm: 3 }, // Responsive padding
-                        mt: isMobile ? 2 : 0, // Extra margin top on mobile for menu button
                     }}
                 >
                     <Toolbar />

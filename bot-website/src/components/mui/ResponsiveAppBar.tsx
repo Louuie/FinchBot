@@ -8,6 +8,8 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
+import { Menu as MenuIcon } from "@mui/icons-material";
+import { useMediaQuery, useTheme } from "@mui/material";
 import FinchBot_logo from '../../assets/FinchBot_logo_large.png'
 import {
   AuthenticationStatusInterface,
@@ -19,11 +21,21 @@ import { AppBar } from "@mui/material";
 
 const settings = ["Sign out"];
 
-export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
+interface ResponsiveAppBarProps extends AuthenticationStatusInterface {
+  onDrawerToggle?: () => void;
+  showDrawerToggle?: boolean;
+}
+
+export const ResponsiveAppBar: React.FC<ResponsiveAppBarProps> = ({
   authenticated,
+  onDrawerToggle,
+  showDrawerToggle = false,
 }) => {
   // state variable that sets the userData so that way we can use it
   const [userData, setUserData] = React.useState<TwitchUserInfoInterface>();
+  
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // useEffect that checks if the user is Authenticated, if so fetch their displayName and avatar
   React.useEffect(() => {
@@ -48,6 +60,7 @@ export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -62,13 +75,25 @@ export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
 
   return (
     <AppBar position="fixed" elevation={0} className="bg-[#212121]" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-      <Toolbar disableGutters className="w-full ">
+      <Toolbar disableGutters className="w-full">
+        {/* Drawer Toggle Button - Only show on mobile when showDrawerToggle is true */}
+        {showDrawerToggle && isMobile && (
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            edge="start"
+            onClick={onDrawerToggle}
+            sx={{ ml: 1, mr: 1 }}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
+
         <img
           src={FinchBot_logo}
           alt="FinchBot Logo"
           className="h-12 w-12 ml-2 mr-2"
         />
-
         <Typography
           variant="h6"
           noWrap
@@ -79,9 +104,8 @@ export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
           FINCHBOT
         </Typography>
 
-
         <Box className="flex ml-auto mr-1 items-end">
-          {authenticated ?
+          {authenticated ? (
             <div>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} className="p-2">
@@ -106,13 +130,16 @@ export const ResponsiveAppBar: React.FC<AuthenticationStatusInterface> = ({
               >
                 <MenuItem href="/" onClick={() => { setAnchorElUser(null); }}>
                   <a href="/" onClick={() => logout()}>
-                    <Typography textAlign="center" >Sign out</Typography>
+                    <Typography textAlign="center">Sign out</Typography>
                   </a>
                 </MenuItem>
               </Menu>
             </div>
-            :
-            <Button variant="contained" className="mr-2 bg-[#127707] text-gray-100" href="/login">Login</Button>}
+          ) : (
+            <Button variant="contained" className="mr-2 bg-[#127707] text-gray-100" href="/login">
+              Login
+            </Button>
+          )}
         </Box>
       </Toolbar>
     </AppBar>

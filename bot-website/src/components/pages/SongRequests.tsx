@@ -76,37 +76,7 @@ export const SongRequests: React.FC<AuthenticationStatusInterface> = ({ authenti
     return () => {
       isMounted = false;
     };
-  }, [params.streamer]);
-  
-
-  // Fetch settings
-  // React.useEffect(() => {
-  //   let isMounted = true;
-  
-  //   const fetchSettings = async () => {
-  //     try {
-  //       const res = await axios.get('https://api.finchbot.xyz/song-queue-settings', {
-  //         params: { channel: params.streamer + '_settings' }
-  //       });
-  //       if (isMounted) {
-  //         setSongQueueSettings(res.data.settings[0]);
-  //       }
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  
-  //     if (isMounted) {
-  //       setTimeout(fetchSettings, 3000);
-  //     }
-  //   };
-  
-  //   fetchSettings();
-  
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, [params.streamer]);
-  
+  }, [params.streamer]);  
 
   const drawerItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: `/c/${params.streamer}/dashboard` },
