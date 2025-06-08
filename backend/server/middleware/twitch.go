@@ -70,7 +70,7 @@ func TwitchAuthCheck(c *fiber.Ctx) error {
 		})
 	}
 
-	userInfo, err := api.GetUserInfo(token)
+	userInfo, err := api.GetUserInfo(token, "")
 	if err != nil {
 		fmt.Print(err.Error())
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
@@ -114,7 +114,7 @@ func TwitchUserInfo(c *fiber.Ctx) error {
 			"error3": err.Error(),
 		})
 	}
-	userInfo, err := api.GetUserInfo(fmt.Sprintf("%v", sess.Get("access_token")))
+	userInfo, err := api.GetUserInfo(fmt.Sprintf("%v", sess.Get("access_token")), "")
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
 			"error": err.Error(),
@@ -141,7 +141,7 @@ func ModifyBroadcastInformation(c *fiber.Ctx) error {
 			"error4": err.Error(),
 		})
 	}
-	userInfo, err := api.GetUserInfo(fmt.Sprintf("%v", sess.Get("access_token")))
+	userInfo, err := api.GetUserInfo(fmt.Sprintf("%v", sess.Get("access_token")), "")
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
 			"error": err.Error(),
@@ -221,6 +221,20 @@ func ModifyBroadcastInformation(c *fiber.Ctx) error {
 }
 
 func GetBroadcastInformation(c *fiber.Ctx) error {
+	type Query struct {
+		login string `query:"login"`
+	}
+
+	query := new(Query)
+
+	if err := c.QueryParser(query); err != nil {
+		log.Fatalln(err)
+	}
+	if query.login == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": "missing login/username",
+		})
+	}
 	// TODO: We need to get the AppAccessToken and not the user access_token from the session, since we hit this middlewarwe for example if a moderator is on their dashboard
 	token, err := api.GetAppAccessToken()
 	if err != nil {
@@ -228,7 +242,7 @@ func GetBroadcastInformation(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-	userInfo, err := api.GetUserInfo(token)
+	userInfo, err := api.GetUserInfo(token, query.login)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
 			"error": err.Error(),

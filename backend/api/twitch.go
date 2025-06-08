@@ -181,12 +181,17 @@ func RevokeAccessToken(token string) error {
 //
 // TODO: Update this function to not be able to handle the UserAccessToken like it already does but the AppAccessToken because there will be instance where we need the userInfo without their accessToken
 // Note that this doesn't need to be changed here as the code here is perfect, just where this function is being called
-func GetUserInfo(token string) (*models.TwitchUserInfoResponse, error) {
+func GetUserInfo(token string, login string) (*models.TwitchUserInfoResponse, error) {
 	url := "https://api.twitch.tv/helix/users"
 	client := http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
+	}
+	if login != "" {
+		q := req.URL.Query()
+		q.Add("login", login)
+		q.Encode()
 	}
 	req.Header.Add("Authorization", "Bearer "+token)
 	req.Header.Add("Client-Id", os.Getenv("TWITCH_CLIENT_ID"))
