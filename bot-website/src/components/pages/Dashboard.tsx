@@ -72,7 +72,7 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
                         key={text}
                         to={path}
                         style={{ textDecoration: 'none' }}
-                        onClick={() => setMobileOpen(false)}
+                        onClick={() => isMobile && setMobileOpen(false)}
                     >
                         <ListItem disablePadding>
                             <ListItemButton
@@ -112,26 +112,25 @@ export const Dashboard: React.FC<DashboardProps> = ({authenticated, channelInfo}
                 <CssBaseline />
 
                 {/* Desktop Drawer */}
-                <Drawer
-                    sx={{
-                        width: mobileOpen ? 0 : drawerWidth,
-                        flexShrink: 0,
-                        '& .MuiDrawer-paper': {
+                {!isMobile && (
+                    <Drawer
+                        sx={{
                             width: drawerWidth,
-                            boxSizing: 'border-box',
-                            backgroundColor: '#1e1e1e',
-                            color: '#fff',
-                            borderRight: '1px solid #333',
-                            transform: mobileOpen ? 'translateX(-100%)' : 'translateX(0)',
-                            transition: 'transform 0.3s ease-in-out',
-                        },
-                    }}
-                    variant="persistent"
-                    anchor="left"
-                    open={!mobileOpen}
-                >
-                    {drawer}
-                </Drawer>
+                            flexShrink: 0,
+                            '& .MuiDrawer-paper': {
+                                width: drawerWidth,
+                                boxSizing: 'border-box',
+                                backgroundColor: '#1e1e1e',
+                                color: '#fff',
+                                borderRight: '1px solid #333',
+                            },
+                        }}
+                        variant="permanent"
+                        anchor="left"
+                    >
+                        {drawer}
+                    </Drawer>
+                )}
 
                 {/* Mobile Drawer */}
                 {isMobile && (
