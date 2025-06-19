@@ -46,7 +46,8 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
         if (Boolean(result)) setIsJoined(false)
     }
     const handleUpdateStream = () => {
-        axios.post("https://api.finchbot.xyz/twitch/modify", null, {
+        axios.post("https://api.finchbot.xyz/twitch/modify", null,  {
+            withCredentials: true,
             params: {
                 title: channelInfo.title,
                 game: channelInfo.category || "unlisted"  // fallback if needed
