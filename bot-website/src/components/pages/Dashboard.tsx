@@ -18,7 +18,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
     const [channelInfo, setChannelInfo] = React.useState<Channel>({
         title: '',
         category: '',
-      });
+    });
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -45,6 +45,21 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
         const result = await partChannel(params.streamer)
         if (Boolean(result)) setIsJoined(false)
     }
+    const handleUpdateStream = () => {
+        axios.post("https://api.finchbot.xyz/twitch/modify", null, {
+            params: {
+                title: channelInfo.title,
+                game: channelInfo.category || "unlisted"  // fallback if needed
+            }
+        })
+            .then(() => alert("Stream updated!"))
+            .catch((err) => {
+                console.error(err);
+                alert("Something went wrong");
+            });
+
+    };
+
 
     // useEffect that checks if the twitch-bot is in the streamers chatroom
     React.useEffect(() => {
@@ -202,7 +217,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
 
                             <Grid container spacing={{ xs: 2, sm: 3 }}>
                                 {/* Bot Actions Card */}
-                                <Grid size={{ xs: 12, md: 4, lg: 2 }}>
+                                <Grid container spacing={{ xs: 12, md: 4, lg: 2 }}>
                                     <Card sx={{ px: { xs: 2, sm: 4 }, py: 2, width: '100%' }} >
                                         <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 18, my: 2 }}>
                                             Bot Actions
@@ -231,7 +246,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                 </Grid>
 
                                 {/* Stream Controls Card */}
-                                <Grid size={{ xs: 12, md: 8, lg: 3 }}>
+                                <Grid container spacing={{ xs: 2, sm: 3 }}>
                                     <Card sx={{ px: { xs: 2, sm: 4 }, py: 2, width: '100%' }}>
                                         <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 18 }}>
                                             Stream Controls
@@ -241,30 +256,47 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                             <TextField
                                                 label="Stream Title"
                                                 value={channelInfo.title}
+                                                onChange={(e) =>
+                                                    setChannelInfo((prev) => ({ ...prev, title: e.target.value }))
+                                                }
                                                 variant="outlined"
                                                 focused
                                                 fullWidth
                                                 size={isMobile ? "small" : "medium"}
                                             />
+
                                             <TextField
                                                 label="Stream Game"
                                                 value={channelInfo.category}
+                                                onChange={(e) =>
+                                                    setChannelInfo((prev) => ({ ...prev, category: e.target.value }))
+                                                }
                                                 variant="outlined"
                                                 focused
                                                 fullWidth
+                                                required
                                                 size={isMobile ? "small" : "medium"}
                                             />
+
                                         </Box>
                                         <Divider sx={{ my: 2 }} />
                                         <Box sx={{ display: 'flex', gap: 1, flexDirection: { xs: 'column', sm: 'row' } }}>
                                             <Button disabled variant="outlined" fullWidth={isMobile}>Reset</Button>
-                                            <Button disabled variant="contained" fullWidth={isMobile}>Update</Button>
+                                            <Button
+                                                variant="contained"
+                                                fullWidth={isMobile}
+                                                disabled={!channelInfo.title.trim()}
+                                                onClick={handleUpdateStream}
+                                            >
+                                                Update
+                                            </Button>
+
                                         </Box>
                                     </Card>
                                 </Grid>
 
                                 {/* Audit Log Card */}
-                                <Grid size={{ xs: 12, lg: 7 }}>
+                                <Grid container spacing={{ xs: 12, lg: 7 }}>
                                     <Card sx={{ px: { xs: 2, sm: 4 }, py: 2, width: '100%' }}>
                                         <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 18 }}>
                                             Audit Log
