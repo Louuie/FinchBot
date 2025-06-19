@@ -7,13 +7,15 @@ import { NavLink, useLocation, useParams } from "react-router-dom";
 import { AuthenticationStatusInterface } from "../../interfaces/Auth";
 import { joinChannel, partChannel } from "../../api/api";
 import { Channel } from "../../interfaces/Channel";
+import { Snackbar, Alert as MuiAlert } from "@mui/material";
 import axios from "axios";
 
 const drawerWidth = 240;
 
 export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticated }) => {
     let [isJoined, setIsJoined] = React.useState<boolean>(false)
-    let [isParted, setIsParted] = React.useState<boolean>(false)
+    const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [channelInfo, setChannelInfo] = React.useState<Channel>({
         title: '',
@@ -46,14 +48,14 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
         if (Boolean(result)) setIsJoined(false)
     }
     const handleUpdateStream = () => {
-        axios.post("https://api.finchbot.xyz/twitch/modify", null,  {
+        axios.post("https://api.finchbot.xyz/twitch/modify", null, {
             withCredentials: true,
             params: {
                 title: channelInfo.title,
                 game: channelInfo.category || "unlisted"  // fallback if needed
             }
         })
-            .then(() => alert("Stream updated!"))
+            .then(() => setSnackbarOpen(true))
             .catch((err) => {
                 console.error(err);
                 alert("Something went wrong");
@@ -253,6 +255,17 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                             Stream Controls
                                         </Typography>
                                         <Divider sx={{ mb: 2 }} />
+                                        <Snackbar
+                                            open={snackbarOpen}
+                                            autoHideDuration={3000}
+                                            onClose={() => setSnackbarOpen(false)}
+                                            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                                        >
+                                            <MuiAlert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
+                                                Stream updated successfully!
+                                            </MuiAlert>
+                                        </Snackbar>
+
                                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                             <TextField
                                                 label="Stream Title"
