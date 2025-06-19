@@ -15,6 +15,8 @@ const drawerWidth = 240;
 export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticated }) => {
     let [isJoined, setIsJoined] = React.useState<boolean>(false)
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+    const [snackbarError, setSnackbarError] = React.useState<string | null>(null);
+
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [channelInfo, setChannelInfo] = React.useState<Channel>({
@@ -58,7 +60,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
             .then(() => setSnackbarOpen(true))
             .catch((err) => {
                 console.error(err);
-                alert("Something went wrong");
+                setSnackbarError("Failed to update stream. Please try again.")
             });
 
     };
@@ -255,16 +257,6 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                             Stream Controls
                                         </Typography>
                                         <Divider sx={{ mb: 2 }} />
-                                        <Snackbar
-                                            open={snackbarOpen}
-                                            autoHideDuration={3000}
-                                            onClose={() => setSnackbarOpen(false)}
-                                            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                                        >
-                                            <MuiAlert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
-                                                Stream updated successfully!
-                                            </MuiAlert>
-                                        </Snackbar>
 
                                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                                             <TextField
@@ -326,6 +318,16 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                             </Grid>
                         </Box>
                     </div>
+                    <Snackbar
+                        open={snackbarOpen}
+                        autoHideDuration={3000}
+                        onClose={() => setSnackbarOpen(false)}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                    >
+                        <MuiAlert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%' }}>
+                            Stream updated successfully!
+                        </MuiAlert>
+                    </Snackbar>
                 </Box>
             </Box>
         </div>
