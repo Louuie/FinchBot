@@ -90,10 +90,8 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
             setChannelInfo(currentChannelInformation)
         })
         axios.get("https://api.finchbot.xyz/top-games").then((res) => {
-            const games = res.data
-            setTop100Games(games)
+            setTop100Games(res.data)
             console.log(top100games)
-            console.log(res.data)
         })
     }, [params.streamer]);
 
