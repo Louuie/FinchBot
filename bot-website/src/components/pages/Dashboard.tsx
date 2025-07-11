@@ -9,6 +9,7 @@ import { joinChannel, partChannel } from "../../api/api";
 import { Channel } from "../../interfaces/Channel";
 import { Snackbar, Alert as MuiAlert } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
+import HowToModFinchBotIMG from '../../assets/how-to-mod-finchbot.png'
 import axios from "axios";
 
 const drawerWidth = 240;
@@ -310,6 +311,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                                     </Box>
                                                     <Typography variant="body1">in the chatroom.</Typography>
                                                 </Box>
+                                                <img src={HowToModFinchBotIMG} alt="..." style={{ width: 24, height: 24, borderRadius: 4 }} />
                                             </DialogContent>
                                         </Dialog>
                                     </Card>
