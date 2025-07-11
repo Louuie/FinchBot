@@ -269,7 +269,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                         }
                                         <Dialog
                                             onClose={handleCloseDialog}
-                                            open={isJoined}
+                                            open={dialogOpened}
                                         >
                                             <DialogTitle sx={{ m: 0, p: 2 }}>
                                                 Joined to channel!
@@ -311,7 +311,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                                     </Box>
                                                     <Typography variant="body1">in the chatroom.</Typography>
                                                 </Box>
-                                                <img src={HowToModFinchBotIMG} alt="..." style={{ width: 24, height: 24, borderRadius: 4 }} />
+                                                <img src={HowToModFinchBotIMG} alt="..." />
                                             </DialogContent>
                                         </Dialog>
                                     </Card>
