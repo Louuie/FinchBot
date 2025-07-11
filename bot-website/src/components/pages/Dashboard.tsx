@@ -311,7 +311,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                                     </Box>
                                                     <Typography variant="body1">in the chatroom.</Typography>
                                                 </Box>
-                                                <img src={HowToModFinchBotIMG} alt="..." style={{ width: 24, height: 8, borderRadius: 4 }}/>
+                                                <img src={HowToModFinchBotIMG} alt="..." style={{ width: 64}}/>
                                             </DialogContent>
                                         </Dialog>
                                     </Card>
