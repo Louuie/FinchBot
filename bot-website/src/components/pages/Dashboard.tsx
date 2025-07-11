@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ResponsiveAppBar } from "../mui/ResponsiveAppBar";
-import { Alert, AlertTitle, Collapse, IconButton, Card, Button, Box, Grid, TextField, Divider, Typography, CssBaseline, AppBar, Toolbar, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery, useTheme, Autocomplete } from "@mui/material";
+import { Alert, AlertTitle, Collapse, IconButton, Card, Button, Box, Grid, TextField, Divider, Typography, CssBaseline, AppBar, Toolbar, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery, useTheme, Autocomplete, DialogTitle, Dialog, DialogContent } from "@mui/material";
 import { Close, FormatListBulleted, QueueMusic, Menu } from "@mui/icons-material";
 import { Dashboard as DashboardIcon } from "@mui/icons-material";
 import { NavLink, useLocation, useParams } from "react-router-dom";
@@ -8,19 +8,21 @@ import { AuthenticationStatusInterface } from "../../interfaces/Auth";
 import { joinChannel, partChannel } from "../../api/api";
 import { Channel } from "../../interfaces/Channel";
 import { Snackbar, Alert as MuiAlert } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 import axios from "axios";
 
 const drawerWidth = 240;
 interface Game {
-  id: string;
-  name: string;
-  box_art_url: string;
-  igdb_id?: string;
+    id: string;
+    name: string;
+    box_art_url: string;
+    igdb_id?: string;
 }
 
 
 export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticated }) => {
     let [isJoined, setIsJoined] = React.useState<boolean>(false)
+    const [dialogOpened, setDialogOpened] = React.useState(false);
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
     const [snackbarError, setSnackbarError] = React.useState<string | null>(null);
 
@@ -51,6 +53,11 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
     const joinTwitchChannel = async () => {
         const result = await joinChannel(params.streamer)
         setIsJoined(result)
+        setDialogOpened(true)
+    }
+
+    const handleCloseDialog = () => {
+        setDialogOpened(false)
     }
 
     const partTwitchChannel = async () => {
@@ -259,6 +266,49 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                                     Join Channel
                                                 </Button>
                                         }
+                                        <Dialog
+                                            onClose={handleCloseDialog}
+                                            open={isJoined}
+                                        >
+                                            <DialogTitle sx={{ m: 0, p: 2 }}>
+                                                Joined to channel!
+                                            </DialogTitle>
+                                            <IconButton
+                                                aria-label="close"
+                                                onClick={handleCloseDialog}
+                                                sx={(theme) => ({
+                                                    position: 'absolute',
+                                                    right: 8,
+                                                    top: 8,
+                                                    color: theme.palette.grey[500],
+                                                })}
+                                            >
+                                                <CloseIcon />
+                                            </IconButton>
+                                            <DialogContent dividers>
+                                                <Alert severity="success">FinchBot should be joining your channel shortly.</Alert>
+                                                <Typography>
+                                                    Head to your chatroom and ensure that Fossabot is moderated in your channel - the bot is unable to function correctly otherwise.
+                                                </Typography>
+                                                <Typography variant="body1">Please mod Fossabot by typing</Typography>
+                                                <Box
+                                                    component="span"
+                                                    sx={{
+                                                        backgroundColor: '#1e1e1e', // dark bg like Twitch
+                                                        color: '#fff',
+                                                        fontWeight: 600,
+                                                        paddingX: 1,
+                                                        paddingY: 0.5,
+                                                        borderRadius: 1,
+                                                        fontSize: '0.9rem',
+                                                        fontFamily: 'monospace',
+                                                    }}
+                                                >
+                                                    /mod @finchbot
+                                                </Box>
+                                                <Typography variant="body1">in the chatroom.</Typography>
+                                            </DialogContent>
+                                        </Dialog>
                                     </Card>
                                 </Grid>
 
