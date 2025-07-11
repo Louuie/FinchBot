@@ -11,6 +11,13 @@ import { Snackbar, Alert as MuiAlert } from "@mui/material";
 import axios from "axios";
 
 const drawerWidth = 240;
+interface Game {
+  id: string;
+  name: string;
+  box_art_url: string;
+  igdb_id?: string;
+}
+
 
 export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticated }) => {
     let [isJoined, setIsJoined] = React.useState<boolean>(false)
@@ -23,7 +30,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
         title: '',
         category: '',
     });
-    const [top100games, setTop100Games] = React.useState([]);
+    const [top100games, setTop100Games] = React.useState<Game[]>([]);
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -277,12 +284,16 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                             />
 
                                             <Autocomplete
-                                                disablePortal
                                                 options={top100games}
-                                                value={channelInfo.category}
-                                                onChange={(_, newValue) => {
-                                                    setChannelInfo((prev) => ({ ...prev, category: newValue || '' }));
+                                                getOptionLabel={(option) => option.name || ""} // <-- tells Autocomplete what to show
+                                                value={top100games.find(game => game.name === channelInfo.category) || null}
+                                                onChange={(e, newValue) => {
+                                                    setChannelInfo(prev => ({
+                                                        ...prev,
+                                                        category: newValue?.name || ''
+                                                    }));
                                                 }}
+
                                                 renderInput={(params) => (
                                                     <TextField
                                                         {...params}
@@ -295,6 +306,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                                     />
                                                 )}
                                             />
+
 
 
 
