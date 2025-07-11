@@ -363,6 +363,9 @@ func GetTopTwitchGames(token string) (*models.TopGamesResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	q := req.URL.Query()
+	q.Add("first", "100")
+	req.URL.RawQuery = q.Encode()
 	req.Header.Add("Authorization", "Bearer "+token)
 	req.Header.Add("Client-Id", os.Getenv("TWITCH_CLIENT_ID"))
 	resp, err := client.Do(req)
