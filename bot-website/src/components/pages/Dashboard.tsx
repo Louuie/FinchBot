@@ -285,7 +285,8 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
 
                                             <Autocomplete
                                                 options={top100games}
-                                                getOptionLabel={(option) => option.name || ""} // <-- tells Autocomplete what to show
+                                                getOptionLabel={(option) => option.name || ""}
+                                                isOptionEqualToValue={(option, value) => option.id === value.id}
                                                 value={top100games.find(game => game.name === channelInfo.category) || null}
                                                 onChange={(e, newValue) => {
                                                     setChannelInfo(prev => ({
