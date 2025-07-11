@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ResponsiveAppBar } from "../mui/ResponsiveAppBar";
-import { Alert, AlertTitle, Collapse, IconButton, Card, Button, Box, Grid, TextField, Divider, Typography, CssBaseline, AppBar, Toolbar, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery, useTheme } from "@mui/material";
+import { Alert, AlertTitle, Collapse, IconButton, Card, Button, Box, Grid, TextField, Divider, Typography, CssBaseline, AppBar, Toolbar, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, useMediaQuery, useTheme, Autocomplete } from "@mui/material";
 import { Close, FormatListBulleted, QueueMusic, Menu } from "@mui/icons-material";
 import { Dashboard as DashboardIcon } from "@mui/icons-material";
 import { NavLink, useLocation, useParams } from "react-router-dom";
@@ -23,6 +23,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
         title: '',
         category: '',
     });
+    const [top100games, setTop100Games] = React.useState([]);
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -87,6 +88,10 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
         }).then((res) => {
             const currentChannelInformation: Channel = res.data
             setChannelInfo(currentChannelInformation)
+        })
+        axios.get("https://api.finchbot.xyz/top-games").then((res) => {
+            const games = res.data
+            setTop100Games(games)
         })
     }, [params.streamer]);
 
@@ -271,18 +276,27 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                                 size={isMobile ? "small" : "medium"}
                                             />
 
-                                            <TextField
-                                                label="Stream Game"
+                                            <Autocomplete
+                                                disablePortal
+                                                options={top100games}
                                                 value={channelInfo.category}
-                                                onChange={(e) =>
-                                                    setChannelInfo((prev) => ({ ...prev, category: e.target.value }))
-                                                }
-                                                variant="outlined"
-                                                focused
-                                                fullWidth
-                                                required
-                                                size={isMobile ? "small" : "medium"}
+                                                onChange={(_, newValue) => {
+                                                    setChannelInfo((prev) => ({ ...prev, category: newValue || '' }));
+                                                }}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="Stream Game"
+                                                        variant="outlined"
+                                                        focused
+                                                        fullWidth
+                                                        required
+                                                        size={isMobile ? "small" : "medium"}
+                                                    />
+                                                )}
                                             />
+
+
 
                                         </Box>
                                         <Divider sx={{ my: 2 }} />
