@@ -290,23 +290,26 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                                 <Typography>
                                                     Head to your chatroom and ensure that Fossabot is moderated in your channel - the bot is unable to function correctly otherwise.
                                                 </Typography>
-                                                <Typography variant="body1">Please mod Fossabot by typing</Typography>
-                                                <Box
-                                                    component="span"
-                                                    sx={{
-                                                        backgroundColor: '#1e1e1e', // dark bg like Twitch
-                                                        color: '#fff',
-                                                        fontWeight: 600,
-                                                        paddingX: 1,
-                                                        paddingY: 0.5,
-                                                        borderRadius: 1,
-                                                        fontSize: '0.9rem',
-                                                        fontFamily: 'monospace',
-                                                    }}
-                                                >
-                                                    /mod @finchbot
+                                                <Typography></Typography>
+                                                <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
+                                                    <Typography variant="body1">Please mod Fossabot by typing</Typography>
+                                                    <Box
+                                                        component="span"
+                                                        sx={{
+                                                            backgroundColor: '#1e1e1e', // dark bg like Twitch
+                                                            color: '#fff',
+                                                            fontWeight: 600,
+                                                            paddingX: 1,
+                                                            paddingY: 0.5,
+                                                            borderRadius: 1,
+                                                            fontSize: '0.9rem',
+                                                            fontFamily: 'monospace',
+                                                        }}
+                                                    >
+                                                        /mod @finchbot
+                                                    </Box>
+                                                    <Typography variant="body1">in the chatroom.</Typography>
                                                 </Box>
-                                                <Typography variant="body1">in the chatroom.</Typography>
                                             </DialogContent>
                                         </Dialog>
                                     </Card>
