@@ -356,6 +356,28 @@ func SearchTwitchCategories(query string, token string) (*models.SearchCategorie
 	return &searchCategoriesResponse, nil
 }
 
+func GetTopTwitchGames(token string) (*models.TopGamesResponse, error) {
+	url := "https://api.twitch.tv/helix/games/top"
+	client := http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Add("Client-Id", os.Getenv("TWITCH_CLIENT_ID"))
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var currentTopGames models.TopGamesResponse
+	json.Unmarshal(body, &currentTopGames)
+	return &currentTopGames, nil
+}
+
 func GetChannelInformation(token string, broadcaster_id string) (*models.CurrentCategoryResponse, error) {
 	url := "https://api.twitch.tv/helix/channels"
 	client := http.Client{}

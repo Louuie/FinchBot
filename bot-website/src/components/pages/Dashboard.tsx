@@ -328,6 +328,17 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                             Stream updated successfully!
                         </MuiAlert>
                     </Snackbar>
+                    <Snackbar
+                        open={!!snackbarError}
+                        autoHideDuration={4000}
+                        onClose={() => setSnackbarError(null)}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                    >
+                        <MuiAlert onClose={() => setSnackbarError(null)} severity="error" sx={{ width: '100%' }}>
+                            {snackbarError}
+                        </MuiAlert>
+                    </Snackbar>
+
                 </Box>
             </Box>
         </div>

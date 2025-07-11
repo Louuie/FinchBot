@@ -265,3 +265,19 @@ func GetBroadcastInformation(c *fiber.Ctx) error {
 		"category": currentChannelInformation.Data[0].GameName,
 	})
 }
+
+func GetCurrentTopGames(c *fiber.Ctx) error {
+	token, err := api.GetAppAccessToken()
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	topGames, err := api.GetTopTwitchGames(token)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusAccepted).JSON(topGames.Data)
+}

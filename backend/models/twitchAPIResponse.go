@@ -70,3 +70,11 @@ type CurrentCategoryResponse struct {
 		Delay               int32  `json:"delay"`
 	}
 }
+type TopGamesResponse struct {
+	Data []struct {
+		ID        string `json:"id"`
+		Name      string `json:"name"`
+		BoxArtURL string `json:"box_art_url"`
+		IGDB_ID   string `json:"igdb_id"`
+	}
+}
