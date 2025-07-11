@@ -291,7 +291,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                                 <Typography>
                                                     Head to your chatroom and ensure that Fossabot is moderated in your channel - the bot is unable to function correctly otherwise.
                                                 </Typography>
-                                                <Typography></Typography>
+                                                <Divider/>
                                                 <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
                                                     <Typography variant="body1">Please mod Fossabot by typing</Typography>
                                                     <Box
@@ -311,7 +311,7 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                                     </Box>
                                                     <Typography variant="body1">in the chatroom.</Typography>
                                                 </Box>
-                                                <img src={HowToModFinchBotIMG} alt="..." />
+                                                <img src={HowToModFinchBotIMG} alt="..." style={{ width: 24, height: 24, borderRadius: 4 }}/>
                                             </DialogContent>
                                         </Dialog>
                                     </Card>
