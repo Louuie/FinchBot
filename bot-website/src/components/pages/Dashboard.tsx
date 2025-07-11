@@ -270,50 +270,88 @@ export const Dashboard: React.FC<AuthenticationStatusInterface> = ({ authenticat
                                         <Dialog
                                             onClose={handleCloseDialog}
                                             open={dialogOpened}
+                                            maxWidth="sm"
+                                            fullWidth
+                                            PaperProps={{
+                                                sx: { borderRadius: 3, p: 1.5, backgroundColor: '#1a1a1a', color: '#fff' },
+                                            }}
                                         >
-                                            <DialogTitle sx={{ m: 0, p: 2 }}>
-                                                Joined to channel!
-                                            </DialogTitle>
-                                            <IconButton
-                                                aria-label="close"
-                                                onClick={handleCloseDialog}
-                                                sx={(theme) => ({
-                                                    position: 'absolute',
-                                                    right: 8,
-                                                    top: 8,
-                                                    color: theme.palette.grey[500],
-                                                })}
+                                            <DialogTitle
+                                                sx={{
+                                                    m: 0,
+                                                    p: 2,
+                                                    fontWeight: 'bold',
+                                                    fontSize: '1.2rem',
+                                                    color: '#fff',
+                                                }}
                                             >
-                                                <CloseIcon />
-                                            </IconButton>
-                                            <DialogContent dividers>
-                                                <Alert severity="success">FinchBot should be joining your channel shortly.</Alert>
-                                                <Typography>
-                                                    Head to your chatroom and ensure that Fossabot is moderated in your channel - the bot is unable to function correctly otherwise.
+                                                Joined to channel!
+                                                <IconButton
+                                                    aria-label="close"
+                                                    onClick={handleCloseDialog}
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        right: 8,
+                                                        top: 8,
+                                                        color: '#aaa',
+                                                    }}
+                                                >
+                                                    <CloseIcon />
+                                                </IconButton>
+                                            </DialogTitle>
+
+                                            <DialogContent dividers sx={{ borderColor: '#333', px: 3, py: 2 }}>
+                                                <Alert severity="success" sx={{ mb: 2 }}>
+                                                    FinchBot should be joining your channel shortly.
+                                                </Alert>
+
+                                                <Typography sx={{ mb: 2, color: '#ccc' }}>
+                                                    Head to your chatroom and ensure that FinchBot is moderated in your channel – the bot is unable to function correctly otherwise.
                                                 </Typography>
-                                                <Divider/>
-                                                <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
-                                                    <Typography variant="body1">Please mod Fossabot by typing</Typography>
+
+                                                <Box
+                                                    display="flex"
+                                                    alignItems="center"
+                                                    gap={1}
+                                                    flexWrap="wrap"
+                                                    sx={{ mb: 2 }}
+                                                >
+                                                    <Typography variant="body2" sx={{ color: '#ccc' }}>
+                                                        Please mod FinchBot by typing
+                                                    </Typography>
                                                     <Box
                                                         component="span"
                                                         sx={{
-                                                            backgroundColor: '#1e1e1e', // dark bg like Twitch
+                                                            backgroundColor: '#2a2a2a',
                                                             color: '#fff',
                                                             fontWeight: 600,
-                                                            paddingX: 1,
-                                                            paddingY: 0.5,
+                                                            px: 1,
+                                                            py: 0.5,
                                                             borderRadius: 1,
-                                                            fontSize: '0.9rem',
+                                                            fontSize: '0.85rem',
                                                             fontFamily: 'monospace',
                                                         }}
                                                     >
                                                         /mod @finchbot
                                                     </Box>
-                                                    <Typography variant="body1">in the chatroom.</Typography>
+                                                    <Typography variant="body2" sx={{ color: '#ccc' }}>
+                                                        in the chatroom.
+                                                    </Typography>
                                                 </Box>
-                                                <img src={HowToModFinchBotIMG} alt="..." style={{ width: 512}}/>
+
+                                                <Box
+                                                    component="img"
+                                                    src={HowToModFinchBotIMG}
+                                                    alt="How to mod FinchBot"
+                                                    sx={{
+                                                        width: '100%',
+                                                        borderRadius: 2,
+                                                        border: '1px solid #333',
+                                                    }}
+                                                />
                                             </DialogContent>
                                         </Dialog>
+
                                     </Card>
                                 </Grid>
 
