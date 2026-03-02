@@ -130,5 +130,8 @@ func GetAllJoinedTwitchChannels(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
-	return c.Status()
+	return c.Status(200).JSON(fiber.Map{
+		"status":   "success",
+		"channels": channels,
+	})
 }
