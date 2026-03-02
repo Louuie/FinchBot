@@ -1,6 +1,7 @@
 package models
 
 type Song struct {
+	Id       string  `pg:"id,omitempty"`
 	User     string  `pg:"user,omitempty"`
 	Title    string  `pg:"title,omitempty"`
 	Artist   string  `pg:"artist,omitempty"`
@@ -10,11 +11,11 @@ type Song struct {
 }
 
 type Data struct {
-	Name     string  `json:"name,omitempty"`
-	Artist   string  `json:"artist,omitempty"`
-	FormattedDuration string `json:"formatted_duration,omitempty"`
+	Id                string  `json:"id,omitempty"`
+	Name              string  `json:"name,omitempty"`
+	Artist            string  `json:"artist,omitempty"`
+	FormattedDuration string  `json:"formatted_duration,omitempty"`
 	DurationInSeconds float64 `json:"duration_in_seconds,omitempty"`
-	Position int     `json:"position,omitempty"`
 }
 type ClientData struct {
 	Status  string `json:"status,omitempty"`

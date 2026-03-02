@@ -5,6 +5,7 @@ export interface Songs {
     Title: string,
     Userid: string,
     Videoid: string,
+    Position: number,
   }
 
   export interface SongsTable {

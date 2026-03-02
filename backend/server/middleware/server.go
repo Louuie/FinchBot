@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -19,18 +20,30 @@ func Server() *fiber.App {
 
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
-		AllowOrigins:     "https://finchbot.xyz",
+		AllowOrigins:     "http://localhost:4173, https://finchbot.xyz",
 		AllowHeaders:     "Access-Control-Allow-Origin, Content-Type, Origin, Accept, Authorization",
 		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS",
 	}), logger.New())
 
+	isDev := os.Getenv("ENV") == "dev" // or however you define your dev environment
+
 	store = session.New(session.Config{
 		CookieHTTPOnly: true,
-		CookieSecure:   true,
-		CookieSameSite: "None",
-		CookieDomain:   "finchbot.xyz",
-		CookiePath:     "/",
-		Expiration:     time.Hour * 5,
+		CookieSecure:   !isDev, // false in dev, true in prod
+		CookieSameSite: func() string {
+			if isDev {
+				return "Lax" // Works on localhost
+			}
+			return "None" // Required for cross-domain cookies on HTTPS
+		}(),
+		CookieDomain: func() string {
+			if isDev {
+				return "" // Leave blank for localhost
+			}
+			return "finchbot.xyz"
+		}(),
+		CookiePath: "/",
+		Expiration: time.Hour * 5,
 	})
 
 	//app.Use(limiter.New())
@@ -66,16 +79,19 @@ func Server() *fiber.App {
 	app.Post("/delete-all-songs", DeleteAllSongs)
 
 	// Route that fetches the Song Queue setting.
-	app.Get("/song-queue-settings", GetSongQueueSettings)
+	// app.Get("/song-queue-settings", GetSongQueueSettings)
 
 	// Route that sets the Song Queue setting.
-	app.Post("/song-queue-settings", SetSongQueueSettings)
+	// app.Post("/song-queue-settings", SetSongQueueSettings)
 
 	// Route that joins the twitch-bot into the users twitch channel
 	app.Post("join-channel", JoinChannel)
 
 	// Route that parts the twitch-bot from the users twitch channel
 	app.Post("part-channel", PartChannel)
+
+	// Route that gets all the twitch channels that the bot is joined in
+	app.Get("/fetch-channels", GetAllJoinedTwitchChannels)
 
 	return app
 }

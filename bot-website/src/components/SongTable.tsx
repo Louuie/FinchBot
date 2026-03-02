@@ -209,7 +209,7 @@ export const SongTable: React.FC<Props> = (props) => {
                         onClick={() => {
                           promoteSong(
                             Streamer,
-                            song.Id,
+                            song.Position,
                           );
                           console.log('promoteid', song.Id)
                         }
@@ -304,9 +304,9 @@ export const SongTable: React.FC<Props> = (props) => {
                         onClick={() => {
                           promoteSong(
                             Streamer,
-                            song.Id,
+                            song.Position,
                           );
-                          console.log('promoteid', song.Id)
+                          console.log('promoteid', song.Position)
                         }
                         }
                       >
