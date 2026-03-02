@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 	"twitch-bot/config"
 	"twitch-bot/irc"
 	"twitch-bot/twitch"
@@ -12,10 +13,26 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+const (
+	// Time allowed to write a message to the peer
+	writeWait = 10 * time.Second
+
+	// Time allowed to read the next pong message from the peer
+	pongWait = 60 * time.Second
+
+	// Send pings to peer with this period (must be less than pongWait)
+	pingPeriod = (pongWait * 9) / 10
+
+	// Maximum message size allowed from peer
+	maxMessageSize = 512
+)
+
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
 }
 
 func main() {
@@ -61,12 +78,54 @@ func main() {
 		}
 		defer ws.Close()
 
+		log.Println("New WebSocket connection established")
+
+		// Configure connection settings
+		ws.SetReadLimit(maxMessageSize)
+		ws.SetReadDeadline(time.Now().Add(pongWait))
+		ws.SetPongHandler(func(string) error {
+			ws.SetReadDeadline(time.Now().Add(pongWait))
+			return nil
+		})
+
+		// Channel to signal when to stop the ping ticker
+		done := make(chan struct{})
+
+		// Start ping ticker in a goroutine
+		go func() {
+			ticker := time.NewTicker(pingPeriod)
+			defer ticker.Stop()
+
+			for {
+				select {
+				case <-ticker.C:
+					ws.SetWriteDeadline(time.Now().Add(writeWait))
+					if err := ws.WriteMessage(websocket.PingMessage, nil); err != nil {
+						log.Println("Ping error:", err)
+						return
+					}
+				case <-done:
+					return
+				}
+			}
+		}()
+
+		// Read messages from client
 		for {
 			_, msg, err := ws.ReadMessage()
 			if err != nil {
-				log.Println("Read error:", err)
+				if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+					log.Printf("WebSocket unexpected close error: %v", err)
+				} else {
+					log.Println("WebSocket connection closed")
+				}
+				close(done)
 				break
 			}
+
+			// Reset read deadline on successful message
+			ws.SetReadDeadline(time.Now().Add(pongWait))
+
 			// Pass received WS message to IRC bot
 			messages <- string(msg)
 		}
