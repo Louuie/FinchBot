@@ -9,6 +9,7 @@ import axios from "axios";
 import { AuthenticationStatusInterface } from "./interfaces/Auth";
 import { Dashboard } from "./components/pages/Dashboard";
 import { Commands } from "./components/pages/Commands";
+import { Channel } from "./interfaces/Channel";
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
@@ -20,6 +21,7 @@ export const App: React.FC = () => {
   // state variable for auth
   const [isAuthed, setIsAuthed] = React.useState(false);
 
+
   // useEffect that fetches the users authentication status
   React.useEffect(() => {
     axios
@@ -28,28 +30,13 @@ export const App: React.FC = () => {
       })
       .then((res) => {
         const authData: AuthenticationStatusInterface = res.data;
-        console.log(authData);
-        setIsAuthed(Boolean(authData.authenticated));
-        console.log("auth status", isAuthed);
-        exclusiveUsers.map((exclusiveUser: string) => {
-          console.log(exclusiveUser, authData.display_name);
-          if (exclusiveUser === authData.display_name?.toLocaleLowerCase()) {
-            axios
-              .post("https://api.finchbot.xyz/song-queue-settings", null, {
-                params: {
-                  channel: authData.display_name.toLowerCase(),
-                  song_queue_status: false,
-                  song_limit: 20,
-                  user_limit: 2,
-                },
-              })
-              .then((res) => console.log(res.data))
-              .catch((err) => console.log(err));
-          }
-        });
+        const authed = Boolean(authData.authenticated);
+        setIsAuthed(authed);
       })
       .catch((err) => console.log(err));
   }, []);
+
+  
 
   return (
     <ThemeProvider theme={darkTheme}>

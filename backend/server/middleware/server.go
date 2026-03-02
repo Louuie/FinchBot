@@ -63,6 +63,9 @@ func Server() *fiber.App {
 	// Route that fetches the users twitch information. (MUST BE AUTHED)
 	app.Get("/twitch/user", TwitchUserInfo)
 
+	// Route that allows you to get the users twitch broadcaster information
+	app.Get("/twitch/channel", GetBroadcastInformation)
+
 	// Route that allows you to modify the users twitch broadcaster information, such as the title and the game. (MUST BE AUTHED)
 	app.Post("/twitch/modify", ModifyBroadcastInformation)
 
@@ -92,6 +95,9 @@ func Server() *fiber.App {
 
 	// Route that gets all the twitch channels that the bot is joined in
 	app.Get("/fetch-channels", GetAllJoinedTwitchChannels)
+
+	// Route that gets the top 100 twitch games
+	app.Get("/top-games", GetCurrentTopGames)
 
 	return app
 }

@@ -10,6 +10,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
+	"time"
+)
+
+var (
+	appAccessToken     string
+	appAccessTokenExp  time.Time
+	appAccessTokenLock sync.Mutex
 )
 
 // Fetches the Twitch User Access Token.
@@ -25,7 +33,7 @@ import (
 //	    Status       float64
 //	    Message      string
 //	}
-func GetAccessToken(code string) (*models.TwitchAuthResponse, error) {
+func GetUserAccessToken(code string) (*models.TwitchAuthResponse, error) {
 	url := "https://id.twitch.tv/oauth2/token"
 	client := http.Client{}
 	req, err := http.NewRequest("POST", url, nil)
@@ -55,6 +63,51 @@ func GetAccessToken(code string) (*models.TwitchAuthResponse, error) {
 	return &twitchAuthRes, nil
 }
 
+func GetAppAccessToken() (string, error) {
+	appAccessTokenLock.Lock()
+	defer appAccessTokenLock.Unlock()
+
+	// Use cached token if it's still valid
+	if appAccessToken != "" && time.Now().Before(appAccessTokenExp) {
+		return appAccessToken, nil
+	}
+
+	// Request new token
+	url := "https://id.twitch.tv/oauth2/token"
+	client := http.Client{}
+	req, err := http.NewRequest("POST", url, nil)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	q := req.URL.Query()
+	q.Add("client_id", os.Getenv("TWITCH_CLIENT_ID"))
+	q.Add("client_secret", os.Getenv("TWITCH_CLIENT_SECRET"))
+	q.Add("grant_type", "client_credentials")
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var twitchAuthRes models.TwitchAuthResponse
+	err = json.Unmarshal(body, &twitchAuthRes)
+	if err != nil {
+		return "", err
+	}
+
+	// Cache token and expiration
+	appAccessToken = twitchAuthRes.AccessToken
+	appAccessTokenExp = time.Now().Add(time.Duration(twitchAuthRes.ExpiresIn-60) * time.Second) // buffer 1 min
+
+	return appAccessToken, nil
+}
+
 // Validates the users access token to make sure its a valid one, if not it returns an error.
 func ValidateAccessToken(token string) error {
 	url := "https://id.twitch.tv/oauth2/validate"
@@ -69,15 +122,29 @@ func ValidateAccessToken(token string) error {
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
-	var twitchValidateTokenRes models.TwitchValidateTokenResponse
-	json.Unmarshal(body, &twitchValidateTokenRes)
-	if twitchValidateTokenRes.ExpiresIn == 0 {
-		return errors.New("something went wrong validating the token on the backend")
+
+	if resp.StatusCode != http.StatusOK {
+		// 🔍 Print the error Twitch gives for debugging
+		log.Printf("Token validation failed. Status: %d, Body: %s", resp.StatusCode, string(body))
+		return errors.New("invalid access token")
 	}
+
+	var twitchValidateTokenRes models.TwitchValidateTokenResponse
+	if err := json.Unmarshal(body, &twitchValidateTokenRes); err != nil {
+		return err
+	}
+
+	if twitchValidateTokenRes.ExpiresIn == 0 {
+		log.Printf("Unexpected validation response: %s", string(body))
+		return errors.New("token expired or invalid")
+	}
+
 	return nil
 }
 
@@ -129,12 +196,20 @@ func RevokeAccessToken(token string) error {
 //			CreatedAt       time.Time
 //	 	}
 //	}
-func GetUserInfo(token string) (*models.TwitchUserInfoResponse, error) {
+//
+// TODO: Update this function to not be able to handle the UserAccessToken like it already does but the AppAccessToken because there will be instance where we need the userInfo without their accessToken
+// Note that this doesn't need to be changed here as the code here is perfect, just where this function is being called
+func GetUserInfo(token string, login string) (*models.TwitchUserInfoResponse, error) {
 	url := "https://api.twitch.tv/helix/users"
 	client := http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
+	}
+	if login != "" {
+		q := req.URL.Query()
+		q.Add("login", login)
+		req.URL.RawQuery = q.Encode()
 	}
 	req.Header.Add("Authorization", "Bearer "+token)
 	req.Header.Add("Client-Id", os.Getenv("TWITCH_CLIENT_ID"))
@@ -281,7 +356,32 @@ func SearchTwitchCategories(query string, token string) (*models.SearchCategorie
 	return &searchCategoriesResponse, nil
 }
 
-func GetCurrentCategory(token string, broadcaster_id string) (*models.CurrentCategoryResponse, error) {
+func GetTopTwitchGames(token string) (*models.TopGamesResponse, error) {
+	url := "https://api.twitch.tv/helix/games/top"
+	client := http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	q := req.URL.Query()
+	q.Add("first", "100")
+	req.URL.RawQuery = q.Encode()
+	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Add("Client-Id", os.Getenv("TWITCH_CLIENT_ID"))
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	var currentTopGames models.TopGamesResponse
+	json.Unmarshal(body, &currentTopGames)
+	return &currentTopGames, nil
+}
+
+func GetChannelInformation(token string, broadcaster_id string) (*models.CurrentCategoryResponse, error) {
 	url := "https://api.twitch.tv/helix/channels"
 	client := http.Client{}
 	req, err := http.NewRequest("GET", url, nil)

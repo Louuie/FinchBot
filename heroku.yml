@@ -1,0 +1,5 @@
+build:
+  config:
+    GO_INSTALL_PACKAGE_SPEC: ./backend/...
+  run:
+    web: cd backend && go run .

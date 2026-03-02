@@ -27,7 +27,7 @@ func TwitchAuth(c *fiber.Ctx) error {
 		})
 	}
 
-	twitchData, err := api.GetAccessToken(query.Code)
+	twitchData, err := api.GetUserAccessToken(query.Code)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
 			"error": err,
@@ -70,7 +70,7 @@ func TwitchAuthCheck(c *fiber.Ctx) error {
 		})
 	}
 
-	userInfo, err := api.GetUserInfo(token)
+	userInfo, err := api.GetUserInfo(token, "")
 	if err != nil {
 		fmt.Print(err.Error())
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
@@ -114,7 +114,7 @@ func TwitchUserInfo(c *fiber.Ctx) error {
 			"error3": err.Error(),
 		})
 	}
-	userInfo, err := api.GetUserInfo(fmt.Sprintf("%v", sess.Get("access_token")))
+	userInfo, err := api.GetUserInfo(fmt.Sprintf("%v", sess.Get("access_token")), "")
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
 			"error": err.Error(),
@@ -141,7 +141,7 @@ func ModifyBroadcastInformation(c *fiber.Ctx) error {
 			"error4": err.Error(),
 		})
 	}
-	userInfo, err := api.GetUserInfo(fmt.Sprintf("%v", sess.Get("access_token")))
+	userInfo, err := api.GetUserInfo(fmt.Sprintf("%v", sess.Get("access_token")), "")
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
 			"error": err.Error(),
@@ -218,4 +218,66 @@ func ModifyBroadcastInformation(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusAccepted).JSON(&fiber.Map{
 		"success": "successfully set title to " + categoryModel.Title + " and set the game to " + gameData.Data[0].Name,
 	})
+}
+
+func GetBroadcastInformation(c *fiber.Ctx) error {
+	type Query struct {
+		Login string `query:"login"`
+	}
+
+	query := new(Query)
+
+	if err := c.QueryParser(query); err != nil {
+		log.Fatalln(err)
+	}
+	if query.Login == "" {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": "missing login/username",
+		})
+	}
+	// TODO: We need to get the AppAccessToken and not the user access_token from the session, since we hit this middlewarwe for example if a moderator is on their dashboard
+	token, err := api.GetAppAccessToken()
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	userInfo, err := api.GetUserInfo(token, query.Login)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	if len(userInfo.Data) == 0 {
+		return c.Status(fiber.StatusNotFound).JSON(&fiber.Map{
+			"error": "user not found",
+		})
+	}
+	// Now we can get the current channel information of the streamer/user
+	currentChannelInformation, err := api.GetChannelInformation(token, userInfo.Data[0].ID)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusAccepted).JSON(&fiber.Map{
+		"title":    currentChannelInformation.Data[0].Title,
+		"category": currentChannelInformation.Data[0].GameName,
+	})
+}
+
+func GetCurrentTopGames(c *fiber.Ctx) error {
+	token, err := api.GetAppAccessToken()
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	topGames, err := api.GetTopTwitchGames(token)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(&fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	return c.Status(fiber.StatusAccepted).JSON(topGames.Data)
 }

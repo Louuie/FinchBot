@@ -39,7 +39,7 @@ export const formatDuration = (duration: number) => {
   export const onSongEnd = (streamer: string, songID: number | undefined): void => {
     axios.get('https://api.finchbot.xyz/song-request-delete', {
       params: {
-        channel: 'Louiee_tv',
+        channel: streamer,
         id: songID,
       }
     }).then((res) => (console.log(res.data))).catch((err) => console.log(err));
