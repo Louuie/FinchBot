@@ -40,7 +40,11 @@ func AddSong(query string, channel string, username string) (*models.AddSongResp
 	if addSongResponse.Status == "success" {
 		return &addSongResponse, nil
 	} else {
-		return nil, fmt.Errorf("error adding song: %s", addSongResponse.Message)
+		errorMsg := addSongResponse.Error
+		if errorMsg == "" {
+			errorMsg = addSongResponse.Message
+		}
+		return nil, fmt.Errorf("%s", errorMsg)
 	}
 
 }

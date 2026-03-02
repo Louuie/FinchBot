@@ -3,6 +3,7 @@ package models
 type AddSongResponse struct {
 	Status  string `json:"status,omitempty"`
 	Message string `json:"message,omitempty"`
+	Error   string `json:"error,omitempty"`
 	Data    []Data `json:"data,omitempty"`
 }
 
